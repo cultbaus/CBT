@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scroll", "Scroll\Scroll.csproj", "{467C443A-E383-41DC-AE5C-6EED0C62576D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9236941E-FCB4-4C19-ABA5-32D7F8CC3C2F}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{467C443A-E383-41DC-AE5C-6EED0C62576D}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{467C443A-E383-41DC-AE5C-6EED0C62576D}.Debug|Any CPU.Build.0 = Debug|x64
+		{467C443A-E383-41DC-AE5C-6EED0C62576D}.Debug|x64.ActiveCfg = Debug|x64
+		{467C443A-E383-41DC-AE5C-6EED0C62576D}.Debug|x64.Build.0 = Debug|x64
+		{467C443A-E383-41DC-AE5C-6EED0C62576D}.Release|Any CPU.ActiveCfg = Release|x64
+		{467C443A-E383-41DC-AE5C-6EED0C62576D}.Release|Any CPU.Build.0 = Release|x64
+		{467C443A-E383-41DC-AE5C-6EED0C62576D}.Release|x64.ActiveCfg = Release|x64
+		{467C443A-E383-41DC-AE5C-6EED0C62576D}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E96CB457-1FB3-4953-A2A1-4EC079A48A34}
+	EndGlobalSection
+EndGlobal

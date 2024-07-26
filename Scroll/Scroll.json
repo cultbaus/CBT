@@ -1,0 +1,10 @@
+{
+    "Author": "cultbaus",
+    "Name": "Scroll",
+    "Punchline": "Provides configurable flytext.",
+    "Description": "This plugin allows the configuration and manipulation of in-game flytext.",
+    "RepoUrl": "https://github.com/cultbaus/Scroll",
+    "IconUrl": null,
+    "ImageUrls": [],
+    "DalamudApiLevel": 10
+}
