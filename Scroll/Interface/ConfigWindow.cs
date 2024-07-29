@@ -3,6 +3,7 @@ namespace Scroll.Interface;
 using System.Numerics;
 
 using Dalamud.Interface.Windowing;
+using ImGuiNET;
 
 internal class ConfigWindow : Window
 {
@@ -16,5 +17,11 @@ internal class ConfigWindow : Window
 
     public override void Draw()
     {
+        ImGui.Indent();
+
+        using (Service.Fonts.Push(Service.Configuration.DefaultFont, Service.Configuration.DefaultFontSize))
+        {
+            ImGui.Text("Scroll plugin configuration coming soon!");
+        }
     }
 }

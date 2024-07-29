@@ -4,64 +4,60 @@ using System.Numerics;
 
 internal class FlyTextConfiguration
 {
-    public FlyTextConfiguration( string fontName, float fontSize, Vector4 fontColor, float outlineSize, Vector4 outlineColor, FlyTextAnimationKind animationKind, float animationDuration)
+    internal FlyTextConfiguration(string fontName, float fontSize, Vector4 fontColor, bool fontFormat, int outlineSize, Vector4 outlineColor, FlyTextAnimationKind animationKind, float animationDuration, float animationSpeed)
     {
-        this.Font = new FlyTextFontConfiguration(fontSize, fontName, fontColor);
+        this.Font = new FlyTextFontConfiguration(fontSize, fontName, fontColor, fontFormat);
         this.Outline = new FlyTextOutlineConfiguration(outlineSize, outlineColor);
-        this.Animation = new FlyTextAnimationConfiguration(animationKind, animationDuration);
+        this.Animation = new FlyTextAnimationConfiguration(animationKind, animationDuration, animationSpeed);
     }
 
-    public bool Enabled { get; set; } = true;
-
-    public FlyTextFontConfiguration Font { get; set; }
-
-    public FlyTextOutlineConfiguration Outline { get; set; }
-
-    public FlyTextAnimationConfiguration Animation { get; set; }
+    internal bool Enabled { get; set; } = true;
+    internal FlyTextFontConfiguration Font { get; set; }
+    internal FlyTextOutlineConfiguration Outline { get; set; }
+    internal FlyTextAnimationConfiguration Animation { get; set; }
 
 }
 
 internal class FlyTextFontConfiguration
 {
-    internal FlyTextFontConfiguration(float size, string name, Vector4 color)
+    internal FlyTextFontConfiguration(float size, string name, Vector4 color, bool format)
     {
         this.Size = size;
         this.Name = name;
         this.Color = color;
+        this.Format = format;
     }
 
-    public float Size { get; set; }
-
-    public string Name { get; set; }
-
-    public Vector4 Color { get; set; }
+    internal float Size { get; set; }
+    internal string Name { get; set; }
+    internal Vector4 Color { get; set; }
+    internal bool Format { get; set; }
 }
 
 internal class FlyTextOutlineConfiguration
 {
-    internal FlyTextOutlineConfiguration(float size, Vector4 color)
+    internal FlyTextOutlineConfiguration(int size, Vector4 color)
     {
         this.Enabled = true;
         this.Size = size;
         this.Color = color;
     }
 
-    public bool Enabled { get; set; }
-
-    public float Size { get; set; }
-
-    public Vector4 Color { get; set; }
+    internal bool Enabled { get; set; }
+    internal int Size { get; set; }
+    internal Vector4 Color { get; set; }
 }
 
 internal class FlyTextAnimationConfiguration
 {
-    internal FlyTextAnimationConfiguration(FlyTextAnimationKind kind, float duration)
+    internal FlyTextAnimationConfiguration(FlyTextAnimationKind kind, float duration, float speed)
     {
         this.Kind = kind;
         this.Duration = duration;
+        this.Speed = speed;
     }
 
-    public FlyTextAnimationKind Kind { get; set; }
-
-    public float Duration { get; set; }
+    internal FlyTextAnimationKind Kind { get; set; }
+    internal float Duration { get; set; }
+    internal float Speed { get; set; }
 }

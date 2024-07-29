@@ -4,12 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+
 using Dalamud.Configuration;
-using Dalamud.Game.Gui.FlyText;
 
 using Scroll.FlyText;
 
-internal partial class PluginConfiguration : IPluginConfiguration
+internal class PluginConfiguration : IPluginConfiguration
 {
     internal PluginConfiguration()
     {
@@ -21,35 +21,35 @@ internal partial class PluginConfiguration : IPluginConfiguration
             this.DefaultFont,
             this.DefaultFontSize,
             this.DefaultFontColor,
+            this.DefaultFontFormat,
             this.DefaultOutlineThickness,
             this.DefaultOutlineColor,
             this.DefaultAnimationKind,
-            this.DefaultAnimationDuration));
+            this.DefaultAnimationDuration,
+            this.DefaultAnimationSpeed));
     }
 
-    public int Version { get; set; } = 0;
-
-    public Dictionary<FlyTextKind, FlyTextConfiguration> FlyText { get; set; } = new Dictionary<FlyTextKind, FlyTextConfiguration>();
-
-    public void Save()
+    internal void Save()
         => Service.Interface.SavePluginConfig(this);
-}
 
-internal partial class PluginConfiguration
-{
-    public string DefaultFont { get; set; } = "Expressway";
+    // Configuration
+    public int Version { get; set; } = 0;
+    internal Dictionary<FlyTextKind, FlyTextConfiguration> FlyText { get; set; } = new Dictionary<FlyTextKind, FlyTextConfiguration>();
+    internal Dictionary<string, List<float>> Fonts = new Dictionary<string, List<float>>();
 
-    public float DefaultFontSize { get; set; } = 18f;
+    // Font defaults
+    internal string DefaultFont { get; private set; } = "Expressway";
+    internal float DefaultFontSize { get; private set; } = 18f;
+    internal Vector4 DefaultFontColor { get; private set; } = Vector4.One;
+    internal bool DefaultFontFormat { get; private set; } = true;
 
-    public Vector4 DefaultFontColor { get; set; } = Vector4.One;
+    // Outline defaults
+    internal bool DefaultOutline { get; private set; } = true;
+    internal int DefaultOutlineThickness { get; private set; } = 1;
+    internal Vector4 DefaultOutlineColor { get; private set; } = new Vector4(0, 0, 0, 1);
 
-    public bool DefaultOutline { get; set; } = true;
-
-    public float DefaultOutlineThickness { get; set; } = 1f;
-
-    public Vector4 DefaultOutlineColor { get; set; } = new Vector4(0, 0, 0, 1);
-
-    public FlyTextAnimationKind DefaultAnimationKind { get; set; } = FlyTextAnimationKind.LinearFade;
-
-    public float DefaultAnimationDuration { get; set; } = 5f;
+    // Animation defaults
+    internal FlyTextAnimationKind DefaultAnimationKind { get; private set; } = FlyTextAnimationKind.LinearFade;
+    internal float DefaultAnimationDuration { get; private set; } = 5f;
+    internal float DefaultAnimationSpeed { get; private set; } = 120f;
 }

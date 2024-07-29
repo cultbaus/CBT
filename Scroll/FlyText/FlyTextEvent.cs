@@ -1,11 +1,11 @@
-namespace Scroll.Flytext;
+namespace Scroll.FlyText;
 
-using Dalamud.Game.Gui.FlyText;
+using System.Numerics;
+
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
+using ImGuiNET;
 
-using Scroll.FlyText;
-
-internal unsafe class FlyTextEvent
+internal unsafe partial class FlyTextEvent
 {
     internal FlyTextEvent(FlyTextKind kind, Character* target, Character* source, int option, int actionKind, int actionID, int val1, int val2, int val3, int val4)
     {
@@ -15,10 +15,13 @@ internal unsafe class FlyTextEvent
             config.Font.Name,
             config.Font.Size,
             config.Font.Color,
+            config.Font.Format,
             config.Outline.Size,
             config.Outline.Color,
             config.Animation.Kind,
-            config.Animation.Duration);
+            config.Animation.Duration,
+            config.Animation.Speed);
+        this.Animation = FlyTextAnimation.Create(kind);
         this.Target = target;
         this.Source = source;
         this.Option = option;
@@ -30,23 +33,37 @@ internal unsafe class FlyTextEvent
         this.Value4 = val4;
     }
 
-    public FlyTextConfiguration Config { get; set; }
+    internal void Update(float timeElapsed)
+    {
+        this.Animation.TimeElapsed += timeElapsed;
+        this.Animation.Apply(this, timeElapsed);
+    }
 
-    public Character* Target { get; set; }
+    internal bool IsExpired
+        => this.Animation.TimeElapsed > this.Animation.Duration;
+    internal Vector2 Anchor
+        => Service.GameGui.WorldToScreen(this.Target->Position, out Vector2 currentPosition) ? currentPosition : Vector2.Zero;
+    internal Vector2 Position
+        => this.Anchor + this.Animation.Offset;
+    internal Vector2 Size
+        => ImGui.CalcTextSize(this.Text);
+    internal string Text
+        => this.Config.Font.Format ? this.Value1.ToString("N0") : this.Value1.ToString();
 
-    public Character* Source { get; set; }
+    // Configuration
+    internal FlyTextConfiguration Config { get; set; }
 
-    public int Option { get; set; }
+    // Animation
+    internal FlyTextAnimation Animation { get; set; }
 
-    public int ActionKind { get; set; }
-
-    public int ActionID { get; set; }
-
-    public int Value1 { get; set; }
-
-    public int Value2 { get; set; }
-
-    public int Value3 { get; set; }
-
-    public int Value4 { get; set; }
+    // Arguments passed into the original hook
+    internal Character* Target { get; set; }
+    internal Character* Source { get; set; }
+    internal int Option { get; set; }
+    internal int ActionKind { get; set; }
+    internal int ActionID { get; set; }
+    internal int Value1 { get; set; }
+    internal int Value2 { get; set; }
+    internal int Value3 { get; set; }
+    internal int Value4 { get; set; }
 }

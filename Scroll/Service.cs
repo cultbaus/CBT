@@ -5,11 +5,20 @@ using Dalamud.IoC;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 
+using Scroll.FlyText;
+using Scroll.Helpers;
+
 internal class Service
 {
     internal static PluginConfiguration Configuration { get; set; } = null!;
 
     internal static PluginAddressResolver Address { get; set; } = null!;
+
+    internal static PluginManager Manager { get; set; } = null!;
+
+    internal static FlyTextReceiver Receiver { get; set; } = null!;
+
+    internal static FontManager Fonts { get; set; } = null!;
 
     [PluginService]
     internal static IClientState ClientState { get; private set; } = null!;
