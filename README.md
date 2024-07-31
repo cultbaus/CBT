@@ -1,8 +1,10 @@
 <div align="center">
 
-<img height="100px" src="./res/CBT-7-30-2024.png" />
+<img height="100px" src="./res/icon.png" />
 
 ## Cultbaus Battle Text
+
+<img height="400px" src="./res/record.gif" />
 
 An ImGui replacement for FlyText in Final Fantasy XIV.
 
