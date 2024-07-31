@@ -8,7 +8,7 @@ Thank you to the creators & maintainers of [FlyTextFilter][1] and [DamageInfo][2
 
 # Attribution
 
-Additionally, thank you to the creators & maintainers of [DelvUI][3] and [XIVComboExpanded][4] for providing additional reference material and implementation details that were lost on me from the official documentation sources. Similar to the aforementioned prior art, these plugins were instrumental in providing me a basis for which I could begin.
+Additionally, thank you to the creators & maintainers of [DelvUI][4] and [XIVComboExpanded][3] for providing additional reference material and implementation details that were lost on me from the official documentation sources. Similar to the aforementioned prior art, these plugins were instrumental in providing me a basis for which I could begin.
 
 [1]: https://github.com/Aireil/FlyTextFilter
 [2]: https://github.com/lmcintyre/DamageInfoPlugin
