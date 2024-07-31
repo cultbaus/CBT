@@ -1,6 +1,12 @@
-# Scroll
+<center>
+
+# CBT
+
+## Cultbaus Battle Text
 
 An ImGui replacement for FlyText in Final Fantasy XIV.
+
+</center>
 
 # Prior Art
 

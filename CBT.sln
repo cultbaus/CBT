@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scroll", "Scroll\Scroll.csproj", "{467C443A-E383-41DC-AE5C-6EED0C62576D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CBT", "CBT\CBT.csproj", "{467C443A-E383-41DC-AE5C-6EED0C62576D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9236941E-FCB4-4C19-ABA5-32D7F8CC3C2F}"
 	ProjectSection(SolutionItems) = preProject

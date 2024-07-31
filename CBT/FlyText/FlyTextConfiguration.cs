@@ -1,4 +1,4 @@
-namespace Scroll.FlyText;
+namespace CBT.FlyText;
 
 using System.Numerics;
 

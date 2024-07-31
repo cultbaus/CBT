@@ -1,12 +1,12 @@
-namespace Scroll;
+namespace CBT;
 
 using Dalamud.Game.ClientState.Objects;
 using Dalamud.IoC;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 
-using Scroll.FlyText;
-using Scroll.Helpers;
+using CBT.FlyText;
+using CBT.Helpers;
 
 internal class Service
 {

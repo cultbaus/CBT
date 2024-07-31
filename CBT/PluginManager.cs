@@ -1,12 +1,12 @@
-namespace Scroll;
+namespace CBT;
 
 using System;
 using System.Collections.Generic;
 
 using ImGuiNET;
 
-using Scroll.FlyText;
-using Scroll.FlyText.Types;
+using CBT.FlyText;
+using CBT.FlyText.Types;
 
 internal class PluginManager(FlyTextArtist artist) : IDisposable
 {

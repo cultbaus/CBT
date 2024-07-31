@@ -1,4 +1,4 @@
-namespace Scroll.FlyText;
+namespace CBT.FlyText;
 
 using System;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.Numerics;
 
 using ImGuiNET;
 
-using Scroll.FlyText.Types;
+using CBT.FlyText.Types;
 
 internal unsafe partial class FlyTextArtist
 {

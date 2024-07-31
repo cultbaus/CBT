@@ -1,4 +1,4 @@
-namespace Scroll.Interface;
+namespace CBT.Interface;
 
 using System;
 using System.Numerics;
@@ -20,7 +20,7 @@ internal partial class OverlayWindow : Window
     private DateTime lastFrame = DateTime.Now;
 
     internal OverlayWindow()
-        : base("Scroll Overlay Window##SCROLL_OVERLAY_WINDOW", windowFlags, true)
+        : base("CBT Overlay Window##CBT_OVERLAY_WINDOW", windowFlags, true)
     {
         this.IsOpen = true;
         this.RespectCloseHotkey = false;

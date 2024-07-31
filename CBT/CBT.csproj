@@ -6,7 +6,7 @@
     <Version>0.0.1</Version>
     <Description>This plugin manipulates flytext.</Description>
     <Copyright>-</Copyright>
-    <PackageProjectUrl>https://github.com/cultbaus/Scroll</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/cultbaus/CBT</PackageProjectUrl>
   </PropertyGroup>
 
   <PropertyGroup>

@@ -1,4 +1,4 @@
-namespace Scroll.FlyText.Types;
+namespace CBT.FlyText.Types;
 
 using System;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ internal enum FlyTextCategory
     NonCombat = 1 << 1,
 
     // Categories
-    Attack = 1 << 10 | Combat,
+    AutoAttack = 1 << 10 | Combat,
     AbilityDamage = 1 << 11 | Combat,
     AbilityHealing = 1 << 12 | Combat,
     Miss = 1 << 13 | Combat,

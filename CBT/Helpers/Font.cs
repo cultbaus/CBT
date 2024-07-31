@@ -1,4 +1,4 @@
-namespace Scroll.Helpers;
+namespace CBT.Helpers;
 
 using System;
 

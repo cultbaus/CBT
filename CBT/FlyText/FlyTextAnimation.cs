@@ -1,9 +1,9 @@
-namespace Scroll.FlyText;
+namespace CBT.FlyText;
 
 using System;
 using System.Numerics;
 
-using Scroll.FlyText.Types;
+using CBT.FlyText.Types;
 
 internal enum FlyTextAnimationKind
 {

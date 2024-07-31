@@ -1,6 +1,7 @@
-namespace Scroll.FlyText.Types;
+namespace CBT.FlyText.Types;
 
 using System;
+
 using S = Dalamud.Game.Gui.FlyText;
 
 [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
@@ -11,16 +12,16 @@ internal class FlyTextCategoryAttribute(FlyTextCategory category) : Attribute
 
 internal enum FlyTextKind
 {
-    [FlyTextCategory(FlyTextCategory.Attack)]
+    [FlyTextCategory(FlyTextCategory.AutoAttack)]
     AutoAttackOrDot = S.FlyTextKind.AutoAttackOrDot,
 
-    [FlyTextCategory(FlyTextCategory.Attack)]
+    [FlyTextCategory(FlyTextCategory.AutoAttack)]
     AutoAttackOrDotDh = S.FlyTextKind.AutoAttackOrDotDh,
 
-    [FlyTextCategory(FlyTextCategory.Attack)]
+    [FlyTextCategory(FlyTextCategory.AutoAttack)]
     AutoAttackOrDotCrit = S.FlyTextKind.AutoAttackOrDotCrit,
 
-    [FlyTextCategory(FlyTextCategory.Attack)]
+    [FlyTextCategory(FlyTextCategory.AutoAttack)]
     AutoAttackOrDotCritDh = S.FlyTextKind.AutoAttackOrDotCritDh,
 
     [FlyTextCategory(FlyTextCategory.AbilityDamage)]
@@ -34,6 +35,50 @@ internal enum FlyTextKind
 
     [FlyTextCategory(FlyTextCategory.AbilityDamage)]
     DamageCritDh = S.FlyTextKind.DamageCritDh,
+
+    // Miss,
+    // NamedMiss,
+    // Dodge,
+    // NamedDodge,
+    // Buff,
+    // Debuff,
+    // Exp,
+    // IslandExp,
+    // MpDrain,
+    // NamedTp,
+    [FlyTextCategory(FlyTextCategory.AbilityHealing)]
+    Healing = S.FlyTextKind.Healing,
+    // MpRegen,
+    // NamedTp2,
+    // EpRegen,
+    // CpRegen,
+    // GpRegen,
+    // None,
+    // Invulnerable,
+    // Interrupted,
+    // CraftingProgress,
+    // CraftingQuality,
+    // CraftingQualityCrit,
+    [FlyTextCategory(FlyTextCategory.AbilityHealing)]
+    HealingCrit = S.FlyTextKind.HealingCrit,
+    // DebuffNoEffect,
+    // BuffFading,
+    // DebuffFading,
+    // Named,
+    // DebuffResisted,
+    // Incapacitated,
+    // FullyResisted,
+    // HasNoEffect,
+    // HpDrain,
+    // DebuffInvulnerable,
+    // Resist,
+    // LootedItem,
+    // Collectability,
+    // CollectabilityCrit,
+    // Reflect,
+    // Reflected,
+    // CraftingQualityDh,
+    // CraftingQualityCritDh
 }
 
 internal static class FlyTextKindMethods

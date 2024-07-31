@@ -1,4 +1,4 @@
-namespace Scroll.FlyText;
+namespace CBT.FlyText;
 
 using System;
 
@@ -10,7 +10,7 @@ using FFXIVClientStructs.FFXIV.Client.Game.Character;
 
 using S = Dalamud.Game.Gui.FlyText;
 
-using Scroll.FlyText.Types;
+using CBT.FlyText.Types;
 
 internal unsafe partial class FlyTextReceiver : IDisposable
 {
@@ -23,6 +23,7 @@ internal unsafe partial class FlyTextReceiver : IDisposable
         this.addScreenLogHook = gameInteropProvider.HookFromAddress<AddScreenLogDelegate>(Service.Address.AddScreenLog, this.AddScreenLogDetour);
         this.addScreenLogHook.Enable();
     }
+
     public void Dispose()
     {
         this.addScreenLogHook.Disable();
@@ -66,6 +67,13 @@ internal unsafe partial class FlyTextReceiver : IDisposable
                 if (IsCombatKind(kind))
                     Service.Manager.Add(new FlyTextEvent(kind, target, source, option, actionKind, actionID, val1, val2, val3, val4));
             }
+
+            // FIXME @cultbaus: Just a smoke test for healing
+            if (InvolvesMe(source, target))
+            {
+                if (IsHealing(kind))
+                    Service.Manager.Add(new FlyTextEvent(kind, target, source, option, actionKind, actionID, val1, val2, val3, val4));
+            }
         }
         catch (Exception ex)
         {
@@ -87,7 +95,7 @@ internal unsafe partial class FlyTextReceiver : IDisposable
         ref float yOffset,
         ref bool handled)
     {
-        Service.PluginLog.Debug($"FlyTextCreated event \"{kind}\" has been handled by Scroll.");
+        Service.PluginLog.Debug($"FlyTextCreated event \"{kind}\" has been handled by CBT.");
 
         handled = true;
     }
@@ -112,4 +120,7 @@ internal unsafe partial class FlyTextReceiver
 
     protected static bool IsCombatKind(FlyTextKind kind)
         => kind.InGroup(FlyTextCategory.Combat);
+
+    protected static bool IsHealing(FlyTextKind kind)
+        => kind.InCategory(FlyTextCategory.AbilityHealing);
 }

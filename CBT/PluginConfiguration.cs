@@ -1,4 +1,4 @@
-namespace Scroll;
+namespace CBT;
 
 using System;
 using System.Collections.Generic;
@@ -7,8 +7,8 @@ using System.Numerics;
 
 using Dalamud.Configuration;
 
-using Scroll.FlyText;
-using Scroll.FlyText.Types;
+using CBT.FlyText;
+using CBT.FlyText.Types;
 
 internal class PluginConfiguration : IPluginConfiguration
 {
