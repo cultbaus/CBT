@@ -7,7 +7,7 @@ using System.Linq;
 
 using Dalamud.Interface.ManagedFontAtlas;
 
-internal partial class FontManager
+internal class FontManager
 {
     private readonly string mediaPath;
     private readonly List<Font> fonts = new List<Font>();

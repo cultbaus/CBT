@@ -69,7 +69,7 @@ internal unsafe partial class FlyTextReceiver : IDisposable
             }
 
             // FIXME @cultbaus: Just a smoke test for healing
-            if (InvolvesMe(source, target))
+            else if (InvolvesMe(source, target))
             {
                 if (IsHealing(kind))
                     Service.Manager.Add(new FlyTextEvent(kind, target, source, option, actionKind, actionID, val1, val2, val3, val4));

@@ -1,7 +1,7 @@
 namespace CBT.FlyText.Types;
 
 using System.Numerics;
-
+using Dalamud.Interface.Textures.TextureWraps;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using ImGuiNET;
 
@@ -49,6 +49,9 @@ internal unsafe partial class FlyTextEvent
         => ImGui.CalcTextSize(this.Text);
     internal string Text
         => this.Config.Font.Format ? this.Value1.ToString("N0") : this.Value1.ToString();
+    // FIXME @cultbaus: Icons are incorrect, this is getting ~some~ texture but it's not ~the right~ texture.
+    internal IDalamudTextureWrap? Icon
+        => Service.TextureProvider.GetFromGameIcon(this.ActionID).GetWrapOrDefault();
 
     // Configuration
     internal FlyTextConfiguration Config { get; set; }

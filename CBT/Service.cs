@@ -43,4 +43,7 @@ internal class Service
 
     [PluginService]
     internal static ITargetManager TargetManager { get; private set; } = null!;
+
+    [PluginService]
+    internal static ITextureProvider TextureProvider { get; private set; } = null!;
 }

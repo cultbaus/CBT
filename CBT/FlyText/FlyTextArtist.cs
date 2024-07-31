@@ -8,6 +8,8 @@ using System.Numerics;
 using ImGuiNET;
 
 using CBT.FlyText.Types;
+using System.Security.Cryptography.X509Certificates;
+using System.Formats.Tar;
 
 internal unsafe partial class FlyTextArtist
 {
@@ -37,6 +39,8 @@ internal unsafe partial class FlyTextArtist
                 if (flyTextEvent.Config.Outline.Enabled)
                     DrawOutline(drawList, flyTextEvent);
 
+                // FIXME @cultbaus: Icons are incorrect, see FlyTextEvent.cs
+                // DrawIcon(drawList, flyTextEvent);
                 DrawText(drawList, flyTextEvent);
             }
         }
@@ -68,6 +72,25 @@ internal unsafe partial class FlyTextArtist
     {
         drawList.AddText(VerticalCenter(flyTextEvent), ImGui.GetColorU32(flyTextEvent.Config.Font.Color), flyTextEvent.Text);
     }
+
+    protected static void DrawIcon(ImDrawListPtr drawList, FlyTextEvent flyTextEvent)
+    {
+        if (flyTextEvent.Icon == null)
+            return;
+
+        var pos = VerticalCenter(flyTextEvent);
+        var iconSize = flyTextEvent.Icon.Size;
+
+        var textHeight = flyTextEvent.Config.Font.Size;
+        var aspectRatio = iconSize.X / iconSize.Y;
+        var iconHeight = textHeight;
+        var iconWidth = iconHeight * aspectRatio;
+
+        var iconPos = new Vector2(pos.X - iconWidth - 4, pos.Y);
+
+        drawList.AddImage(flyTextEvent.Icon.ImGuiHandle, iconPos, iconPos + new Vector2(iconWidth, iconHeight));
+    }
+
 
     protected static void DrawOutline(ImDrawListPtr drawList, FlyTextEvent flyTextEvent)
     {

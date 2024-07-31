@@ -4,20 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-[Flags]
-internal enum FlyTextCategory
-{
-    // Groups
-    Combat = 1 << 0,
-    NonCombat = 1 << 1,
-
-    // Categories
-    AutoAttack = 1 << 10 | Combat,
-    AbilityDamage = 1 << 11 | Combat,
-    AbilityHealing = 1 << 12 | Combat,
-    Miss = 1 << 13 | Combat,
-}
-
 internal static class FlyTextCategoryMethods
 {
     internal static List<FlyTextKind> GetKindsForCategory(this FlyTextCategory category)
@@ -49,4 +35,36 @@ internal static class FlyTextCategoryMethods
 
     internal static bool IsCategory(this FlyTextCategory value)
         => !IsGroup(value);
+
+    internal static void ForEach(this FlyTextCategory category, Action<FlyTextKind> action)
+    {
+        Enum.GetValues<FlyTextKind>()
+           .Cast<FlyTextKind>()
+           .Where(kind => IsCategory(category) ? kind.InCategory(category) : kind.InGroup(category))
+           .ToList()
+           .ForEach(action);
+    }
+}
+
+[AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
+internal class FlyTextCategoryAttribute(FlyTextCategory category) : Attribute
+{
+    public FlyTextCategory Category { get; } = category;
+}
+
+[Flags]
+internal enum FlyTextCategory
+{
+    // Groups
+    Combat = 1 << 0,
+    NonCombat = 1 << 1,
+
+    // Categories
+    AutoAttack = 1 << 10 | Combat,
+    AbilityDamage = 1 << 11 | Combat,
+    AbilityHealing = 1 << 12 | Combat,
+    Miss = 1 << 13 | Combat,
+    Buff = 1 << 14 | Combat,
+    Debuff = 1 << 15 | Combat,
+    CC = 1 << 16 | Combat,
 }

@@ -4,6 +4,13 @@ using System.Numerics;
 
 internal class FlyTextConfiguration
 {
+    internal FlyTextConfiguration()
+    {
+        this.Font = new FlyTextFontConfiguration(Defaults.DefaultFontSize, Defaults.DefaultFontName, Defaults.DefaultFontColor, Defaults.DefaultFontFormat);
+        this.Outline = new FlyTextOutlineConfiguration(Defaults.DefaultOutlineThickness, Defaults.DefaultOutlineColor);
+        this.Animation = new FlyTextAnimationConfiguration(Defaults.DefaultAnimationKind, Defaults.DefaultAnimationDuration, Defaults.DefaultAnimationSpeed);
+    }
+
     internal FlyTextConfiguration(string fontName, float fontSize, Vector4 fontColor, bool fontFormat, int outlineSize, Vector4 outlineColor, FlyTextAnimationKind animationKind, float animationDuration, float animationSpeed)
     {
         this.Font = new FlyTextFontConfiguration(fontSize, fontName, fontColor, fontFormat);
@@ -59,4 +66,23 @@ internal class FlyTextAnimationConfiguration
     internal FlyTextAnimationKind Kind { get; set; }
     internal float Duration { get; set; }
     internal float Speed { get; set; }
+}
+
+internal static class Defaults
+{
+    // Font defaults
+    internal const string DefaultFontName = "Expressway";
+    internal const float DefaultFontSize = 18f;
+    internal static readonly Vector4 DefaultFontColor = Vector4.One;
+    internal const bool DefaultFontFormat = true;
+
+    // Outline defaults
+    internal const bool DefaultOutlineEnabled = true;
+    internal const int DefaultOutlineThickness = 1;
+    internal static readonly Vector4 DefaultOutlineColor = new Vector4(0, 0, 0, 1);
+
+    // Animation defaults
+    internal const FlyTextAnimationKind DefaultAnimationKind = FlyTextAnimationKind.LinearFade;
+    internal const float DefaultAnimationDuration = 3f;
+    internal const float DefaultAnimationSpeed = 120f;
 }

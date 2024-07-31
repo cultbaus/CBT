@@ -4,10 +4,28 @@ using System;
 
 using S = Dalamud.Game.Gui.FlyText;
 
-[AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
-internal class FlyTextCategoryAttribute(FlyTextCategory category) : Attribute
+internal static class FlyTextKindMethods
 {
-    public FlyTextCategory Category { get; } = category;
+    internal static FlyTextCategory GetCategory(this FlyTextKind kind)
+    {
+        var attr = typeof(FlyTextKind)
+            .GetMember(kind.ToString())[0]
+            .GetCustomAttributes(typeof(FlyTextCategoryAttribute), false);
+
+        return attr.Length > 0
+            ? ((FlyTextCategoryAttribute)attr[0]).Category
+            : throw new ArgumentOutOfRangeException(nameof(kind), kind, null);
+    }
+
+    internal static bool InCategory(this FlyTextKind kind, FlyTextCategory category)
+        => category.IsCategory()
+            ? GetCategory(kind) == category
+            : throw new ArgumentOutOfRangeException(nameof(category), category, null);
+
+    internal static bool InGroup(this FlyTextKind kind, FlyTextCategory group)
+        => group.IsGroup()
+            ? GetCategory(kind).HasFlag(group)
+            : throw new ArgumentOutOfRangeException(nameof(group), group, null);
 }
 
 internal enum FlyTextKind
@@ -36,18 +54,32 @@ internal enum FlyTextKind
     [FlyTextCategory(FlyTextCategory.AbilityDamage)]
     DamageCritDh = S.FlyTextKind.DamageCritDh,
 
-    // Miss,
-    // NamedMiss,
-    // Dodge,
-    // NamedDodge,
-    // Buff,
-    // Debuff,
+    [FlyTextCategory(FlyTextCategory.Miss)]
+    Miss = S.FlyTextKind.Miss,
+
+    [FlyTextCategory(FlyTextCategory.Miss)]
+    NamedMiss = S.FlyTextKind.NamedMiss,
+
+    [FlyTextCategory(FlyTextCategory.Miss)]
+    Dodge = S.FlyTextKind.Dodge,
+
+    [FlyTextCategory(FlyTextCategory.Miss)]
+    NamedDodge = S.FlyTextKind.NamedDodge,
+
+    [FlyTextCategory(FlyTextCategory.Buff)]
+    Buff = S.FlyTextKind.Buff,
+
+    [FlyTextCategory(FlyTextCategory.Debuff)]
+    Debuff = S.FlyTextKind.Debuff,
+
     // Exp,
     // IslandExp,
     // MpDrain,
     // NamedTp,
+
     [FlyTextCategory(FlyTextCategory.AbilityHealing)]
     Healing = S.FlyTextKind.Healing,
+
     // MpRegen,
     // NamedTp2,
     // EpRegen,
@@ -59,19 +91,42 @@ internal enum FlyTextKind
     // CraftingProgress,
     // CraftingQuality,
     // CraftingQualityCrit,
+
     [FlyTextCategory(FlyTextCategory.AbilityHealing)]
     HealingCrit = S.FlyTextKind.HealingCrit,
-    // DebuffNoEffect,
-    // BuffFading,
-    // DebuffFading,
+
+    [FlyTextCategory(FlyTextCategory.Miss)]
+    DebuffNoEffect = S.FlyTextKind.DebuffNoEffect,
+
+    [FlyTextCategory(FlyTextCategory.Buff)]
+    BuffFading = S.FlyTextKind.BuffFading,
+
+    [FlyTextCategory(FlyTextCategory.Debuff)]
+    DebuffFading = S.FlyTextKind.DebuffFading,
+
     // Named,
-    // DebuffResisted,
-    // Incapacitated,
-    // FullyResisted,
-    // HasNoEffect,
-    // HpDrain,
-    // DebuffInvulnerable,
-    // Resist,
+
+    [FlyTextCategory(FlyTextCategory.Miss)]
+    DebuffResisted = S.FlyTextKind.DebuffResisted,
+
+    [FlyTextCategory(FlyTextCategory.CC)]
+    Incapacitated = S.FlyTextKind.Incapacitated,
+
+    [FlyTextCategory(FlyTextCategory.Miss)]
+    FullyResisted = S.FlyTextKind.FullyResisted,
+
+    [FlyTextCategory(FlyTextCategory.Miss)]
+    HasNoEffect = S.FlyTextKind.HasNoEffect,
+
+    [FlyTextCategory(FlyTextCategory.AbilityHealing)]
+    HpDrain = S.FlyTextKind.HpDrain,
+
+    [FlyTextCategory(FlyTextCategory.Miss)]
+    DebuffInvulnerable = S.FlyTextKind.DebuffInvulnerable,
+
+    [FlyTextCategory(FlyTextCategory.Miss)]
+    Resist = S.FlyTextKind.Resist,
+
     // LootedItem,
     // Collectability,
     // CollectabilityCrit,
@@ -79,28 +134,4 @@ internal enum FlyTextKind
     // Reflected,
     // CraftingQualityDh,
     // CraftingQualityCritDh
-}
-
-internal static class FlyTextKindMethods
-{
-    internal static FlyTextCategory GetCategory(this FlyTextKind kind)
-    {
-        var attr = typeof(FlyTextKind)
-            .GetMember(kind.ToString())[0]
-            .GetCustomAttributes(typeof(FlyTextCategoryAttribute), false);
-
-        return attr.Length > 0
-            ? ((FlyTextCategoryAttribute)attr[0]).Category
-            : throw new ArgumentOutOfRangeException(nameof(kind), kind, null);
-    }
-
-    internal static bool InCategory(this FlyTextKind kind, FlyTextCategory category)
-        => category.IsCategory()
-            ? GetCategory(kind) == category
-            : throw new ArgumentOutOfRangeException(nameof(category), category, null);
-
-    internal static bool InGroup(this FlyTextKind kind, FlyTextCategory group)
-        => group.IsGroup()
-            ? GetCategory(kind).HasFlag(group)
-            : throw new ArgumentOutOfRangeException(nameof(group), group, null);
 }
