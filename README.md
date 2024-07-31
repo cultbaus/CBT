@@ -1,12 +1,12 @@
-<center>
+<div align="center">
 
-# CBT
+<img height="100px" src="./res/CBT-7-30-2024.png" />
 
 ## Cultbaus Battle Text
 
 An ImGui replacement for FlyText in Final Fantasy XIV.
 
-</center>
+</div>
 
 # Prior Art
 
