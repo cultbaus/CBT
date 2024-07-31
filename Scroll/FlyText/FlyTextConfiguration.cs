@@ -15,7 +15,6 @@ internal class FlyTextConfiguration
     internal FlyTextFontConfiguration Font { get; set; }
     internal FlyTextOutlineConfiguration Outline { get; set; }
     internal FlyTextAnimationConfiguration Animation { get; set; }
-
 }
 
 internal class FlyTextFontConfiguration

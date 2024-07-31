@@ -15,18 +15,17 @@ using Scroll.Helpers;
 
 internal sealed partial class Plugin : IDalamudPlugin
 {
-    private static readonly string Command = "/scroll";
-    private static readonly string Name = "Scroll";
+    private static readonly string command = "/scroll";
+    private static readonly string name = "Scroll";
+    private readonly string assemblyLocation;
     private readonly WindowSystem windowSystem;
     private readonly ConfigWindow configWindow;
     private readonly OverlayWindow overlayWindow;
     private readonly FlyTextArtist artist;
-    private readonly string assemblyLocation;
 
     public Plugin(IDalamudPluginInterface pluginInterface, ISigScanner sigScanner, IGameInteropProvider gameInteropProvider)
     {
         pluginInterface.Create<Service>();
-
 
         Service.Configuration = pluginInterface.GetPluginConfig() as PluginConfiguration ?? new PluginConfiguration();
 
@@ -36,7 +35,7 @@ internal sealed partial class Plugin : IDalamudPlugin
         this.configWindow = new ConfigWindow();
         this.overlayWindow = new OverlayWindow();
 
-        this.windowSystem = new WindowSystem(Name);
+        this.windowSystem = new WindowSystem(name);
         this.windowSystem.AddWindow(this.configWindow);
         this.windowSystem.AddWindow(this.overlayWindow);
 
@@ -53,7 +52,7 @@ internal sealed partial class Plugin : IDalamudPlugin
         Service.Interface.UiBuilder.OpenConfigUi += this.OnOpenConfigUi;
         Service.Interface.UiBuilder.Draw += this.windowSystem.Draw;
 
-        Service.CommandManager.AddHandler(Command, new CommandInfo(this.OnCommand)
+        Service.CommandManager.AddHandler(command, new CommandInfo(this.OnCommand)
         {
             HelpMessage = "Open a window to edit Scroll settings.",
             ShowInHelp = true,
@@ -62,7 +61,7 @@ internal sealed partial class Plugin : IDalamudPlugin
 
     public void Dispose()
     {
-        Service.CommandManager.RemoveHandler(Command);
+        Service.CommandManager.RemoveHandler(command);
 
         Service.Interface.UiBuilder.OpenConfigUi -= this.OnOpenConfigUi;
         Service.Interface.UiBuilder.Draw -= this.windowSystem.Draw;

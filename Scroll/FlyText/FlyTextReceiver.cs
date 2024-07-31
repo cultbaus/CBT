@@ -1,8 +1,6 @@
 namespace Scroll.FlyText;
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.Text.SeStringHandling;
@@ -11,6 +9,8 @@ using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 
 using S = Dalamud.Game.Gui.FlyText;
+
+using Scroll.FlyText.Types;
 
 internal unsafe partial class FlyTextReceiver : IDisposable
 {
@@ -63,8 +63,7 @@ internal unsafe partial class FlyTextReceiver : IDisposable
         {
             if (InvolvesEnemy(source, target))
             {
-                var category = GetCategory(kind);
-                if (IsCombatKind(category))
+                if (IsCombatKind(kind))
                     Service.Manager.Add(new FlyTextEvent(kind, target, source, option, actionKind, actionID, val1, val2, val3, val4));
             }
         }
@@ -96,17 +95,6 @@ internal unsafe partial class FlyTextReceiver : IDisposable
 
 internal unsafe partial class FlyTextReceiver
 {
-    protected static FlyTextCategory GetCategory(FlyTextKind kind)
-    {
-        var attr = typeof(FlyTextKind)
-            .GetMember(kind.ToString())[0]
-            .GetCustomAttributes(typeof(FlyTextCategoryAttribute), false);
-
-        return attr.Length > 0
-            ? ((FlyTextCategoryAttribute)attr[0]).Category
-            : throw new ArgumentOutOfRangeException(nameof(kind), kind, null);
-    }
-
     protected static IPlayerCharacter? LocalPlayer
         => Service.ClientState.LocalPlayer;
 
@@ -122,12 +110,6 @@ internal unsafe partial class FlyTextReceiver
     protected static bool Unfiltered(FlyTextKind kind)
         => Service.Configuration.FlyText[kind].Enabled;
 
-    protected static List<FlyTextCategory> CombatKinds
-        => Enum.GetValues(typeof(FlyTextCategory))
-            .Cast<FlyTextCategory>()
-            .Where(value => value.HasFlag(FlyTextCategory.Combat))
-            .ToList();
-
-    protected static bool IsCombatKind(FlyTextCategory category)
-        => CombatKinds.Contains(category);
+    protected static bool IsCombatKind(FlyTextKind kind)
+        => kind.InGroup(FlyTextCategory.Combat);
 }

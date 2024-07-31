@@ -14,9 +14,7 @@ internal class Font : IDisposable
     }
 
     public void Dispose()
-    {
-        this.Handle?.Pop();
-    }
+        => this.Handle?.Pop();
 
     internal Font Push()
     {

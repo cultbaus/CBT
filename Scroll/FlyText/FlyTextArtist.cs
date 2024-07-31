@@ -7,6 +7,8 @@ using System.Numerics;
 
 using ImGuiNET;
 
+using Scroll.FlyText.Types;
+
 internal unsafe partial class FlyTextArtist
 {
     internal void Draw(ImDrawListPtr drawList, List<FlyTextEvent> flyTextEvents)

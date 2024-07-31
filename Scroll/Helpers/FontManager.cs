@@ -43,7 +43,6 @@ internal partial class FontManager
                     {
                         this.LoadFont(file, size);
                     });
-
             });
 
         Service.Configuration.Fonts = this.fonts

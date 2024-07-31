@@ -50,11 +50,8 @@ internal partial class OverlayWindow : Window
         Service.Manager.Update(timeElapsed);
         Service.Manager.Draw(drawList);
     }
-}
 
-internal partial class OverlayWindow
-{
-    protected float TimeSince(DateTime lastFrame)
+    internal float TimeSince(DateTime lastFrame)
     {
         float timeElapsed = (float)(DateTime.Now - lastFrame).TotalSeconds;
         this.lastFrame = DateTime.Now;

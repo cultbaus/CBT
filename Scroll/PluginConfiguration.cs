@@ -8,6 +8,7 @@ using System.Numerics;
 using Dalamud.Configuration;
 
 using Scroll.FlyText;
+using Scroll.FlyText.Types;
 
 internal class PluginConfiguration : IPluginConfiguration
 {
@@ -35,7 +36,7 @@ internal class PluginConfiguration : IPluginConfiguration
     // Configuration
     public int Version { get; set; } = 0;
     internal Dictionary<FlyTextKind, FlyTextConfiguration> FlyText { get; set; } = new Dictionary<FlyTextKind, FlyTextConfiguration>();
-    internal Dictionary<string, List<float>> Fonts = new Dictionary<string, List<float>>();
+    internal Dictionary<string, List<float>> Fonts { get; set; } = new Dictionary<string, List<float>>();
 
     // Font defaults
     internal string DefaultFont { get; private set; } = "Expressway";
