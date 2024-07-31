@@ -52,6 +52,7 @@
     <Reference Include="Dalamud" Private="False" />
     <Reference Include="FFXIVClientStructs" Private="False" />
     <Reference Include="ImGui.NET" Private="False" />
+    <Reference Include="Newtonsoft.Json" Private="False" />
 	  <Reference Include="InteropGenerator.Runtime">
 		  <HintPath>$(DalamudLibPath)InteropGenerator.Runtime.dll</HintPath>
 		  <Private>false</Private>

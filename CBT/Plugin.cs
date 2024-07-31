@@ -56,8 +56,10 @@ internal sealed partial class Plugin : IDalamudPlugin
         Service.Configuration = pluginInterface.GetPluginConfig() as PluginConfiguration ?? new PluginConfiguration();
         Service.Fonts = new FontManager(Path.GetDirectoryName(assemblyLocation) + "\\Media\\Fonts\\");
         Service.Interface.UiBuilder.OpenConfigUi += this.OnOpenConfigUi;
+        Service.Interface.UiBuilder.OpenMainUi += this.OnOpenConfigUi;
         Service.Interface.UiBuilder.Draw += this.windowSystem.Draw;
         Service.Manager = new PluginManager(artist);
+        Service.Manifest = new ManifestManager(assemblyLocation + Path.GetFileNameWithoutExtension(Service.Interface.AssemblyLocation.FullName) + ".json");
         Service.Receiver = new FlyTextReceiver(gameInteropProvider);
     }
 
@@ -66,8 +68,10 @@ internal sealed partial class Plugin : IDalamudPlugin
     {
         Service.Receiver.Dispose();
         Service.Manager.Dispose();
+        Service.Manifest.Dispose();
         Service.Fonts.Dispose();
         Service.Interface.UiBuilder.Draw -= this.windowSystem.Draw;
+        Service.Interface.UiBuilder.OpenMainUi -= this.OnOpenConfigUi;
         Service.Interface.UiBuilder.OpenConfigUi -= this.OnOpenConfigUi;
         Service.CommandManager.RemoveHandler(Command);
     }

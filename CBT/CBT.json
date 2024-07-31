@@ -4,7 +4,12 @@
     "Punchline": "Provides configurable flytext.",
     "Description": "This plugin allows the configuration and manipulation of in-game flytext.",
     "RepoUrl": "https://github.com/cultbaus/CBT",
-    "IconUrl": null,
+    "IconUrl": "https://raw.githubusercontent.com/cultbaus/CBT/main/res/CBT-7-30-2024.png",
     "ImageUrls": [],
-    "DalamudApiLevel": 10
+    "DalamudApiLevel": 10,
+    "Tags": [
+        "combat",
+        "flytext",
+        "plugin"
+    ]
 }

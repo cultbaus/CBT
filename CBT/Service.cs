@@ -38,6 +38,11 @@ internal class Service
     internal static FontManager Fonts { get; set; } = null!;
 
     /// <summary>
+    /// Gets or sets the CBT Manifest manager.
+    /// </summary>
+    internal static ManifestManager Manifest { get; set; } = null!;
+
+    /// <summary>
     /// Gets the Dalamud ClientState.
     /// </summary>
     [PluginService]
