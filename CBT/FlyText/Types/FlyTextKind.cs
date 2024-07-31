@@ -1,137 +1,201 @@
 namespace CBT.FlyText.Types;
 
-using System;
+using CBT.Attributes;
+using DalamudFlyText = Dalamud.Game.Gui.FlyText;
 
-using S = Dalamud.Game.Gui.FlyText;
-
-internal static class FlyTextKindMethods
-{
-    internal static FlyTextCategory GetCategory(this FlyTextKind kind)
-    {
-        var attr = typeof(FlyTextKind)
-            .GetMember(kind.ToString())[0]
-            .GetCustomAttributes(typeof(FlyTextCategoryAttribute), false);
-
-        return attr.Length > 0
-            ? ((FlyTextCategoryAttribute)attr[0]).Category
-            : throw new ArgumentOutOfRangeException(nameof(kind), kind, null);
-    }
-
-    internal static bool InCategory(this FlyTextKind kind, FlyTextCategory category)
-        => category.IsCategory()
-            ? GetCategory(kind) == category
-            : throw new ArgumentOutOfRangeException(nameof(category), category, null);
-
-    internal static bool InGroup(this FlyTextKind kind, FlyTextCategory group)
-        => group.IsGroup()
-            ? GetCategory(kind).HasFlag(group)
-            : throw new ArgumentOutOfRangeException(nameof(group), group, null);
-}
-
+/// <summary>
+/// FlyTextKind is the CBT wrapped enum of the Dalamud FlyTextKind enum.
+/// </summary>
 internal enum FlyTextKind
 {
+    /// <summary>
+    /// Auto attack or dot.
+    /// </summary>
     [FlyTextCategory(FlyTextCategory.AutoAttack)]
-    AutoAttackOrDot = S.FlyTextKind.AutoAttackOrDot,
+    AutoAttackOrDot = DalamudFlyText.FlyTextKind.AutoAttackOrDot,
 
+    /// <summary>
+    /// Auto attack or dot direct hit.
+    /// </summary>
     [FlyTextCategory(FlyTextCategory.AutoAttack)]
-    AutoAttackOrDotDh = S.FlyTextKind.AutoAttackOrDotDh,
+    AutoAttackOrDotDh = DalamudFlyText.FlyTextKind.AutoAttackOrDotDh,
 
+    /// <summary>
+    /// Auto attack or dot crit.
+    /// </summary>
     [FlyTextCategory(FlyTextCategory.AutoAttack)]
-    AutoAttackOrDotCrit = S.FlyTextKind.AutoAttackOrDotCrit,
+    AutoAttackOrDotCrit = DalamudFlyText.FlyTextKind.AutoAttackOrDotCrit,
 
+    /// <summary>
+    /// Auto attack or dot direct-hit-crit.
+    /// </summary>
     [FlyTextCategory(FlyTextCategory.AutoAttack)]
-    AutoAttackOrDotCritDh = S.FlyTextKind.AutoAttackOrDotCritDh,
+    AutoAttackOrDotCritDh = DalamudFlyText.FlyTextKind.AutoAttackOrDotCritDh,
 
+    /// <summary>
+    /// Ability damage.
+    /// </summary>
     [FlyTextCategory(FlyTextCategory.AbilityDamage)]
-    Damage = S.FlyTextKind.Damage,
+    Damage = DalamudFlyText.FlyTextKind.Damage,
 
+    /// <summary>
+    /// Ability damage direct hit.
+    /// </summary>
     [FlyTextCategory(FlyTextCategory.AbilityDamage)]
-    DamageDh = S.FlyTextKind.DamageDh,
+    DamageDh = DalamudFlyText.FlyTextKind.DamageDh,
 
+    /// <summary>
+    /// Ability damage crit.
+    /// </summary>
     [FlyTextCategory(FlyTextCategory.AbilityDamage)]
-    DamageCrit = S.FlyTextKind.DamageCrit,
+    DamageCrit = DalamudFlyText.FlyTextKind.DamageCrit,
 
+    /// <summary>
+    /// Ability damage direct-hit-crit.
+    /// </summary>
     [FlyTextCategory(FlyTextCategory.AbilityDamage)]
-    DamageCritDh = S.FlyTextKind.DamageCritDh,
+    DamageCritDh = DalamudFlyText.FlyTextKind.DamageCritDh,
 
+    /// <summary>
+    /// Miss, but sometimes dodge.
+    /// </summary>
     [FlyTextCategory(FlyTextCategory.Miss)]
-    Miss = S.FlyTextKind.Miss,
+    Miss = DalamudFlyText.FlyTextKind.Miss,
 
+    /// <summary>
+    /// Named miss.
+    /// </summary>
     [FlyTextCategory(FlyTextCategory.Miss)]
-    NamedMiss = S.FlyTextKind.NamedMiss,
+    NamedMiss = DalamudFlyText.FlyTextKind.NamedMiss,
 
+    /// <summary>
+    /// Dodge.
+    /// </summary>
     [FlyTextCategory(FlyTextCategory.Miss)]
-    Dodge = S.FlyTextKind.Dodge,
+    Dodge = DalamudFlyText.FlyTextKind.Dodge,
 
+    /// <summary>
+    /// Dodge.
+    /// </summary>
     [FlyTextCategory(FlyTextCategory.Miss)]
-    NamedDodge = S.FlyTextKind.NamedDodge,
+    NamedDodge = DalamudFlyText.FlyTextKind.NamedDodge,
 
+    /// <summary>
+    /// Buff.
+    /// </summary>
     [FlyTextCategory(FlyTextCategory.Buff)]
-    Buff = S.FlyTextKind.Buff,
+    Buff = DalamudFlyText.FlyTextKind.Buff,
 
+    /// <summary>
+    /// Debuff.
+    /// </summary>
     [FlyTextCategory(FlyTextCategory.Debuff)]
-    Debuff = S.FlyTextKind.Debuff,
+    Debuff = DalamudFlyText.FlyTextKind.Debuff,
 
-    // Exp,
-    // IslandExp,
-    // MpDrain,
-    // NamedTp,
+    /*
+    * Exp,
+    * IslandExp,
+    * MpDrain,
+    * NamedTp,
+    */
 
+    /// <summary>
+    /// Healing.
+    /// </summary>
     [FlyTextCategory(FlyTextCategory.AbilityHealing)]
-    Healing = S.FlyTextKind.Healing,
+    Healing = DalamudFlyText.FlyTextKind.Healing,
 
-    // MpRegen,
-    // NamedTp2,
-    // EpRegen,
-    // CpRegen,
-    // GpRegen,
-    // None,
-    // Invulnerable,
-    // Interrupted,
-    // CraftingProgress,
-    // CraftingQuality,
-    // CraftingQualityCrit,
+    /*
+    * MpRegen,
+    * NamedTp2,
+    * EpRegen,
+    * CpRegen,
+    * GpRegen,
+    * None,
+    * Invulnerable,
+    * Interrupted,
+    * CraftingProgress,
+    * CraftingQuality,
+    * CraftingQualityCrit,
+    */
 
+    /// <summary>
+    /// Healing crit.
+    /// </summary>
     [FlyTextCategory(FlyTextCategory.AbilityHealing)]
-    HealingCrit = S.FlyTextKind.HealingCrit,
+    HealingCrit = DalamudFlyText.FlyTextKind.HealingCrit,
 
+    /// <summary>
+    /// Debuff "has no effect".
+    /// </summary>
     [FlyTextCategory(FlyTextCategory.Miss)]
-    DebuffNoEffect = S.FlyTextKind.DebuffNoEffect,
+    DebuffNoEffect = DalamudFlyText.FlyTextKind.DebuffNoEffect,
 
+    /// <summary>
+    /// Buff with faded text.
+    /// </summary>
     [FlyTextCategory(FlyTextCategory.Buff)]
-    BuffFading = S.FlyTextKind.BuffFading,
+    BuffFading = DalamudFlyText.FlyTextKind.BuffFading,
 
+    /// <summary>
+    /// Debuff with faded text.
+    /// </summary>
     [FlyTextCategory(FlyTextCategory.Debuff)]
-    DebuffFading = S.FlyTextKind.DebuffFading,
+    DebuffFading = DalamudFlyText.FlyTextKind.DebuffFading,
 
-    // Named,
+    /*
+    * Named
+    */
 
+    /// <summary>
+    /// Debuff was resisted.
+    /// </summary>
     [FlyTextCategory(FlyTextCategory.Miss)]
-    DebuffResisted = S.FlyTextKind.DebuffResisted,
+    DebuffResisted = DalamudFlyText.FlyTextKind.DebuffResisted,
 
+    /// <summary>
+    /// Target is incapacitated.
+    /// </summary>
     [FlyTextCategory(FlyTextCategory.CC)]
-    Incapacitated = S.FlyTextKind.Incapacitated,
+    Incapacitated = DalamudFlyText.FlyTextKind.Incapacitated,
 
+    /// <summary>
+    /// Ability is fully resisted.
+    /// </summary>
     [FlyTextCategory(FlyTextCategory.Miss)]
-    FullyResisted = S.FlyTextKind.FullyResisted,
+    FullyResisted = DalamudFlyText.FlyTextKind.FullyResisted,
 
+    /// <summary>
+    /// Ability has no effect.
+    /// </summary>
     [FlyTextCategory(FlyTextCategory.Miss)]
-    HasNoEffect = S.FlyTextKind.HasNoEffect,
+    HasNoEffect = DalamudFlyText.FlyTextKind.HasNoEffect,
 
+    /// <summary>
+    /// HP Drain, bloodbath.
+    /// </summary>
     [FlyTextCategory(FlyTextCategory.AbilityHealing)]
-    HpDrain = S.FlyTextKind.HpDrain,
+    HpDrain = DalamudFlyText.FlyTextKind.HpDrain,
 
+    /// <summary>
+    /// Debuff immued due to invuln.
+    /// </summary>
     [FlyTextCategory(FlyTextCategory.Miss)]
-    DebuffInvulnerable = S.FlyTextKind.DebuffInvulnerable,
+    DebuffInvulnerable = DalamudFlyText.FlyTextKind.DebuffInvulnerable,
 
+    /// <summary>
+    /// Resisted.
+    /// </summary>
     [FlyTextCategory(FlyTextCategory.Miss)]
-    Resist = S.FlyTextKind.Resist,
+    Resist = DalamudFlyText.FlyTextKind.Resist,
 
-    // LootedItem,
-    // Collectability,
-    // CollectabilityCrit,
-    // Reflect,
-    // Reflected,
-    // CraftingQualityDh,
-    // CraftingQualityCritDh
+    /*
+    * LootedItem,
+    * Collectability,
+    * CollectabilityCrit,
+    * Reflect,
+    * Reflected,
+    * CraftingQualityDh,
+    * CraftingQualityCritDh
+    */
 }

@@ -1,13 +1,20 @@
 namespace CBT.Interface;
 
 using System.Numerics;
+using CBT.FlyText;
+using CBT.FlyText.Configuration;
 using Dalamud.Interface.Windowing;
 using ImGuiNET;
 
-using CBT.FlyText;
-
+/// <summary>
+/// ConfigWindow is the primary configuration GUI for CBT.
+/// </summary>
 internal partial class ConfigWindow : Window
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ConfigWindow"/> class.
+    /// </summary>
+    /// <param name="name">Name of the <see cref="Plugin"/>.</param>
     internal ConfigWindow(string name)
         : base($"{name} Configuration##{name}_CONFIGURATION_WINDOW")
     {
@@ -16,6 +23,7 @@ internal partial class ConfigWindow : Window
         this.Size = new Vector2(720, 480);
     }
 
+    /// <inheritdoc/>
     public override void Draw()
     {
         using (Service.Fonts.Push(Defaults.DefaultFontName, 24.0f))
@@ -37,9 +45,11 @@ internal partial class ConfigWindow : Window
         }
     }
 
+    /// <inheritdoc/>
     public override void OnOpen()
         => base.OnOpen();
 
+    /// <inheritdoc/>
     public override void OnClose()
     {
         base.OnClose();

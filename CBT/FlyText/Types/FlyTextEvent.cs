@@ -1,21 +1,40 @@
 namespace CBT.FlyText.Types;
 
 using System.Numerics;
+using CBT.FlyText.Animations;
+using CBT.FlyText.Configuration;
 using Dalamud.Interface.Textures.TextureWraps;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using ImGuiNET;
 
+/// <summary>
+/// FlyTextEvent is a CBT FlyTextEvent wrapper over the in-game event.
+/// </summary>
 internal unsafe partial class FlyTextEvent
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FlyTextEvent"/> class.
+    /// </summary>
+    /// <param name="target">Target for the incoming FlyText event.</param>
+    /// <param name="source">Source of the FlyText event.</param>
+    /// <param name="kind">Kind of the FlyText event.</param>
+    /// <param name="option">Option. Unused.</param>
+    /// <param name="actionKind">ActionKind of the FlyText event.</param>
+    /// <param name="actionID">ActionID of the FlyText event.</param>
+    /// <param name="val1">Val1 of the FlyText event.</param>
+    /// <param name="val2">Val2 of the FlyText event.</param>
+    /// <param name="val3">Val3 of the FlyText event.</param>
+    /// <param name="val4">Val4 of the FlyText event.</param>
     internal FlyTextEvent(FlyTextKind kind, Character* target, Character* source, int option, int actionKind, int actionID, int val1, int val2, int val3, int val4)
     {
-        FlyTextConfiguration config = Service.Configuration.FlyText[kind];
+        FlyTextConfiguration config = PluginConfiguration.FlyText[kind];
 
         this.Config = new FlyTextConfiguration(
             config.Font.Name,
             config.Font.Size,
             config.Font.Color,
             config.Font.Format,
+            config.Outline.Enabled,
             config.Outline.Size,
             config.Outline.Color,
             config.Animation.Kind,
@@ -33,40 +52,106 @@ internal unsafe partial class FlyTextEvent
         this.Value4 = val4;
     }
 
+    /// <summary>
+    /// gets a value indicating whether an event is expired.
+    /// </summary>
+    internal bool IsExpired
+        => this.Animation.TimeElapsed > this.Animation.Duration;
+
+    /// <summary>
+    /// Gets a value indicating the world anchor of the event.
+    /// </summary>
+    internal Vector2 Anchor
+        => Service.GameGui.WorldToScreen(this.Target->Position, out Vector2 currentPosition) ? currentPosition : Vector2.Zero;
+
+    /// <summary>
+    /// Gets the position of the FlyTextEvent with the animation offset applied.
+    /// </summary>
+    internal Vector2 Position
+        => this.Anchor + this.Animation.Offset;
+
+    /// <summary>
+    /// Gets the size of the FlyTextEvent rectangle.
+    /// </summary>
+    internal Vector2 Size
+        => ImGui.CalcTextSize(this.Text);
+
+    /// <summary>
+    /// Gets the string representation of the FlyTextEvent Value1.
+    /// </summary>
+    internal string Text
+        => this.Config.Font.Format ? this.Value1.ToString("N0") : this.Value1.ToString();
+
+    /// <summary>
+    /// Gets the Dalamud Texture Wrap for the ActionID.
+    /// </summary>
+    internal IDalamudTextureWrap? Icon
+
+        // FIXME @cultbaus: Icons are incorrect, this is getting ~some~ texture but it's not ~the right~ texture.
+        => Service.TextureProvider.GetFromGameIcon(this.ActionID).GetWrapOrDefault();
+
+    /// <summary>
+    /// Gets or sets the FlyTextConfiguration.
+    /// </summary>
+    internal FlyTextConfiguration Config { get; set; }
+
+    /// <summary>
+    /// Gets or sets the FlyTextAnimation.
+    /// </summary>
+    internal FlyTextAnimation Animation { get; set; }
+
+    /// <summary>
+    /// Gets the Target from the original event.
+    /// </summary>
+    internal Character* Target { get; }
+
+    /// <summary>
+    /// Gets the Source from the original event.
+    /// </summary>
+    internal Character* Source { get; }
+
+    /// <summary>
+    /// Gets the Option from the original event.
+    /// </summary>
+    internal int Option { get; }
+
+    /// <summary>
+    /// Gets the ActionKind from the original event.
+    /// </summary>
+    internal int ActionKind { get; }
+
+    /// <summary>
+    /// Gets the ActionID from the original event.
+    /// </summary>
+    internal int ActionID { get; }
+
+    /// <summary>
+    /// Gets the Value1 from the original event.
+    /// </summary>
+    internal int Value1 { get; }
+
+    /// <summary>
+    /// Gets the Value2 from the original event.
+    /// </summary>
+    internal int Value2 { get; }
+
+    /// <summary>
+    /// Gets the Value3 from the original event.
+    /// </summary>
+    internal int Value3 { get; }
+
+    /// <summary>
+    /// Gets the Value4 from the original event.
+    /// </summary>
+    internal int Value4 { get; }
+
+    /// <summary>
+    /// Update applies state changes to the FlyText event.
+    /// </summary>
+    /// <param name="timeElapsed">Time since the last frame.</param>
     internal void Update(float timeElapsed)
     {
         this.Animation.TimeElapsed += timeElapsed;
         this.Animation.Apply(this, timeElapsed);
     }
-
-    internal bool IsExpired
-        => this.Animation.TimeElapsed > this.Animation.Duration;
-    internal Vector2 Anchor
-        => Service.GameGui.WorldToScreen(this.Target->Position, out Vector2 currentPosition) ? currentPosition : Vector2.Zero;
-    internal Vector2 Position
-        => this.Anchor + this.Animation.Offset;
-    internal Vector2 Size
-        => ImGui.CalcTextSize(this.Text);
-    internal string Text
-        => this.Config.Font.Format ? this.Value1.ToString("N0") : this.Value1.ToString();
-    // FIXME @cultbaus: Icons are incorrect, this is getting ~some~ texture but it's not ~the right~ texture.
-    internal IDalamudTextureWrap? Icon
-        => Service.TextureProvider.GetFromGameIcon(this.ActionID).GetWrapOrDefault();
-
-    // Configuration
-    internal FlyTextConfiguration Config { get; set; }
-
-    // Animation
-    internal FlyTextAnimation Animation { get; set; }
-
-    // Arguments passed into the original hook
-    internal Character* Target { get; set; }
-    internal Character* Source { get; set; }
-    internal int Option { get; set; }
-    internal int ActionKind { get; set; }
-    internal int ActionID { get; set; }
-    internal int Value1 { get; set; }
-    internal int Value2 { get; set; }
-    internal int Value3 { get; set; }
-    internal int Value4 { get; set; }
 }
