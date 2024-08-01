@@ -77,6 +77,11 @@ internal class PluginConfiguration : IPluginConfiguration
     internal static Dictionary<string, List<float>> Fonts { get; set; } = new Dictionary<string, List<float>>();
 
     /// <summary>
+    /// Gets or sets a value indicating whether warnings are enabled.
+    /// </summary>
+    internal static bool Warnings { get; set; } = true;
+
+    /// <summary>
     /// Persist the configuration settings to disk.
     /// </summary>
     internal void Save()

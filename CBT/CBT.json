@@ -1,10 +1,10 @@
 {
     "Author": "cultbaus",
     "Name": "CBT",
-    "Punchline": "Provides configurable flytext.",
-    "Description": "This plugin allows the configuration and manipulation of in-game flytext.",
+    "Punchline": "A configurable ImGUI FlyText replacement.",
+    "Description": "This plugin allows the configuration and customization of in-game flytext.",
     "RepoUrl": "https://github.com/cultbaus/CBT",
-    "IconUrl": "https://raw.githubusercontent.com/cultbaus/CBT/main/res/CBT-7-30-2024.png",
+    "IconUrl": "https://raw.githubusercontent.com/cultbaus/CBT/main/res/icon.png",
     "ImageUrls": [],
     "DalamudApiLevel": 10,
     "Tags": [
