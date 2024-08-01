@@ -8,19 +8,19 @@ using ImGuiNET;
 /// <summary>
 /// SettingsTab configures settings for FlyTextSettings Settingss.
 /// </summary>
-internal class SettingsTab : Tab
+public class SettingsTab : Tab
 {
-    private static bool warningState = PluginConfiguration.Warnings;
+    private static bool warningState = Service.Configuration.Warnings;
 
     /// <summary>
     /// Gets the Name of the Tab.
     /// </summary>
-    internal override string Name => TabKind.Settings.ToString();
+    public override string Name => TabKind.Settings.ToString();
 
     /// <summary>
     /// Gets the Settings of the Window drawn within the tab.
     /// </summary>
-    internal override TabKind Kind => TabKind.Settings;
+    public override TabKind Kind => TabKind.Settings;
 
     /// <inheritdoc/>
     public override void Draw()
@@ -32,11 +32,6 @@ internal class SettingsTab : Tab
                 ImGui.Text("Plugin configuration settings");
             }
         }
-
-        Artist.Checkbox("Toggle warnings", ref warningState, value =>
-        {
-            PluginConfiguration.Warnings = value;
-        });
     }
 
     /// <inheritdoc/>

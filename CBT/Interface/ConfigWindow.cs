@@ -13,7 +13,7 @@ using ImGuiNET;
 /// <summary>
 /// ConfigWindow is the primary configuration GUI for CBT.
 /// </summary>
-internal partial class ConfigWindow : Window
+public partial class ConfigWindow : Window
 {
     private static readonly List<Tab> Tabs = new List<Tab>()
     {
@@ -24,27 +24,27 @@ internal partial class ConfigWindow : Window
     };
 
     private static TabKind currentTab = TabKind.Kind;
-    private static TabKind clickedTab = TabKind.Kind;
-    private static bool shouldPromptConfirmation = false;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConfigWindow"/> class.
     /// </summary>
     /// <param name="name">Name of the <see cref="Plugin"/>.</param>
-    internal ConfigWindow(string name)
-        : base($"{name} - Cultbaus Battle Text##{name}_CONFIGURATION_WINDOW", ImGuiWindowFlags.NoScrollbar)
+    public ConfigWindow(string name)
+        : base($"{name} - Cultbaus Battle Text##{name}_CONFIGURATION_WINDOW", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse)
     {
         this.RespectCloseHotkey = true;
         this.SizeCondition = ImGuiCond.FirstUseEver;
-        this.Size = new Vector2(720, 480);
+        this.Size = new Vector2(900, 450);
     }
 
     /// <inheritdoc/>
     public override void Draw()
     {
+        Service.PluginLog.Info($"{ImGui.GetWindowSize()}");
+
         using (Service.Fonts.Push(Defaults.DefaultFontName, 14f))
         {
-            using (ImRaii.PushStyle(ImGuiStyleVar.CellPadding, new Vector2(5, 0)))
+            using (ImRaii.PushStyle(ImGuiStyleVar.CellPadding, new Vector2(5, 30)))
             {
                 using (ImRaii.Table("##CONFIGURATION_TABLE", 2, ImGuiTableFlags.BordersInnerV))
                 {
@@ -55,8 +55,6 @@ internal partial class ConfigWindow : Window
                     DrawRightColumn();
                 }
             }
-
-            DrawConfirmationModal(shouldPromptConfirmation && PluginConfiguration.Warnings);
         }
     }
 
@@ -67,40 +65,7 @@ internal partial class ConfigWindow : Window
     /// <inheritdoc/>
     public override void OnClose()
     {
-        base.OnClose();
-
         Service.Configuration.Save();
-    }
-
-    private static void DrawConfirmationModal(bool shouldDisplayModal)
-    {
-        if (shouldDisplayModal)
-        {
-            ImGui.SetNextWindowSize(new Vector2(300, 150), ImGuiCond.FirstUseEver);
-            ImGui.SetNextWindowPos(new Vector2((ImGui.GetIO().DisplaySize.X - 300) / 2, (ImGui.GetIO().DisplaySize.Y - 150) / 2), ImGuiCond.FirstUseEver);
-
-            ImGui.Begin("Confirm Tab Switch", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse);
-            {
-                ImGui.Text("Warning! Changing these configurations will overwrite more granular settings, do you wish to proceed?");
-
-                Artist.Button("Yes", () =>
-                {
-                    currentTab = clickedTab;
-                    clickedTab = default;
-                    shouldPromptConfirmation = false;
-                });
-
-                ImGui.SameLine();
-
-                Artist.Button("No", () =>
-                {
-                    clickedTab = default;
-                    shouldPromptConfirmation = false;
-                });
-            }
-
-            ImGui.End();
-        }
     }
 
     private static void DrawLeftColumn()
@@ -115,13 +80,15 @@ internal partial class ConfigWindow : Window
                 Tabs.ForEach(tab =>
                 {
                     tab.Selectable();
-                    Artist.SelectableTab(tab, currentTab == tab.Kind, t =>
-                    {
-                        clickedTab = t.Kind;
+                    var isSelected = currentTab == tab.Kind;
 
-                        shouldPromptConfirmation = t.Kind.HasFlag(TabKind.Warning);
-                        currentTab = shouldPromptConfirmation && PluginConfiguration.Warnings ? currentTab : clickedTab;
-                    });
+                    using (ImRaii.PushColor(ImGuiCol.Text, ImGui.GetColorU32(new Vector4(1, 1, 0, 1)), isSelected))
+                    {
+                        using (Service.Fonts.Push(Defaults.DefaultFontName, 16f))
+                        {
+                            Artist.SelectableTab(tab, isSelected, t => { currentTab = t.Kind; });
+                        }
+                    }
                 });
             }
         }
@@ -134,7 +101,7 @@ internal partial class ConfigWindow : Window
 
         var regionSize = ImGui.GetContentRegionAvail();
 
-        using (ImRaii.Child("##LOGO", regionSize with { Y = 125f }, false, ImGuiWindowFlags.NoDecoration))
+        using (ImRaii.Child("##LOGO", regionSize with { Y = 67f * 1.25f }, false, ImGuiWindowFlags.NoDecoration))
         {
             if (logoImage != null)
             {

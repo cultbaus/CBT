@@ -5,7 +5,7 @@ using System.Numerics;
 /// <summary>
 /// FlyTextOutline configuration options.
 /// </summary>
-internal class FlyTextOutlineConfiguration
+public class FlyTextOutlineConfiguration
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="FlyTextOutlineConfiguration"/> class.
@@ -13,7 +13,7 @@ internal class FlyTextOutlineConfiguration
     /// <param name="enabled">If the outline is enabled.</param>
     /// <param name="size">Size of the outline in pixels.</param>
     /// <param name="color">Color of the outline.</param>
-    internal FlyTextOutlineConfiguration(bool enabled, int size, Vector4 color)
+    public FlyTextOutlineConfiguration(bool enabled, int size, Vector4 color)
     {
         this.Enabled = enabled;
         this.Size = size;
@@ -23,15 +23,15 @@ internal class FlyTextOutlineConfiguration
     /// <summary>
     /// Gets or sets a value indicating whether the outline is enabled.
     /// </summary>
-    internal bool Enabled { get; set; }
+    public bool Enabled { get; set; }
 
     /// <summary>
     /// Gets or sets the Size of the outline.
     /// </summary>
-    internal int Size { get; set; }
+    public int Size { get; set; }
 
     /// <summary>
     /// Gets or sets the color of the outline.
     /// </summary>
-    internal Vector4 Color { get; set; }
+    public Vector4 Color { get; set; }
 }

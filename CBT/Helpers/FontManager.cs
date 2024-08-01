@@ -10,7 +10,7 @@ using Dalamud.Interface.ManagedFontAtlas;
 /// <summary>
 /// FontManager loads fonts from the Media directory and exposes a Push API to scope font handles.
 /// </summary>
-internal class FontManager : IDisposable
+public class FontManager : IDisposable
 {
     private readonly string mediaPath;
     private readonly List<Font> fonts = new List<Font>();
@@ -19,7 +19,7 @@ internal class FontManager : IDisposable
     /// Initializes a new instance of the <see cref="FontManager"/> class.
     /// </summary>
     /// <param name="mediaPath">Path to the Media directory where fonts are located.</param>
-    internal FontManager(string mediaPath)
+    public FontManager(string mediaPath)
     {
         this.mediaPath = mediaPath;
 
@@ -38,7 +38,7 @@ internal class FontManager : IDisposable
     /// <param name="name">Name of the font to push.</param>
     /// <param name="size">Size of the font to push.</param>
     /// <returns>A <see cref="Font"/> instance which will Pop once it goes out of scope.</returns>
-    internal Font? Push(string name, float size)
+    public Font? Push(string name, float size)
     {
         return this.fonts.FirstOrDefault(f => f.Name == name && f.Size == size)?.Push();
     }

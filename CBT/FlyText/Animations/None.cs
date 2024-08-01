@@ -5,13 +5,13 @@ using CBT.FlyText.Types;
 /// <summary>
 ///  None is the No-op animation for <see cref="FlyTextEvent"/>s.
 /// </summary>
-internal class None : FlyTextAnimation
+public class None : FlyTextAnimation
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="None"/> class.
     /// </summary>
     /// <param name="kind">FlyTextKind for the Animation parent.</param>
-    internal None(FlyTextKind kind)
+    public None(FlyTextKind kind)
     {
         this.FlyTextKind = kind;
         this.AnimationKind = FlyTextAnimationKind.None;
@@ -22,7 +22,7 @@ internal class None : FlyTextAnimation
     /// </summary>
     /// <param name="flyTextEvent">FlyTextEvent which will not be animation.</param>
     /// <param name="timeSinceCreated">Time since the event was created.</param>
-    internal override void Apply(FlyTextEvent flyTextEvent, float timeSinceCreated)
+    public override void Apply(FlyTextEvent flyTextEvent, float timeSinceCreated)
     {
         // No-op
     }

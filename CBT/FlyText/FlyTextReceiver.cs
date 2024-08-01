@@ -12,7 +12,7 @@ using DalamudFlyText = Dalamud.Game.Gui.FlyText;
 /// <summary>
 /// FlyTextReceiver receives FlyText from the game client.
 /// </summary>
-internal unsafe partial class FlyTextReceiver : IDisposable
+public unsafe partial class FlyTextReceiver : IDisposable
 {
     private readonly Hook<AddScreenLogDelegate> addScreenLogHook;
 
@@ -20,7 +20,7 @@ internal unsafe partial class FlyTextReceiver : IDisposable
     /// Initializes a new instance of the <see cref="FlyTextReceiver"/> class.
     /// </summary>
     /// <param name="gameInteropProvider">Dalamud game interop provider.</param>
-    internal FlyTextReceiver(IGameInteropProvider gameInteropProvider)
+    public FlyTextReceiver(IGameInteropProvider gameInteropProvider)
     {
         Service.FlyTextGui.FlyTextCreated += this.FlyTextCreated;
 
@@ -74,22 +74,11 @@ internal unsafe partial class FlyTextReceiver : IDisposable
         int val3,
         int val4)
     {
-        // TODO @cultbaus: Right now we only filter for combat events against the enemy, but eventually this should be
-        // configurable such that a user may determine if they want to see buffs/debuffs, friendly healing, etc.
         try
         {
-            if (InvolvesOther(source, target))
+            if (InvolvesMe(source, target))
             {
-                if (IsCombatKind(kind))
-                {
-                    Service.Manager.Add(new FlyTextEvent(kind, target, source, option, actionKind, actionID, val1, val2, val3, val4));
-                }
-            }
-
-            // FIXME @cultbaus: Just a smoke test for healing
-            else if (InvolvesMe(source, target))
-            {
-                if (IsHealing(kind))
+                if (Unfiltered(kind))
                 {
                     Service.Manager.Add(new FlyTextEvent(kind, target, source, option, actionKind, actionID, val1, val2, val3, val4));
                 }
@@ -97,7 +86,7 @@ internal unsafe partial class FlyTextReceiver : IDisposable
         }
         catch (Exception ex)
         {
-            Service.PluginLog.Error($"{ex.Message}");
+            Service.PluginLog.Error($"CBT Wizard used Testicular Torsion: {ex.Message}");
         }
 
         this.addScreenLogHook.Original(target, source, kind, option, actionKind, actionID, val1, val2, val3, val4);
@@ -124,7 +113,7 @@ internal unsafe partial class FlyTextReceiver : IDisposable
 /// <summary>
 /// FlyTextReceiver static member partial class implementation.
 /// </summary>
-internal unsafe partial class FlyTextReceiver
+public unsafe partial class FlyTextReceiver
 {
     /// <summary>
     /// Gets the Local Player from the Dalamud client state.
@@ -141,15 +130,6 @@ internal unsafe partial class FlyTextReceiver
         => LocalPlayer?.GameObjectId == character->GetGameObjectId().ObjectId;
 
     /// <summary>
-    /// Involves events for which the player is not the target but IS the source.
-    /// </summary>
-    /// <param name="source">Source which an action originated from.</param>
-    /// <param name="target">Target of the action.</param>
-    /// <returns>A bool.</returns>
-    protected static bool InvolvesOther(Character* source, Character* target)
-        => IsPlayerCharacter(source) && !IsPlayerCharacter(target);
-
-    /// <summary>
     /// Involves events for which the player is the source or the target.
     /// </summary>
     /// <param name="source">Source which an action originated from.</param>
@@ -164,21 +144,5 @@ internal unsafe partial class FlyTextReceiver
     /// <param name="kind">FlyTextKind of the event.</param>
     /// <returns>True if the event is enabled.</returns>
     protected static bool Unfiltered(FlyTextKind kind)
-        => PluginConfiguration.FlyText[kind].Enabled;
-
-    /// <summary>
-    /// Checks if the event is of the Combat group.
-    /// </summary>
-    /// <param name="kind">FlyTextKind of the event.</param>
-    /// <returns>True if the kind is in the Combat group.</returns>
-    protected static bool IsCombatKind(FlyTextKind kind)
-        => kind.InGroup(FlyTextCategory.Combat);
-
-    /// <summary>
-    /// Checks if the event is of the AbilityHealing category.
-    /// </summary>
-    /// <param name="kind">FlyTextKind of the event.</param>
-    /// <returns>True if the kind is in the AbilityHealing category.</returns>
-    protected static bool IsHealing(FlyTextKind kind)
-        => kind.InCategory(FlyTextCategory.AbilityHealing);
+        => Service.Configuration.FlyTextKinds[kind].Enabled;
 }

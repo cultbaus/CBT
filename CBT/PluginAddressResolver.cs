@@ -7,12 +7,12 @@ using Dalamud.Game;
 /// <summary>
 /// Dalamud address resolver.
 /// </summary>
-internal class PluginAddressResolver : BaseAddressResolver
+public class PluginAddressResolver : BaseAddressResolver
 {
     /// <summary>
     /// Gets the adress of AddScreenLog.
     /// </summary>
-    internal IntPtr AddScreenLog { get; private set; }
+    public IntPtr AddScreenLog { get; private set; }
 
     /// <inheritdoc/>
     protected override void Setup64Bit(ISigScanner scanner)

@@ -6,7 +6,7 @@ using System;
 /// TabKind represents the different types of configuration windows.
 /// </summary>
 [Flags]
-internal enum TabKind
+public enum TabKind
 {
     /// <summary>
     /// Warning for configurations which will overwrite more granular settings.
@@ -42,17 +42,17 @@ internal enum TabKind
 /// <summary>
 /// Tab is the abstract class which represents a configuration tab.
 /// </summary>
-internal abstract class Tab : IDisposable
+public abstract class Tab : IDisposable
 {
     /// <summary>
     /// Gets the Name of the window.
     /// </summary>
-    internal abstract string Name { get; }
+    public abstract string Name { get; }
 
     /// <summary>
     /// Gets the Kind of the window.
     /// </summary>
-    internal abstract TabKind Kind { get; }
+    public abstract TabKind Kind { get; }
 
     /// <inheritdoc/>
     public virtual void Dispose()

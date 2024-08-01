@@ -8,7 +8,7 @@ using CBT.FlyText.Types;
 /// <summary>
 /// FlyTextCategory methods.
 /// </summary>
-internal static class FlyTextCategoryMethods
+public static class FlyTextCategoryMethods
 {
     /// <summary>
     /// Gets kinds for a given category.
@@ -16,7 +16,7 @@ internal static class FlyTextCategoryMethods
     /// <param name="category">FlyTextCategory to fetch kinds for.</param>
     /// <returns>A list of all kinds within that category.</returns>
     /// <exception cref="ArgumentOutOfRangeException">Throws if the category is a group.</exception>
-    internal static List<FlyTextKind> GetKindsForCategory(this FlyTextCategory category)
+    public static List<FlyTextKind> GetKindsForCategory(this FlyTextCategory category)
         => IsCategory(category)
             ? Enum.GetValues<FlyTextKind>()
                 .Cast<FlyTextKind>()
@@ -30,7 +30,7 @@ internal static class FlyTextCategoryMethods
     /// <param name="group">FlyTextCategory group to fetch kinds for.</param>
     /// <returns>A list of all kinds within that group.</returns>
     /// <exception cref="ArgumentOutOfRangeException">Throws if the group is a category.</exception>
-    internal static List<FlyTextKind> GetKindsForGroup(this FlyTextCategory group)
+    public static List<FlyTextKind> GetKindsForGroup(this FlyTextCategory group)
         => IsGroup(group)
             ? Enum.GetValues<FlyTextKind>()
                 .Cast<FlyTextKind>()
@@ -44,7 +44,7 @@ internal static class FlyTextCategoryMethods
     /// <param name="group">FlyTextCategory group to fetch categories for.</param>
     /// <returns>A list of all categories within that group.</returns>
     /// <exception cref="ArgumentOutOfRangeException">Throws if the group is a category.</exception>
-    internal static List<FlyTextCategory> GetCategoriesForGroup(this FlyTextCategory group)
+    public static List<FlyTextCategory> GetCategoriesForGroup(this FlyTextCategory group)
         => IsGroup(group)
         ? Enum.GetValues<FlyTextCategory>()
             .Cast<FlyTextCategory>()
@@ -57,7 +57,7 @@ internal static class FlyTextCategoryMethods
     /// </summary>
     /// <param name="value">FlyTextCategory to check.</param>
     /// <returns>True if the category is a group sub-type.</returns>
-    internal static bool IsGroup(this FlyTextCategory value)
+    public static bool IsGroup(this FlyTextCategory value)
         => value == FlyTextCategory.Combat || value == FlyTextCategory.NonCombat;
 
     /// <summary>
@@ -65,7 +65,7 @@ internal static class FlyTextCategoryMethods
     /// </summary>
     /// <param name="value">FlyTextCategory to check.</param>
     /// <returns>True if the category is a category sub-type.</returns>
-    internal static bool IsCategory(this FlyTextCategory value)
+    public static bool IsCategory(this FlyTextCategory value)
         => !IsGroup(value);
 
     /// <summary>
@@ -73,12 +73,35 @@ internal static class FlyTextCategoryMethods
     /// </summary>
     /// <param name="category">The category or group to iterate.</param>
     /// <param name="action">The action to perform.</param>
-    internal static void ForEach(this FlyTextCategory category, Action<FlyTextKind> action)
+    public static void ForEach(this FlyTextCategory category, Action<FlyTextKind> action)
     {
         Enum.GetValues<FlyTextKind>()
            .Cast<FlyTextKind>()
            .Where(kind => IsCategory(category) ? kind.InCategory(category) : kind.InGroup(category))
            .ToList()
            .ForEach(action);
+    }
+
+    /// <summary>
+    /// Gets the pretty print name for a category.
+    /// </summary>
+    /// <param name="category">FlyTextCategory.</param>
+    /// <returns>Pretty printed name.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Throws if argument is out of range.</exception>
+    public static string Pretty(this FlyTextCategory category)
+    {
+        return category switch
+        {
+            FlyTextCategory.Combat => "Combat",
+            FlyTextCategory.NonCombat => "NonCombat",
+            FlyTextCategory.AutoAttack => "Auto Attacks",
+            FlyTextCategory.AbilityDamage => "Abilities",
+            FlyTextCategory.AbilityHealing => "Heals",
+            FlyTextCategory.Miss => "Misses",
+            FlyTextCategory.Buff => "Buffs",
+            FlyTextCategory.Debuff => "Debuffs",
+            FlyTextCategory.CC => "Crowd Control",
+            _ => throw new ArgumentOutOfRangeException(nameof(category), category, null),
+        };
     }
 }

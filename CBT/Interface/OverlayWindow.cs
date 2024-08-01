@@ -9,7 +9,7 @@ using ImGuiNET;
 /// <summary>
 /// OverlayWindow is the primary canvas for CBT FlyTextEvents.
 /// </summary>
-internal class OverlayWindow : Window
+public class OverlayWindow : Window
 {
     private static readonly ImGuiWindowFlags WindowFlags =
         ImGuiWindowFlags.AlwaysUseWindowPadding
@@ -25,7 +25,7 @@ internal class OverlayWindow : Window
     /// <summary>
     /// Initializes a new instance of the <see cref="OverlayWindow"/> class.
     /// </summary>
-    internal OverlayWindow()
+    public OverlayWindow()
         : base("CBT Overlay Window##CBT_OVERLAY_WINDOW", WindowFlags, true)
     {
         this.IsOpen = true;
@@ -65,7 +65,7 @@ internal class OverlayWindow : Window
     /// </summary>
     /// <param name="lastFrame">Previous DateTime persisted to the OverlayWindow.</param>
     /// <returns>Returns the Time Elapsed since the last Draw.</returns>
-    internal float TimeSince(DateTime lastFrame)
+    public float TimeSince(DateTime lastFrame)
     {
         float timeElapsed = (float)(DateTime.Now - lastFrame).TotalSeconds;
         this.lastFrame = DateTime.Now;

@@ -14,7 +14,7 @@ using Dalamud.Plugin.Services;
 /// <summary>
 /// Plugin is the main entrypoint for CBT.
 /// </summary>
-internal sealed partial class Plugin : IDalamudPlugin
+public sealed partial class Plugin : IDalamudPlugin
 {
     private static readonly string Command = "/cbt";
 
@@ -58,7 +58,7 @@ internal sealed partial class Plugin : IDalamudPlugin
         Service.Interface.UiBuilder.OpenConfigUi += this.OnOpenConfigUi;
         Service.Interface.UiBuilder.OpenMainUi += this.OnOpenConfigUi;
         Service.Interface.UiBuilder.Draw += this.windowSystem.Draw;
-        Service.Manager = new PluginManager(artist);
+        Service.Manager = new PluginManager();
         Service.Manifest = new ManifestManager(assemblyLocation + Path.GetFileNameWithoutExtension(Service.Interface.AssemblyLocation.FullName) + ".json");
         Service.Receiver = new FlyTextReceiver(gameInteropProvider);
     }

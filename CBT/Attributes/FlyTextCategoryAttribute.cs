@@ -8,10 +8,10 @@ using CBT.FlyText.Types;
 /// </summary>
 /// <param name="category">FlyTextCategory which is a collection of kinds.</param>
 [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
-internal class FlyTextCategoryAttribute(FlyTextCategory category) : Attribute
+public class FlyTextCategoryAttribute(FlyTextCategory category) : Attribute
 {
     /// <summary>
     /// Gets the FlyTextCategory.
     /// </summary>
-    internal FlyTextCategory Category { get; } = category;
+    public FlyTextCategory Category { get; } = category;
 }

@@ -10,14 +10,14 @@ using ImGuiNET;
 /// <summary>
 /// FlyTextArtist draws FlyText to the main CBT Canvas.
 /// </summary>
-internal class FlyTextArtist
+public class FlyTextArtist
 {
     /// <summary>
     /// Draws events to the CBT canvas.
     /// </summary>
     /// <param name="drawList">ImGUI Draw List.</param>
     /// <param name="flyTextEvents">Events to draw to the canvas.</param>
-    internal static void Draw(ImDrawListPtr drawList, List<FlyTextEvent> flyTextEvents)
+    public static void Draw(ImDrawListPtr drawList, List<FlyTextEvent> flyTextEvents)
     {
         var indexedEvents = flyTextEvents
             .Select((e, i) => new { Event = e, Index = i })

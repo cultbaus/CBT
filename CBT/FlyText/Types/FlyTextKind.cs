@@ -6,7 +6,7 @@ using DalamudFlyText = Dalamud.Game.Gui.FlyText;
 /// <summary>
 /// FlyTextKind is the CBT wrapped enum of the Dalamud FlyTextKind enum.
 /// </summary>
-internal enum FlyTextKind
+public enum FlyTextKind
 {
     /// <summary>
     /// Auto attack or dot.

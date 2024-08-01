@@ -12,16 +12,30 @@ using Dalamud.Configuration;
 /// <summary>
 /// Dalamud plugin configuration implementation.
 /// </summary>
-internal class PluginConfiguration : IPluginConfiguration
+[Serializable]
+public class PluginConfiguration : IPluginConfiguration
 {
     /// <summary>
-    /// Initializes static members of the <see cref="PluginConfiguration"/> class.
-    /// Initializes a new isntance of the <see cref="PluginConfiguration"/> class.
+    /// Initializes a new instance of the <see cref="PluginConfiguration"/> class.
     /// </summary>
-    static PluginConfiguration()
+    public PluginConfiguration()
     {
-        FlyText = Enum.GetValues<FlyTextKind>()
+        this.FlyTextKinds = Enum.GetValues<FlyTextKind>()
         .Cast<FlyTextKind>()
+        .ToDictionary(
+            kind => kind,
+            kind => new FlyTextConfiguration());
+
+        this.FlyTextCategories = Enum.GetValues<FlyTextCategory>()
+        .Cast<FlyTextCategory>()
+        .Where(category => category.IsCategory())
+        .ToDictionary(
+            kind => kind,
+            kind => new FlyTextConfiguration());
+
+        this.FlyTextGroups = Enum.GetValues<FlyTextCategory>()
+        .Cast<FlyTextCategory>()
+        .Where(category => category.IsGroup())
         .ToDictionary(
             kind => kind,
             kind => new FlyTextConfiguration());
@@ -29,37 +43,62 @@ internal class PluginConfiguration : IPluginConfiguration
         FlyTextCategory.AbilityDamage
             .ForEach(kind =>
             {
-                FlyText[kind].Font.Color = new Vector4(255 / 255, 255 / 255, 0, 255 / 255);
-                FlyText[kind].Font.Size = 24f;
+                this.FlyTextKinds[kind].Font.Color = new Vector4(255 / 255, 255 / 255, 0, 255 / 255);
+                this.FlyTextKinds[kind].Font.Size = 24f;
             });
 
         FlyTextCategory.AutoAttack
             .ForEach(kind =>
             {
-                FlyText[kind].Font.Color = new Vector4(255 / 255, 255 / 255, 255 / 255, 255 / 255);
-                FlyText[kind].Font.Size = 18f;
+                this.FlyTextKinds[kind].Font.Color = new Vector4(255 / 255, 255 / 255, 255 / 255, 255 / 255);
+                this.FlyTextKinds[kind].Font.Size = 18f;
             });
 
         FlyTextCategory.AbilityHealing
             .ForEach(kind =>
             {
-                FlyText[kind].Font.Color = new Vector4(0, 255 / 255, 0, 255 / 255);
-                FlyText[kind].Font.Size = 18f;
+                this.FlyTextKinds[kind].Font.Color = new Vector4(0, 255 / 255, 0, 255 / 255);
+                this.FlyTextKinds[kind].Font.Size = 18f;
             });
 
         FlyTextCategory.Miss
             .ForEach(kind =>
             {
-                FlyText[kind].Font.Color = new Vector4(255 / 255, 255 / 4, 255 / 4, 255 / 255);
-                FlyText[kind].Font.Size = 18f;
+                this.FlyTextKinds[kind].Font.Color = new Vector4(255 / 255, 255 / 4, 255 / 4, 255 / 255);
+                this.FlyTextKinds[kind].Font.Size = 18f;
             });
 
         FlyTextCategory.NonCombat
             .ForEach(kind =>
             {
-                FlyText[kind].Enabled = false;
+                this.FlyTextKinds[kind].Enabled = false;
             });
     }
+
+    /// <summary>
+    /// Gets or sets the Fonts configuration settings.
+    /// </summary>
+    public static Dictionary<string, List<float>> Fonts { get; set; } = new Dictionary<string, List<float>>();
+
+    /// <summary>
+    /// Gets or sets the FlyTextKinds Configuration options.
+    /// </summary>
+    public Dictionary<FlyTextKind, FlyTextConfiguration> FlyTextKinds { get; set; } = new Dictionary<FlyTextKind, FlyTextConfiguration>();
+
+    /// <summary>
+    /// Gets or sets the FlyTextCategory Category Configuration options.
+    /// </summary>
+    public Dictionary<FlyTextCategory, FlyTextConfiguration> FlyTextCategories { get; set; } = new Dictionary<FlyTextCategory, FlyTextConfiguration>();
+
+    /// <summary>
+    /// Gets or sets the FlyTextCategory Group Configuration options.
+    /// </summary>
+    public Dictionary<FlyTextCategory, FlyTextConfiguration> FlyTextGroups { get; set; } = new Dictionary<FlyTextCategory, FlyTextConfiguration>();
+
+    /// <summary>
+    /// Gets or sets a value indicating whether warnings are enabled.
+    /// </summary>
+    public bool Warnings { get; set; }
 
     /// <summary>
     /// Gets or sets the Configuration Version.
@@ -67,23 +106,8 @@ internal class PluginConfiguration : IPluginConfiguration
     public int Version { get; set; } = 0;
 
     /// <summary>
-    /// Gets or sets the FlyText Configuration options.
-    /// </summary>
-    internal static Dictionary<FlyTextKind, FlyTextConfiguration> FlyText { get; set; } = new Dictionary<FlyTextKind, FlyTextConfiguration>();
-
-    /// <summary>
-    /// Gets or sets the Fonts configuration settings.
-    /// </summary>
-    internal static Dictionary<string, List<float>> Fonts { get; set; } = new Dictionary<string, List<float>>();
-
-    /// <summary>
-    /// Gets or sets a value indicating whether warnings are enabled.
-    /// </summary>
-    internal static bool Warnings { get; set; } = true;
-
-    /// <summary>
     /// Persist the configuration settings to disk.
     /// </summary>
-    internal void Save()
+    public void Save()
         => Service.Interface.SavePluginConfig(this);
 }

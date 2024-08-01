@@ -10,7 +10,7 @@ using ImGuiNET;
 /// <summary>
 /// FlyTextEvent is a CBT FlyTextEvent wrapper over the in-game event.
 /// </summary>
-internal unsafe partial class FlyTextEvent
+public unsafe partial class FlyTextEvent
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="FlyTextEvent"/> class.
@@ -25,9 +25,9 @@ internal unsafe partial class FlyTextEvent
     /// <param name="val2">Val2 of the FlyText event.</param>
     /// <param name="val3">Val3 of the FlyText event.</param>
     /// <param name="val4">Val4 of the FlyText event.</param>
-    internal FlyTextEvent(FlyTextKind kind, Character* target, Character* source, int option, int actionKind, int actionID, int val1, int val2, int val3, int val4)
+    public FlyTextEvent(FlyTextKind kind, Character* target, Character* source, int option, int actionKind, int actionID, int val1, int val2, int val3, int val4)
     {
-        FlyTextConfiguration config = PluginConfiguration.FlyText[kind];
+        FlyTextConfiguration config = Service.Configuration.FlyTextKinds[kind];
 
         this.Config = new FlyTextConfiguration(
             config.Font.Name,
@@ -55,37 +55,37 @@ internal unsafe partial class FlyTextEvent
     /// <summary>
     /// gets a value indicating whether an event is expired.
     /// </summary>
-    internal bool IsExpired
+    public bool IsExpired
         => this.Animation.TimeElapsed > this.Animation.Duration;
 
     /// <summary>
     /// Gets a value indicating the world anchor of the event.
     /// </summary>
-    internal Vector2 Anchor
+    public Vector2 Anchor
         => Service.GameGui.WorldToScreen(this.Target->Position, out Vector2 currentPosition) ? currentPosition : Vector2.Zero;
 
     /// <summary>
     /// Gets the position of the FlyTextEvent with the animation offset applied.
     /// </summary>
-    internal Vector2 Position
+    public Vector2 Position
         => this.Anchor + this.Animation.Offset;
 
     /// <summary>
     /// Gets the size of the FlyTextEvent rectangle.
     /// </summary>
-    internal Vector2 Size
+    public Vector2 Size
         => ImGui.CalcTextSize(this.Text);
 
     /// <summary>
     /// Gets the string representation of the FlyTextEvent Value1.
     /// </summary>
-    internal string Text
+    public string Text
         => this.Config.Font.Format ? this.Value1.ToString("N0") : this.Value1.ToString();
 
     /// <summary>
     /// Gets the Dalamud Texture Wrap for the ActionID.
     /// </summary>
-    internal IDalamudTextureWrap? Icon
+    public IDalamudTextureWrap? Icon
 
         // FIXME @cultbaus: Icons are incorrect, this is getting ~some~ texture but it's not ~the right~ texture.
         => Service.TextureProvider.GetFromGameIcon(this.ActionID).GetWrapOrDefault();
@@ -93,63 +93,63 @@ internal unsafe partial class FlyTextEvent
     /// <summary>
     /// Gets or sets the FlyTextConfiguration.
     /// </summary>
-    internal FlyTextConfiguration Config { get; set; }
+    public FlyTextConfiguration Config { get; set; }
 
     /// <summary>
     /// Gets or sets the FlyTextAnimation.
     /// </summary>
-    internal FlyTextAnimation Animation { get; set; }
+    public FlyTextAnimation Animation { get; set; }
 
     /// <summary>
     /// Gets the Target from the original event.
     /// </summary>
-    internal Character* Target { get; }
+    public Character* Target { get; }
 
     /// <summary>
     /// Gets the Source from the original event.
     /// </summary>
-    internal Character* Source { get; }
+    public Character* Source { get; }
 
     /// <summary>
     /// Gets the Option from the original event.
     /// </summary>
-    internal int Option { get; }
+    public int Option { get; }
 
     /// <summary>
     /// Gets the ActionKind from the original event.
     /// </summary>
-    internal int ActionKind { get; }
+    public int ActionKind { get; }
 
     /// <summary>
     /// Gets the ActionID from the original event.
     /// </summary>
-    internal int ActionID { get; }
+    public int ActionID { get; }
 
     /// <summary>
     /// Gets the Value1 from the original event.
     /// </summary>
-    internal int Value1 { get; }
+    public int Value1 { get; }
 
     /// <summary>
     /// Gets the Value2 from the original event.
     /// </summary>
-    internal int Value2 { get; }
+    public int Value2 { get; }
 
     /// <summary>
     /// Gets the Value3 from the original event.
     /// </summary>
-    internal int Value3 { get; }
+    public int Value3 { get; }
 
     /// <summary>
     /// Gets the Value4 from the original event.
     /// </summary>
-    internal int Value4 { get; }
+    public int Value4 { get; }
 
     /// <summary>
     /// Update applies state changes to the FlyText event.
     /// </summary>
     /// <param name="timeElapsed">Time since the last frame.</param>
-    internal void Update(float timeElapsed)
+    public void Update(float timeElapsed)
     {
         this.Animation.TimeElapsed += timeElapsed;
         this.Animation.Apply(this, timeElapsed);

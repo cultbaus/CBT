@@ -7,7 +7,7 @@ using Dalamud.Interface.ManagedFontAtlas;
 /// <summary>
 /// Font is a Dalamud IFontHandle with a specific name and size.
 /// </summary>
-internal class Font : IDisposable
+public class Font : IDisposable
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="Font"/> class.
@@ -15,7 +15,7 @@ internal class Font : IDisposable
     /// <param name="handle">Dalamud font handle.</param>
     /// <param name="name">Font name.</param>
     /// <param name="size">Font size in pixels.</param>
-    internal Font(IFontHandle handle, string name, float size)
+    public Font(IFontHandle handle, string name, float size)
     {
         this.Handle = handle;
         this.Name = name;
@@ -25,17 +25,17 @@ internal class Font : IDisposable
     /// <summary>
     /// Gets or sets the Dalamud IFontHandle.
     /// </summary>
-    internal IFontHandle Handle { get; set; }
+    public IFontHandle Handle { get; set; }
 
     /// <summary>
     /// Gets or sets the name of the font.
     /// </summary>
-    internal string Name { get; set; }
+    public string Name { get; set; }
 
     /// <summary>
     /// Gets or sets the size of the font in pixels.
     /// </summary>
-    internal float Size { get; set; }
+    public float Size { get; set; }
 
     /// <inheritdoc/>
     public void Dispose()
@@ -45,7 +45,7 @@ internal class Font : IDisposable
     /// Pushes the Dalamud IFontHandle into the ImGUI stack.
     /// </summary>
     /// <returns>A Dalamud IFontHandle scope.</returns>
-    internal Font Push()
+    public Font Push()
     {
         this.Handle?.Push();
         return this;

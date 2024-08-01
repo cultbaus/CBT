@@ -7,7 +7,7 @@ using CBT.FlyText.Types;
 /// <summary>
 /// FlyTextKinds implements methods on the FlyTextKind enum.
 /// </summary>
-internal static class FlyTextKindMethods
+public static class FlyTextKindMethods
 {
     /// <summary>
     /// Gets the category for a given FlyTextKind.
@@ -15,7 +15,7 @@ internal static class FlyTextKindMethods
     /// <param name="kind">FlyTextKind enum.</param>
     /// <returns>Category for which the kind is a member.</returns>
     /// <exception cref="ArgumentOutOfRangeException">Throws if the kind has no category.</exception>
-    internal static FlyTextCategory GetCategory(this FlyTextKind kind)
+    public static FlyTextCategory GetCategory(this FlyTextKind kind)
     {
         var attr = typeof(FlyTextKind)
             .GetMember(kind.ToString())[0]
@@ -33,7 +33,7 @@ internal static class FlyTextKindMethods
     /// <param name="category">FlyTextCategory to check if kind is a member of.</param>
     /// <returns>True if the kind is a member of that category.</returns>
     /// <exception cref="ArgumentOutOfRangeException">Throws if the category is a group.</exception>
-    internal static bool InCategory(this FlyTextKind kind, FlyTextCategory category)
+    public static bool InCategory(this FlyTextKind kind, FlyTextCategory category)
         => category.IsCategory()
             ? GetCategory(kind) == category
             : throw new ArgumentOutOfRangeException(nameof(category), category, null);
@@ -45,7 +45,7 @@ internal static class FlyTextKindMethods
     /// <param name="group">FlyTextCategory to check if kind is a member of.</param>
     /// <returns>True if the kind is a member of that group.</returns>
     /// <exception cref="ArgumentOutOfRangeException">Throws if the group is a category.</exception>
-    internal static bool InGroup(this FlyTextKind kind, FlyTextCategory group)
+    public static bool InGroup(this FlyTextKind kind, FlyTextCategory group)
         => group.IsGroup()
             ? GetCategory(kind).HasFlag(group)
             : throw new ArgumentOutOfRangeException(nameof(group), group, null);

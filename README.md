@@ -18,6 +18,10 @@ Thank you to the creators & maintainers of [FlyTextFilter][1] and [DamageInfo][2
 
 Additionally, thank you to the creators & maintainers of [DelvUI][4] and [XIVComboExpanded][3] for providing additional reference material and implementation details that were lost on me from the official documentation sources. Similar to the aforementioned prior art, these plugins were instrumental in providing me a basis for which I could begin.
 
+# Help Wanted
+* The [Interface](./CBT/Interface/) needs a LOT of work from someone that's good with ImGUI.
+* Localization support
+
 [1]: https://github.com/Aireil/FlyTextFilter
 [2]: https://github.com/lmcintyre/DamageInfoPlugin
 [3]: https://github.com/MKhayle/XIVComboExpanded

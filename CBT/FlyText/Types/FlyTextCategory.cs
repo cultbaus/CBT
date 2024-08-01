@@ -6,7 +6,7 @@ using System;
 /// FlyTextCategory is a collect of Groups and Categories which organize a subset of <see cref="FlyTextKind"/>s.
 /// </summary>
 [Flags]
-internal enum FlyTextCategory
+public enum FlyTextCategory
 {
     // Groups
 
