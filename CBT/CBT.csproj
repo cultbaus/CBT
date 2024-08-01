@@ -37,10 +37,10 @@
     </AssemblySearchPaths>
   </PropertyGroup>
 
-
   <ItemGroup>
     <Content Include="$(ProjectDir)Media\**" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="$(ProjectDir)Data\**" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\res\icon.png" Link="images\icon.png" CopyToOutputDirectory="PreserveNewest" Visible="false" />
   </ItemGroup>
 
   <ItemGroup>

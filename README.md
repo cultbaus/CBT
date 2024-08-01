@@ -10,6 +10,10 @@ An ImGui replacement for FlyText in Final Fantasy XIV.
 
 </div>
 
+# Quick Start
+
+Add the repository to your custom repos list in Dalamud -> Settings -> Experimental: `https://raw.githubusercontent.com/cultbaus/MyDalamudPlugins/main/repo.json`, then install the plugin. Use `/cbt` to configure.
+
 # Prior Art
 
 Thank you to the creators & maintainers of [FlyTextFilter][1] and [DamageInfo][2] for providing inspiration and an in-code reference implementation for where to begin. It would literally not have been possible for me to begin work on this without their efforts.
