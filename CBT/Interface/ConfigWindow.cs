@@ -20,7 +20,6 @@ public partial class ConfigWindow : Window
         new KindTab(),
         new CategoryTab(),
         new GroupTab(),
-        new SettingsTab(),
     };
 
     private static TabKind currentTab = TabKind.Kind;
@@ -65,6 +64,8 @@ public partial class ConfigWindow : Window
     /// <inheritdoc/>
     public override void OnClose()
     {
+        Tabs.ForEach(tab => tab.OnClose());
+
         Service.Configuration.Save();
     }
 
@@ -79,7 +80,6 @@ public partial class ConfigWindow : Window
             {
                 Tabs.ForEach(tab =>
                 {
-                    tab.Selectable();
                     var isSelected = currentTab == tab.Kind;
 
                     using (ImRaii.PushColor(ImGuiCol.Text, ImGui.GetColorU32(new Vector4(1, 1, 0, 1)), isSelected))

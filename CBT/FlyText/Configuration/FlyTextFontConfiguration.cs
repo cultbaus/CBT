@@ -23,6 +23,18 @@ public class FlyTextFontConfiguration
     }
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="FlyTextFontConfiguration"/> class.
+    /// </summary>
+    /// <param name="toCopy">Copies values from this.</param>
+    public FlyTextFontConfiguration(FlyTextFontConfiguration toCopy)
+    {
+        this.Size = toCopy.Size;
+        this.Name = toCopy.Name;
+        this.Color = toCopy.Color;
+        this.Format = toCopy.Format;
+    }
+
+    /// <summary>
     ///  Gets or sets the size of the font.
     /// </summary>
     public float Size { get; set; }

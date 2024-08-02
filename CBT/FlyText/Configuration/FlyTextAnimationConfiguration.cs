@@ -21,6 +21,17 @@ public class FlyTextAnimationConfiguration
     }
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="FlyTextAnimationConfiguration"/> class.
+    /// </summary>
+    /// <param name="toCopy">Values to copy.</param>
+    public FlyTextAnimationConfiguration(FlyTextAnimationConfiguration toCopy)
+    {
+        this.Kind = toCopy.Kind;
+        this.Duration = toCopy.Duration;
+        this.Speed = toCopy.Speed;
+    }
+
+    /// <summary>
     /// Gets or sets the animation kind.
     /// </summary>
     public FlyTextAnimationKind Kind { get; set; }

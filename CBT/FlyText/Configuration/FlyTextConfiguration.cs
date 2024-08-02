@@ -39,6 +39,17 @@ public class FlyTextConfiguration
     }
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="FlyTextConfiguration"/> class.
+    /// </summary>
+    /// <param name="toCopy">Values to copy.</param>
+    public FlyTextConfiguration(FlyTextConfiguration toCopy)
+    {
+        this.Font = new FlyTextFontConfiguration(toCopy.Font);
+        this.Outline = new FlyTextOutlineConfiguration(toCopy.Outline);
+        this.Animation = new FlyTextAnimationConfiguration(toCopy.Animation);
+    }
+
+    /// <summary>
     /// Gets or sets a value indicating whether or not the kind is enabled.
     /// </summary>
     public bool Enabled { get; set; } = true;

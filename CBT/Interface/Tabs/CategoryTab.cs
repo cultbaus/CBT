@@ -3,6 +3,7 @@
 namespace CBT.Interface.Tabs;
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using CBT.FlyText;
@@ -12,14 +13,13 @@ using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
 
 /// <summary>
-/// CategoryTab configures settings for FlyTextCategory Categorys.
+/// CatgeoryTab configures settings for FlyTextcategory Categories.
 /// </summary>
 public class CategoryTab : Tab
 {
-    private static FlyTextCategory currentCategory =
-        Enum.GetValues<FlyTextCategory>()
-            .Cast<FlyTextCategory>()
-            .FirstOrDefault(c => c.IsCategory());
+    private static FlyTextCategory currentCategory = Enum.GetValues<FlyTextCategory>().Cast<FlyTextCategory>().FirstOrDefault(c => c.IsCategory());
+
+    private static Dictionary<FlyTextCategory, FlyTextConfiguration> tmpConfig = new Dictionary<FlyTextCategory, FlyTextConfiguration>();
 
     /// <summary>
     /// Gets the Name of the Tab.
@@ -37,152 +37,195 @@ public class CategoryTab : Tab
         set => currentCategory = value;
     }
 
-    private static bool CurrentCategoryEnabled
+    private static bool CurrentcategoryEnabled
     {
-        get => Service.Configuration.FlyTextCategories[CurrentCategory].Enabled;
-        set => Service.Configuration.FlyTextCategories[CurrentCategory].Enabled = value;
+        get => GetValue(config => config.Enabled);
+        set => SetValue((config, val) => config.Enabled = val, value);
     }
 
     private static string CurrentFont
     {
-        get => Service.Configuration.FlyTextCategories[CurrentCategory].Font.Name;
-        set => Service.Configuration.FlyTextCategories[CurrentCategory].Font.Name = value;
+        get => GetValue(config => config.Font.Name);
+        set => SetValue((config, val) => config.Font.Name = val, value);
     }
 
     private static Vector4 CurrentFontColor
     {
-        get => Service.Configuration.FlyTextCategories[CurrentCategory].Font.Color;
-        set => Service.Configuration.FlyTextCategories[CurrentCategory].Font.Color = value;
+        get => GetValue(config => config.Font.Color);
+        set => SetValue((config, val) => config.Font.Color = val, value);
     }
 
     private static float CurrentFontSize
     {
-        get => Service.Configuration.FlyTextCategories[CurrentCategory].Font.Size;
-        set => Service.Configuration.FlyTextCategories[CurrentCategory].Font.Size = value;
+        get => GetValue(config => config.Font.Size);
+        set => SetValue((config, val) => config.Font.Size = val, value);
     }
 
     private static bool CurrentOutlineEnabled
     {
-        get => Service.Configuration.FlyTextCategories[CurrentCategory].Outline.Enabled;
-        set => Service.Configuration.FlyTextCategories[CurrentCategory].Outline.Enabled = value;
+        get => GetValue(config => config.Outline.Enabled);
+        set => SetValue((config, val) => config.Outline.Enabled = val, value);
     }
 
     private static int CurrentOutlineThickness
     {
-        get => Service.Configuration.FlyTextCategories[CurrentCategory].Outline.Size;
-        set => Service.Configuration.FlyTextCategories[CurrentCategory].Outline.Size = value;
+        get => GetValue(config => config.Outline.Size);
+        set => SetValue((config, val) => config.Outline.Size = val, value);
     }
 
     private static Vector4 CurrentOutlineColor
     {
-        get => Service.Configuration.FlyTextCategories[CurrentCategory].Outline.Color;
-        set => Service.Configuration.FlyTextCategories[CurrentCategory].Outline.Color = value;
+        get => GetValue(config => config.Outline.Color);
+        set => SetValue((config, val) => config.Outline.Color = val, value);
     }
 
     /// <inheritdoc/>
     public override void Draw()
     {
-        using (Service.Fonts.Push(Defaults.DefaultFontName, 22f))
-        {
-            using (ImRaii.PushColor(ImGuiCol.Text, ImGui.GetColorU32(new Vector4(1, 1, 0, 1))))
-            {
-                ImGui.Text("FlyText Categories");
-                ImGui.Spacing();
-            }
-        }
+        var textPickerWidth = 250f;
+        var numPickerWidth = 50f;
 
-        using (Service.Fonts.Push(Defaults.DefaultFontName, 14f))
-        {
-            using (ImRaii.PushColor(ImGuiCol.Text, ImGui.GetColorU32(new Vector4(1, 0, 0, 1))))
-            {
-                ImGui.Text("Warning: changing settings here will overwrite Kinds!");
-            }
-        }
+        // Title bar
+        Artist.DrawTabTitle("FlyText Categories Configuration");
+        Artist.DrawSeperator();
 
-        ImGui.Separator();
-
+        // Configuration options
         using (Service.Fonts.Push(Defaults.DefaultFontName, 16f))
         {
-            var textPickerWidth = 250f;
-            var numPickerWidth = 50f;
+            Artist.DrawSeperator();
 
-            ImGui.Spacing();
-            ImGui.Separator();
-
-            DrawCategoryConfiguration(textPickerWidth);
-
-            if (CurrentCategoryEnabled)
+            if (DrawcategoryConfiguration(textPickerWidth))
             {
-                ImGui.Spacing();
-                ImGui.Separator();
-
+                Artist.DrawSeperator();
                 DrawFontConfiguration(textPickerWidth, numPickerWidth);
             }
         }
+
+        DrawSaveButton();
     }
 
     /// <inheritdoc/>
-    public override void Selectable()
+    public override void OnClose()
     {
+        tmpConfig.Clear();
     }
 
-    private static void DrawCategoryConfiguration(float textPickerWidth)
+    private static void OnSave()
+    {
+        if (tmpConfig.TryGetValue(CurrentCategory, out var currentConfig))
+        {
+            CurrentCategory.ForEach(kind =>
+            {
+                Service.Configuration.FlyTextKinds[kind] = new FlyTextConfiguration(currentConfig);
+            });
+            Service.Configuration.FlyTextCategories[CurrentCategory] = new FlyTextConfiguration(currentConfig);
+        }
+    }
+
+    private static T GetValue<T>(Func<FlyTextConfiguration, T> selector)
+    {
+        return tmpConfig.TryGetValue(CurrentCategory, out var currentConfig) ? selector(currentConfig) : selector(Service.Configuration.FlyTextCategories[CurrentCategory]);
+    }
+
+    private static void SetValue<T>(Action<FlyTextConfiguration, T> setter, T value)
+    {
+        if (!tmpConfig.TryGetValue(CurrentCategory, out var currentConfig))
+        {
+            currentConfig = new FlyTextConfiguration(Service.Configuration.FlyTextCategories[CurrentCategory]);
+            tmpConfig[CurrentCategory] = currentConfig;
+        }
+
+        setter(currentConfig, value);
+    }
+
+    private static void DrawSaveButton()
+    {
+        var colors = new List<(ImGuiCol Style, Vector4 Color)>
+    {
+        (ImGuiCol.Text, new Vector4(1, 1, 1, 1)),
+        (ImGuiCol.Button, new Vector4(206 / 255f, 39 / 255f, 187 / 255f, 1.0f)),
+        (ImGuiCol.ButtonHovered, new Vector4(39 / 255f, 187 / 255f, 206 / 255f, 1.0f)),
+        (ImGuiCol.ButtonActive, new Vector4(1, 1, 0, 1)),
+    };
+
+        Artist.StyledButton("Save##Category", colors, OnSave);
+    }
+
+    private static void DrawcategoryTitle()
     {
         using (Service.Fonts.Push(Defaults.DefaultFontName, 18f))
         {
             ImGui.Text("Category Configuration");
             ImGui.Spacing();
         }
-
-        {
-            using (ImRaii.PushColor(ImGuiCol.Text, ImGui.GetColorU32(new Vector4(1, 1, 0, 1))))
-            {
-                ImGui.Text("Select Category: ");
-            }
-
-            ImGui.SameLine();
-            ImGui.SetNextItemWidth(textPickerWidth);
-            Artist.DrawSelectPicker("Category", CurrentCategory, Enum.GetValues<FlyTextCategory>().Cast<FlyTextCategory>().ToList().Where(category => category.IsCategory()).ToList(), category => { CurrentCategory = category; });
-
-            ImGui.SameLine();
-            Artist.Checkbox("Enabled", CurrentCategoryEnabled, enabled =>
-            {
-                CurrentCategory.ForEach(kind => Service.Configuration.FlyTextKinds[kind].Enabled = enabled);
-                CurrentCategoryEnabled = enabled;
-            });
-        }
     }
 
-    private static void DrawFontConfiguration(float textPickerWidth, float numPickerWidth)
+    private static void DrawCategoryPicker(float textPickerWidth)
+    {
+        using (ImRaii.PushColor(ImGuiCol.Text, ImGui.GetColorU32(new Vector4(1, 1, 0, 1))))
+        {
+            ImGui.Text("Select Category: ");
+        }
+
+        ImGui.SameLine();
+        ImGui.SetNextItemWidth(textPickerWidth);
+        Artist.DrawSelectPicker("Category", CurrentCategory, Enum.GetValues<FlyTextCategory>().Cast<FlyTextCategory>().Where(category => category.IsCategory()).ToList(), category => { CurrentCategory = category; });
+    }
+
+    private static bool DrawcategoryEnabledCheckbox()
+    {
+        ImGui.SameLine();
+        Artist.Checkbox("Enabled", CurrentcategoryEnabled, enabled =>
+        {
+            CurrentcategoryEnabled = enabled;
+        });
+
+        return CurrentcategoryEnabled;
+    }
+
+    private static bool DrawcategoryConfiguration(float textPickerWidth)
+    {
+        DrawcategoryTitle();
+        DrawCategoryPicker(textPickerWidth);
+        return DrawcategoryEnabledCheckbox();
+    }
+
+    private static void DrawFontTitle()
     {
         using (Service.Fonts.Push(Defaults.DefaultFontName, 18f))
         {
             ImGui.Text("Font Configuration");
             ImGui.Spacing();
         }
+    }
 
+    private static void DrawFontPicker(float textPickerWidth)
+    {
+        using (ImRaii.PushColor(ImGuiCol.Text, ImGui.GetColorU32(new Vector4(1, 1, 0, 1))))
         {
-            using (ImRaii.PushColor(ImGuiCol.Text, ImGui.GetColorU32(new Vector4(1, 1, 0, 1))))
-            {
-                ImGui.Text("Select Font: ");
-            }
-
-            ImGui.SameLine();
-            ImGui.SetNextItemWidth(textPickerWidth);
-            Artist.DrawSelectPicker("Font", CurrentFont, [.. PluginConfiguration.Fonts.Keys], name =>
-            {
-                CurrentCategory.ForEach(kind => Service.Configuration.FlyTextKinds[kind].Font.Name = name);
-                CurrentFont = name;
-            });
-            ImGui.SameLine();
-            ImGui.SetNextItemWidth(numPickerWidth);
-            Artist.DrawSelectPicker("FontSize", CurrentFontSize, PluginConfiguration.Fonts[CurrentFont], size =>
-            {
-                CurrentCategory.ForEach(kind => Service.Configuration.FlyTextKinds[kind].Font.Size = size);
-                CurrentFontSize = size;
-            });
+            ImGui.Text("Select Font: ");
         }
 
+        ImGui.SameLine();
+        ImGui.SetNextItemWidth(textPickerWidth);
+        Artist.DrawSelectPicker("Font", CurrentFont, PluginConfiguration.Fonts.Keys.ToList(), name =>
+        {
+            CurrentFont = name;
+        });
+    }
+
+    private static void DrawFontSizePicker(float numPickerWidth)
+    {
+        ImGui.SameLine();
+        ImGui.SetNextItemWidth(numPickerWidth);
+        Artist.DrawSelectPicker("FontSize", CurrentFontSize, PluginConfiguration.Fonts[CurrentFont], size =>
+        {
+            CurrentFontSize = size;
+        });
+    }
+
+    private static void DrawFontColorPicker(float textPickerWidth)
+    {
         using (ImRaii.PushColor(ImGuiCol.Text, ImGui.GetColorU32(new Vector4(1, 1, 0, 1))))
         {
             ImGui.Text("Select Font Color: ");
@@ -192,10 +235,12 @@ public class CategoryTab : Tab
         ImGui.SetNextItemWidth(textPickerWidth);
         Artist.DrawColorPicker("Color##Font", CurrentFontColor, color =>
         {
-            CurrentCategory.ForEach(kind => Service.Configuration.FlyTextKinds[kind].Font.Color = color);
             CurrentFontColor = color;
         });
+    }
 
+    private static bool DrawFontOutlinePicker()
+    {
         using (ImRaii.PushColor(ImGuiCol.Text, ImGui.GetColorU32(new Vector4(1, 1, 0, 1))))
         {
             ImGui.Text("Select Font Outline: ");
@@ -204,40 +249,54 @@ public class CategoryTab : Tab
         ImGui.SameLine();
         Artist.Checkbox("Outline", CurrentOutlineEnabled, enabled =>
         {
-            CurrentCategory.ForEach(kind => Service.Configuration.FlyTextKinds[kind].Outline.Enabled = enabled);
             CurrentOutlineEnabled = enabled;
         });
 
-        if (CurrentOutlineEnabled)
+        return CurrentOutlineEnabled;
+    }
+
+    private static void DrawFontOutlineThicknessPicker(float numPickerWidth)
+    {
+        using (ImRaii.PushColor(ImGuiCol.Text, ImGui.GetColorU32(new Vector4(1, 1, 0, 1))))
         {
-            using (ImRaii.PushColor(ImGuiCol.Text, ImGui.GetColorU32(new Vector4(1, 1, 0, 1))))
-            {
-                ImGui.Text("Select Outline Thickness: ");
-            }
+            ImGui.Text("Select Outline Thickness: ");
+        }
 
-            ImGui.SameLine();
-            ImGui.SetNextItemWidth(numPickerWidth * 2);
-            var userInput = CurrentOutlineThickness;
-            if (ImGui.InputInt("##Outline Thickness", ref userInput, step: 1, step_fast: 2))
-            {
-                userInput = Math.Clamp(userInput, 1, 5);
+        ImGui.SameLine();
+        ImGui.SetNextItemWidth(numPickerWidth * 2);
+        var userInput = CurrentOutlineThickness;
+        if (ImGui.InputInt("##Outline Thickness", ref userInput, step: 1, step_fast: 2))
+        {
+            userInput = Math.Clamp(userInput, 1, 5);
+            CurrentOutlineThickness = userInput;
+        }
+    }
 
-                CurrentCategory.ForEach(kind => Service.Configuration.FlyTextKinds[kind].Outline.Size = userInput);
-                CurrentOutlineThickness = userInput;
-            }
+    private static void DrawFontOutlineColorPicker(float textPickerWidth)
+    {
+        using (ImRaii.PushColor(ImGuiCol.Text, ImGui.GetColorU32(new Vector4(1, 1, 0, 1))))
+        {
+            ImGui.Text("Select Outline Color: ");
+        }
 
-            using (ImRaii.PushColor(ImGuiCol.Text, ImGui.GetColorU32(new Vector4(1, 1, 0, 1))))
-            {
-                ImGui.Text("Select Outline Color: ");
-            }
+        ImGui.SameLine();
+        ImGui.SetNextItemWidth(textPickerWidth);
+        Artist.DrawColorPicker("Color##Outline", CurrentOutlineColor, color =>
+        {
+            CurrentOutlineColor = color;
+        });
+    }
 
-            ImGui.SameLine();
-            ImGui.SetNextItemWidth(textPickerWidth);
-            Artist.DrawColorPicker("Color##Outline", CurrentOutlineColor, color =>
-            {
-                CurrentCategory.ForEach(kind => Service.Configuration.FlyTextKinds[kind].Outline.Color = color);
-                CurrentOutlineColor = color;
-            });
+    private static void DrawFontConfiguration(float textPickerWidth, float numPickerWidth)
+    {
+        DrawFontTitle();
+        DrawFontPicker(textPickerWidth);
+        DrawFontSizePicker(numPickerWidth);
+        DrawFontColorPicker(textPickerWidth);
+        if (DrawFontOutlinePicker())
+        {
+            DrawFontOutlineThicknessPicker(numPickerWidth);
+            DrawFontOutlineColorPicker(textPickerWidth);
         }
     }
 }

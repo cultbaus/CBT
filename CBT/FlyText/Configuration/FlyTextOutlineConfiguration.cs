@@ -21,6 +21,17 @@ public class FlyTextOutlineConfiguration
     }
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="FlyTextOutlineConfiguration"/> class.
+    /// </summary>
+    /// <param name="toCopy">Values to copy.</param>
+    public FlyTextOutlineConfiguration(FlyTextOutlineConfiguration toCopy)
+    {
+        this.Enabled = toCopy.Enabled;
+        this.Size = toCopy.Size;
+        this.Color = toCopy.Color;
+    }
+
+    /// <summary>
     /// Gets or sets a value indicating whether the outline is enabled.
     /// </summary>
     public bool Enabled { get; set; }

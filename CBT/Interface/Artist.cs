@@ -2,8 +2,8 @@ namespace CBT.Interface;
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
+using CBT.FlyText.Configuration;
 using CBT.Interface.Tabs;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
@@ -36,7 +36,7 @@ public class Artist
     /// <param name="onClicked">What to do when clicked.</param>
     public static void SelectableTab(Tab tab, bool selected, Action<Tab> onClicked)
     {
-        if (ImGui.Selectable($"{tab.Name}##{tab.Kind}_WINDOW", selected))
+        if (ImGui.Selectable($"{tab.Name}##{tab.Kind}_TAB", selected))
         {
             onClicked(tab);
         }
@@ -56,6 +56,32 @@ public class Artist
     }
 
     /// <summary>
+    /// Draws a styled button.
+    /// </summary>
+    /// <param name="label">Text label.</param>
+    /// <param name="colors">A list of style vars and colors to push.</param>
+    /// <param name="onButtonPress">Action on push.</param>
+    public static void StyledButton(string label, List<(ImGuiCol Style, Vector4 Color)> colors, Action onButtonPress)
+    {
+        colors.ForEach(color =>
+        {
+            ImGui.PushStyleColor(color.Style, color.Color);
+        });
+
+        using (Service.Fonts.Push(Defaults.DefaultFontName, 24f))
+        {
+            DrawSeperator();
+
+            if (ImGui.Button(label))
+            {
+                onButtonPress();
+            }
+        }
+
+        ImGui.PopStyleColor(colors.Count);
+    }
+
+    /// <summary>
     /// Draws a child with a margin around the content area.
     /// </summary>
     /// <param name="childId">String ID for the child.</param>
@@ -69,7 +95,7 @@ public class Artist
             ImGui.SetCursorPos(new Vector2(margin * 2, margin));
 
             var regionSize = ImGui.GetContentRegionAvail() - new Vector2(2 * margin, 2 * margin);
-            using (ImRaii.Child(childId + "_CONTENT", regionSize, false, ImGuiWindowFlags.NoDecoration))
+            using (ImRaii.Child($"##{childId}##CONTENT", regionSize, false, ImGuiWindowFlags.NoDecoration))
             {
                 drawContent();
             }
@@ -86,7 +112,7 @@ public class Artist
     /// <param name="action">An action to take with kind T.</param>
     public static void DrawSelectPicker<T>(string label, T currentValue, List<T> values, Action<T> action)
     {
-        using var combo = ImRaii.Combo(string.Empty + $"##_{label}", currentValue?.ToString()!);
+        using var combo = ImRaii.Combo($"##{label}", currentValue?.ToString()!);
 
         if (!combo)
         {
@@ -101,7 +127,7 @@ public class Artist
 
                 if (ImGui.Selectable(el.ToString(), isSelected))
                 {
-                    currentValue = el;
+                    action(el);
                 }
 
                 if (isSelected)
@@ -110,8 +136,6 @@ public class Artist
                 }
             }
         });
-
-        action(currentValue);
     }
 
     /// <summary>
@@ -126,10 +150,39 @@ public class Artist
 
         if (ImGui.ColorEdit4(label, ref colorPicker))
         {
-            currentColor = colorPicker;
+            action(colorPicker);
         }
+    }
 
-        action(currentColor);
+    /// <summary>
+    /// Draws a separation.
+    /// </summary>
+    /// <param name="seperatorSize">Size in pixels to draw the space.</param>
+    public static void DrawSeperator(float seperatorSize = 14f)
+    {
+        using (Service.Fonts.Push(Defaults.DefaultFontName, seperatorSize))
+        {
+            ImGui.Spacing();
+            ImGui.Separator();
+        }
+    }
+
+    /// <summary>
+    /// Draws a Tab title.
+    /// </summary>
+    /// <param name="titleText">The text of the title.</param>
+    /// <param name="fontSize">The font size for the title.</param>
+    public static void DrawTabTitle(string titleText, float fontSize = 22f)
+    {
+        using (Service.Fonts.Push(Defaults.DefaultFontName, fontSize))
+        {
+            using (ImRaii.PushColor(ImGuiCol.Text, ImGui.GetColorU32(new Vector4(1, 1, 0, 1))))
+            {
+                ImGui.Text(titleText);
+
+                DrawSeperator();
+            }
+        }
     }
 
     /// <summary>

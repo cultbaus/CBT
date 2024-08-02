@@ -65,7 +65,7 @@ public abstract class Tab : IDisposable
     public abstract void Draw();
 
     /// <summary>
-    /// Draws the menu entry for a Tab.
+    /// What to do on Close event.
     /// </summary>
-    public abstract void Selectable();
+    public abstract void OnClose();
 }
