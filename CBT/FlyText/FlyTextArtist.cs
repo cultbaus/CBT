@@ -45,8 +45,7 @@ public class FlyTextArtist
                     DrawOutline(drawList, flyTextEvent);
                 }
 
-                // FIXME @cultbaus: Icons are incorrect, see FlyTextEvent.cs
-                // DrawIcon(drawList, flyTextEvent);
+                DrawIcon(drawList, flyTextEvent);
                 DrawText(drawList, flyTextEvent);
             }
         }

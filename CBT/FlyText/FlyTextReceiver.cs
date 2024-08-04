@@ -1,12 +1,15 @@
 namespace CBT.FlyText;
 
 using System;
+using System.Numerics;
 using CBT.FlyText.Types;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Hooking;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
+using FFXIVClientStructs.FFXIV.Client.Game.Object;
+using static FFXIVClientStructs.FFXIV.Client.Game.Character.ActionEffectHandler;
 using DalamudFlyText = Dalamud.Game.Gui.FlyText;
 
 /// <summary>
@@ -28,19 +31,6 @@ public unsafe partial class FlyTextReceiver : IDisposable
         this.addScreenLogHook.Enable();
     }
 
-    /// <summary>
-    /// Delegate function for the AddScreenLog event.
-    /// </summary>
-    /// <param name="target">Target for the incoming FlyText event.</param>
-    /// <param name="source">Source of the FlyText event.</param>
-    /// <param name="kind">Kind of the FlyText event.</param>
-    /// <param name="option">Option. Unused.</param>
-    /// <param name="actionKind">ActionKind of the FlyText event.</param>
-    /// <param name="actionID">ActionID of the FlyText event.</param>
-    /// <param name="val1">Val1 of the FlyText event.</param>
-    /// <param name="val2">Val2 of the FlyText event.</param>
-    /// <param name="val3">Val3 of the FlyText event.</param>
-    /// <param name="val4">Val4 of the FlyText event.</param>
     private delegate void AddScreenLogDelegate(
         Character* target,
         Character* source,
@@ -52,6 +42,14 @@ public unsafe partial class FlyTextReceiver : IDisposable
         int val2,
         int val3,
         int val4);
+
+    private delegate void ReceiveActionEffectDelegate(
+        uint casterEntityId,
+        Character* casterPtr,
+        Vector3* targetPos,
+        Header* header,
+        TargetEffects* effects,
+        GameObjectId* targetEntityIds);
 
     /// <inheritdoc/>
     public void Dispose()
@@ -76,12 +74,28 @@ public unsafe partial class FlyTextReceiver : IDisposable
     {
         try
         {
-            if (InvolvesMe(source, target))
+            var weActuallyCare = InvolvesMe(source, target) && Unfiltered(kind);
+
+            if (weActuallyCare)
             {
-                if (Unfiltered(kind))
+                var effects = this.GetEffects(target->GetActionEffectHandler());
+                var flyTextEvent = new FlyTextEvent(kind, effects, target, source, option, actionKind, actionID, val1, val2, val3, val4);
+
+                Service.Manager.Add(flyTextEvent);
+
+                var debugStr = string.Empty;
+
+                debugStr += $"Handled: {kind} ";
+                debugStr += $"for ability: {flyTextEvent.Name} ";
+
+                if (flyTextEvent.DamageKind != null)
                 {
-                    Service.Manager.Add(new FlyTextEvent(kind, target, source, option, actionKind, actionID, val1, val2, val3, val4));
+                    debugStr += $"with DamageKind: {flyTextEvent.DamageKind} ";
                 }
+
+                debugStr += $"with iconID: {flyTextEvent.IconID}";
+
+                Service.PluginLog.Info(debugStr);
             }
         }
         catch (Exception ex)
@@ -107,6 +121,23 @@ public unsafe partial class FlyTextReceiver : IDisposable
         Service.PluginLog.Debug($"FlyTextCreated event \"{kind}\" has been handled by CBT.");
 
         handled = true;
+    }
+
+    /// <summary>
+    /// There's an pointer to the action effect handler on the target that allows me to get at the action effects.
+    /// I can get the damage type from this, otherwise I need to share state between two delegates, and pointer arithmetic
+    /// seemed like the lesser of two evils.
+    /// </summary>
+    /// <param name="handler">Action Effect Handler associated with the target.</param>
+    /// <param name="effectEntryIndex">EffectEntry index. Maybe this changes someday.</param>
+    /// <returns>A copy of of all effects that an action had.</returns>
+    private Effect[] GetEffects(ActionEffectHandler* handler, int effectEntryIndex = 0)
+    {
+        var effectEntryPtr = (byte*)handler + (effectEntryIndex * 0x78);
+        var targetEffectsPtr = (TargetEffects*)(effectEntryPtr + 0x38);
+        var effectsSpan = targetEffectsPtr->Effects;
+
+        return effectsSpan.ToArray();
     }
 }
 

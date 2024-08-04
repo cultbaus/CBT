@@ -58,7 +58,7 @@ public static class FlyTextCategoryMethods
     /// <param name="value">FlyTextCategory to check.</param>
     /// <returns>True if the category is a group sub-type.</returns>
     public static bool IsGroup(this FlyTextCategory value)
-        => value == FlyTextCategory.Combat || value == FlyTextCategory.NonCombat;
+        => value == FlyTextCategory.Combat || value == FlyTextCategory.NonCombat || value == FlyTextCategory.DamageDealer;
 
     /// <summary>
     /// Determines if a FlyTextCategory is a Category sub-type.

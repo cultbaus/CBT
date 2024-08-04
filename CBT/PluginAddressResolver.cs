@@ -1,7 +1,6 @@
 namespace CBT;
 
 using System;
-
 using Dalamud.Game;
 
 /// <summary>
@@ -10,7 +9,7 @@ using Dalamud.Game;
 public class PluginAddressResolver : BaseAddressResolver
 {
     /// <summary>
-    /// Gets the adress of AddScreenLog.
+    /// Gets the address of AddScreenLog.
     /// </summary>
     public IntPtr AddScreenLog { get; private set; }
 
@@ -19,6 +18,6 @@ public class PluginAddressResolver : BaseAddressResolver
     {
         this.AddScreenLog = scanner.ScanText("E8 ?? ?? ?? ?? BF ?? ?? ?? ?? EB 39");
 
-        Service.PluginLog.Debug($"{nameof(this.AddScreenLog)} 0x{this.AddScreenLog:X}");
+        Service.PluginLog.Debug($"{nameof(this.AddScreenLog)}           0x{this.AddScreenLog:X}");
     }
 }

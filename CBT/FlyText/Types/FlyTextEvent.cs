@@ -1,11 +1,17 @@
 namespace CBT.FlyText.Types;
 
+using System;
+using System.Linq;
 using System.Numerics;
 using CBT.FlyText.Animations;
 using CBT.FlyText.Configuration;
+using CBT.Interface.Tabs;
+using Dalamud.Interface.Textures;
 using Dalamud.Interface.Textures.TextureWraps;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using ImGuiNET;
+using Lumina.Excel.GeneratedSheets;
+using static FFXIVClientStructs.FFXIV.Client.Game.Character.ActionEffectHandler;
 
 /// <summary>
 /// FlyTextEvent is a CBT FlyTextEvent wrapper over the in-game event.
@@ -15,9 +21,10 @@ public unsafe partial class FlyTextEvent
     /// <summary>
     /// Initializes a new instance of the <see cref="FlyTextEvent"/> class.
     /// </summary>
+    /// <param name="kind">Kind of the FlyText event.</param>
+    /// <param name="effects">An array of effects associated with this event.</param>
     /// <param name="target">Target for the incoming FlyText event.</param>
     /// <param name="source">Source of the FlyText event.</param>
-    /// <param name="kind">Kind of the FlyText event.</param>
     /// <param name="option">Option. Unused.</param>
     /// <param name="actionKind">ActionKind of the FlyText event.</param>
     /// <param name="actionID">ActionID of the FlyText event.</param>
@@ -25,10 +32,11 @@ public unsafe partial class FlyTextEvent
     /// <param name="val2">Val2 of the FlyText event.</param>
     /// <param name="val3">Val3 of the FlyText event.</param>
     /// <param name="val4">Val4 of the FlyText event.</param>
-    public FlyTextEvent(FlyTextKind kind, Character* target, Character* source, int option, int actionKind, int actionID, int val1, int val2, int val3, int val4)
+    public FlyTextEvent(FlyTextKind kind, Effect[] effects, Character* target, Character* source, int option, int actionKind, int actionID, int val1, int val2, int val3, int val4)
     {
         FlyTextConfiguration config = Service.Configuration.FlyTextKinds[kind];
 
+        this.Kind = kind;
         this.Config = new FlyTextConfiguration(
             config.Font.Name,
             config.Font.Size,
@@ -41,6 +49,7 @@ public unsafe partial class FlyTextEvent
             config.Animation.Duration,
             config.Animation.Speed);
         this.Animation = FlyTextAnimation.Create(kind);
+        this.Effects = effects;
         this.Target = target;
         this.Source = source;
         this.Option = option;
@@ -86,9 +95,41 @@ public unsafe partial class FlyTextEvent
     /// Gets the Dalamud Texture Wrap for the ActionID.
     /// </summary>
     public IDalamudTextureWrap? Icon
+        => Service.TextureProvider.GetFromGameIcon(new GameIconLookup((uint)this.IconID, false, true)).GetWrapOrDefault();
 
-        // FIXME @cultbaus: Icons are incorrect, this is getting ~some~ texture but it's not ~the right~ texture.
-        => Service.TextureProvider.GetFromGameIcon(this.ActionID).GetWrapOrDefault();
+    /// <summary>
+    /// Gets the IconID for the provided Action.
+    /// </summary>
+    public ushort IconID
+        => this.Kind.InCategory(FlyTextCategory.Buff) || this.Kind.InCategory(FlyTextCategory.Debuff)
+            ? Service.Ability.GetIconForStatus(this.Value1)
+            : Service.Ability.GetIconForAction(this.ActionID);
+
+    /// <summary>
+    /// Gets the Name for the provided Action.
+    /// </summary>
+    public string Name
+        => this.Kind.InCategory(FlyTextCategory.Buff) || this.Kind.InCategory(FlyTextCategory.Debuff)
+            ? Service.Ability.GetNameForStatus(this.Value1)
+            : Service.Ability.GetNameForAction(this.ActionID);
+
+    /// <summary>
+    /// Gets the damage type of an action.
+    /// </summary>
+    public DamageKind? DamageKind
+        => this.Kind.InGroup(FlyTextCategory.DamageDealer)
+            ? (DamageKind)(this.Effects
+                .ToList()
+                .Where(effect => (ActionEventKind)effect.Type == ActionEventKind.Damage)
+                .ToList()
+                .FirstOrDefault(default(Effect))
+            .Param1 & 0xF)
+            : null;
+
+    /// <summary>
+    /// Gets the fly text kind.
+    /// </summary>
+    public FlyTextKind Kind { get; private set; }
 
     /// <summary>
     /// Gets or sets the FlyTextConfiguration.
@@ -99,6 +140,11 @@ public unsafe partial class FlyTextEvent
     /// Gets or sets the FlyTextAnimation.
     /// </summary>
     public FlyTextAnimation Animation { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Effects associated with the event.
+    /// </summary>
+    public Effect[] Effects { get; set; }
 
     /// <summary>
     /// Gets the Target from the original event.

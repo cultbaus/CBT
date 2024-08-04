@@ -20,17 +20,22 @@ public enum FlyTextCategory
     /// </summary>
     NonCombat = 1 << 1,
 
+    /// <summary>
+    /// Combat abilities which explicitly deal damage of a kind.
+    /// </summary>
+    DamageDealer = 1 << 2,
+
     // Categories
 
     /// <summary>
     /// AutoAttack category. Member of the Combat group.
     /// </summary>
-    AutoAttack = 1 << 10 | Combat,
+    AutoAttack = 1 << 10 | Combat | DamageDealer,
 
     /// <summary>
     /// AbilityDamage category. Member of the Combat group.
     /// </summary>
-    AbilityDamage = 1 << 11 | Combat,
+    AbilityDamage = 1 << 11 | Combat | DamageDealer,
 
     /// <summary>
     /// AbilityHealing category. Member of the Combat group.

@@ -61,6 +61,7 @@ public sealed partial class Plugin : IDalamudPlugin
         Service.Manager = new PluginManager();
         Service.Manifest = new ManifestManager(assemblyLocation + Path.GetFileNameWithoutExtension(Service.Interface.AssemblyLocation.FullName) + ".json");
         Service.Receiver = new FlyTextReceiver(gameInteropProvider);
+        Service.Ability = new AbilityManager();
     }
 
     /// <inheritdoc/>

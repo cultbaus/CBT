@@ -43,22 +43,33 @@ public class Service
     public static ManifestManager Manifest { get; set; } = null!;
 
     /// <summary>
+    /// Gets or sets the CBT Ability manager.
+    /// </summary>
+    public static AbilityManager Ability { get; set; } = null!;
+
+    /// <summary>
     /// Gets the Dalamud ClientState.
     /// </summary>
     [PluginService]
     public static IClientState ClientState { get; private set; } = null!;
 
     /// <summary>
-    /// Gets the Dalamud ClientState.
+    /// Gets the Dalamud CommandManager.
     /// </summary>
     [PluginService]
     public static ICommandManager CommandManager { get; private set; } = null!;
 
     /// <summary>
-    /// Gets the Dalamud ClientState.
+    /// Gets the Dalamud Plugin Interface.
     /// </summary>
     [PluginService]
     public static IDalamudPluginInterface Interface { get; private set; } = null!;
+
+    /// <summary>
+    /// Gets the Dalamud Data Manager.
+    /// </summary>
+    [PluginService]
+    public static IDataManager DataManager { get; private set; } = null!;
 
     /// <summary>
     /// Gets the Dalamud FlyTextGui.
@@ -77,6 +88,12 @@ public class Service
     /// </summary>
     [PluginService]
     public static IGameGui GameGui { get; private set; } = null!;
+
+    /// <summary>
+    /// Gets the Dalamud ObjectTable.
+    /// </summary>
+    [PluginService]
+    public static IObjectTable ObjectTable { get; private set; } = null!;
 
     /// <summary>
     /// Gets the Dalamud PluginLog.
