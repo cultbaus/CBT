@@ -1,16 +1,14 @@
 namespace CBT.FlyText.Types;
 
-using System;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Numerics;
 using CBT.FlyText.Animations;
 using CBT.FlyText.Configuration;
-using CBT.Interface.Tabs;
 using Dalamud.Interface.Textures;
 using Dalamud.Interface.Textures.TextureWraps;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using ImGuiNET;
-using Lumina.Excel.GeneratedSheets;
 using static FFXIVClientStructs.FFXIV.Client.Game.Character.ActionEffectHandler;
 
 /// <summary>
@@ -34,21 +32,9 @@ public unsafe partial class FlyTextEvent
     /// <param name="val4">Val4 of the FlyText event.</param>
     public FlyTextEvent(FlyTextKind kind, Effect[] effects, Character* target, Character* source, int option, int actionKind, int actionID, int val1, int val2, int val3, int val4)
     {
-        FlyTextConfiguration config = Service.Configuration.FlyTextKinds[kind];
-
-        this.Kind = kind;
-        this.Config = new FlyTextConfiguration(
-            config.Font.Name,
-            config.Font.Size,
-            config.Font.Color,
-            config.Font.Format,
-            config.Outline.Enabled,
-            config.Outline.Size,
-            config.Outline.Color,
-            config.Animation.Kind,
-            config.Animation.Duration,
-            config.Animation.Speed);
+        this.Config = new FlyTextConfiguration(kind);
         this.Animation = FlyTextAnimation.Create(kind);
+        this.Kind = kind;
         this.Effects = effects;
         this.Target = target;
         this.Source = source;
@@ -89,7 +75,8 @@ public unsafe partial class FlyTextEvent
     /// Gets the string representation of the FlyTextEvent Value1.
     /// </summary>
     public string Text
-        => this.Config.Font.Format ? this.Value1.ToString("N0") : this.Value1.ToString();
+        => this.Kind.IsStatus() ?
+            this.Format(this.Name) : this.Format(this.Value1.ToString("N0"));
 
     /// <summary>
     /// Gets the Dalamud Texture Wrap for the ActionID.
@@ -101,7 +88,7 @@ public unsafe partial class FlyTextEvent
     /// Gets the IconID for the provided Action.
     /// </summary>
     public ushort IconID
-        => this.Kind.InCategory(FlyTextCategory.Buff) || this.Kind.InCategory(FlyTextCategory.Debuff)
+        => this.Kind.IsStatus()
             ? Service.Ability.GetIconForStatus(this.Value1)
             : Service.Ability.GetIconForAction(this.ActionID);
 
@@ -109,7 +96,7 @@ public unsafe partial class FlyTextEvent
     /// Gets the Name for the provided Action.
     /// </summary>
     public string Name
-        => this.Kind.InCategory(FlyTextCategory.Buff) || this.Kind.InCategory(FlyTextCategory.Debuff)
+        => this.Kind.IsStatus()
             ? Service.Ability.GetNameForStatus(this.Value1)
             : Service.Ability.GetNameForAction(this.ActionID);
 
@@ -117,11 +104,10 @@ public unsafe partial class FlyTextEvent
     /// Gets the damage type of an action.
     /// </summary>
     public DamageKind? DamageKind
-        => this.Kind.InGroup(FlyTextCategory.DamageDealer)
+        => this.Kind.InCategory(FlyTextCategory.AbilityDamage)
             ? (DamageKind)(this.Effects
                 .ToList()
                 .Where(effect => (ActionEventKind)effect.Type == ActionEventKind.Damage)
-                .ToList()
                 .FirstOrDefault(default(Effect))
             .Param1 & 0xF)
             : null;
@@ -199,5 +185,27 @@ public unsafe partial class FlyTextEvent
     {
         this.Animation.TimeElapsed += timeElapsed;
         this.Animation.Apply(this, timeElapsed);
+    }
+
+    private string Format(string originalValue)
+    {
+        var outMessage = originalValue;
+
+        if (!this.Config.Message.Format)
+        {
+            return outMessage;
+        }
+
+        if (this.Config.Message.Prefix != string.Empty)
+        {
+            outMessage = $"{this.Config.Message.Prefix} {outMessage}";
+        }
+
+        if (this.Config.Message.Suffix != string.Empty)
+        {
+            outMessage = $"{outMessage} {this.Config.Message.Prefix}";
+        }
+
+        return outMessage;
     }
 }

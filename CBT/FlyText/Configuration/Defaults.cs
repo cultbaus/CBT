@@ -6,7 +6,7 @@ using CBT.FlyText.Animations;
 /// <summary>
 /// Defaults for configuration settings.
 /// </summary>
-public static class Defaults
+public record Defaults
 {
     /// <summary>
     /// Default font.
@@ -14,9 +14,9 @@ public static class Defaults
     public const string DefaultFontName = "Expressway";
 
     /// <summary>
-    /// Default font format options.
+    /// Default message format option.
     /// </summary>
-    public const bool DefaultFontFormat = true;
+    public const bool DefaultMessageFormat = true;
 
     /// <summary>
     /// Default font size.
@@ -27,6 +27,11 @@ public static class Defaults
     /// Default outline enabled.
     /// </summary>
     public const bool DefaultOutlineEnabled = true;
+
+    /// <summary>
+    /// Default outline enabled.
+    /// </summary>
+    public const bool DefaultIconEnabled = true;
 
     /// <summary>
     /// Default outline thickness.
@@ -49,6 +54,11 @@ public static class Defaults
     public const float DefaultAnimationSpeed = 120f;
 
     /// <summary>
+    /// Default icon zoom.
+    /// </summary>
+    public const float DefaultIconZoom = 0f;
+
+    /// <summary>
     /// Default font color.
     /// </summary>
     public static readonly Vector4 DefaultFontColor = Vector4.One;
@@ -57,4 +67,9 @@ public static class Defaults
     /// Default outline color.
     /// </summary>
     public static readonly Vector4 DefaultOutlineColor = new Vector4(0, 0, 0, 1);
+
+    /// <summary>
+    /// Default icon size.
+    /// </summary>
+    public static readonly Vector2 DefaultIconSize = new Vector2(DefaultFontSize, DefaultFontSize);
 }

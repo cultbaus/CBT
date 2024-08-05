@@ -58,7 +58,7 @@ public static class FlyTextCategoryMethods
     /// <param name="value">FlyTextCategory to check.</param>
     /// <returns>True if the category is a group sub-type.</returns>
     public static bool IsGroup(this FlyTextCategory value)
-        => value == FlyTextCategory.Combat || value == FlyTextCategory.NonCombat || value == FlyTextCategory.DamageDealer;
+        => value == FlyTextCategory.Combat || value == FlyTextCategory.NonCombat;
 
     /// <summary>
     /// Determines if a FlyTextCategory is a Category sub-type.
@@ -80,28 +80,5 @@ public static class FlyTextCategoryMethods
            .Where(kind => IsCategory(category) ? kind.InCategory(category) : kind.InGroup(category))
            .ToList()
            .ForEach(action);
-    }
-
-    /// <summary>
-    /// Gets the pretty print name for a category.
-    /// </summary>
-    /// <param name="category">FlyTextCategory.</param>
-    /// <returns>Pretty printed name.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">Throws if argument is out of range.</exception>
-    public static string Pretty(this FlyTextCategory category)
-    {
-        return category switch
-        {
-            FlyTextCategory.Combat => "Combat",
-            FlyTextCategory.NonCombat => "NonCombat",
-            FlyTextCategory.AutoAttack => "Auto Attacks",
-            FlyTextCategory.AbilityDamage => "Abilities",
-            FlyTextCategory.AbilityHealing => "Heals",
-            FlyTextCategory.Miss => "Misses",
-            FlyTextCategory.Buff => "Buffs",
-            FlyTextCategory.Debuff => "Debuffs",
-            FlyTextCategory.CC => "Crowd Control",
-            _ => throw new ArgumentOutOfRangeException(nameof(category), category, null),
-        };
     }
 }

@@ -49,4 +49,20 @@ public static class FlyTextKindMethods
         => group.IsGroup()
             ? GetCategory(kind).HasFlag(group)
             : throw new ArgumentOutOfRangeException(nameof(group), group, null);
+
+    /// <summary>
+    /// Checks if a kind is a status.
+    /// </summary>
+    /// <param name="kind">FlyTextKind.</param>
+    /// <returns>Bool indicating if the kind is a status effect.</returns>
+    public static bool IsStatus(this FlyTextKind kind)
+        => kind.InCategory(FlyTextCategory.Buff) || kind.InCategory(FlyTextCategory.Debuff);
+
+    /// <summary>
+    /// Checks if a kind is a spell.
+    /// </summary>
+    /// <param name="kind">FlyTextKind.</param>
+    /// <returns>Bool indicating if the kind is a spell/ability.</returns>
+    public static bool IsSpell(this FlyTextKind kind)
+        => !IsStatus(kind);
 }
