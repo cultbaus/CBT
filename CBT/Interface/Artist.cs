@@ -21,7 +21,7 @@ public class Artist
     private const float LongElementWidth = 250f;
     private const float ShortElementWidth = 50f;
 
-    /// <summaryNone
+    /// <summary>
     /// Draws an ImGUI Checkbox.
     /// </summary>
     /// <param name="label">Checkbox label.</param>
@@ -117,6 +117,7 @@ public class Artist
     /// <param name="size">Size of the content area.</param>
     /// <param name="margin">Margin.</param>
     /// <param name="drawContent">Content action.</param>
+    /// <param name="flags">ImGUI Window Flags.</param>
     public static void DrawChildWithMargin(string childId, Vector2 size, float margin, Action drawContent, ImGuiWindowFlags flags)
     {
         using (ImRaii.Child(childId, size, false))

@@ -4,8 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using CBT.FlyText.Configuration;
+using CBT.Helpers;
 using CBT.Types;
+using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
 
@@ -14,6 +15,14 @@ using ImGuiNET;
 /// </summary>
 public class FlyTextArtist
 {
+    private static QuadTree quadTree;
+
+    static FlyTextArtist()
+    {
+        var size = ImGuiHelpers.MainViewport.Size;
+        quadTree = new QuadTree(0, new Rectangle(0, 0, size.X, size.Y));
+    }
+
     /// <summary>
     /// Draws events to the CBT canvas.
     /// </summary>
@@ -21,42 +30,54 @@ public class FlyTextArtist
     /// <param name="flyTextEvents">Events to draw to the canvas.</param>
     public static void Draw(ImDrawListPtr drawList, List<FlyTextEvent> flyTextEvents)
     {
-        var indexedEvents = flyTextEvents
-            .Select((e, i) => new { Event = e, Index = i })
-            .ToList();
+        quadTree.Clear();
 
-        indexedEvents
-            .ForEach(a =>
+        flyTextEvents.ForEach(quadTree.Insert);
+        flyTextEvents.ForEach(e =>
+        {
+            var potentialCollisions = quadTree.Retrieve([], e);
+            potentialCollisions.ForEach(p =>
             {
-                indexedEvents.Skip(a.Index + 1)
-                    .ToList()
-                    .ForEach(b => AdjustOverlap(a.Event, b.Event));
-
-                DrawFlyText(drawList, a.Event);
+                if (p != e)
+                {
+                    AdjustOverlap(e, p);
+                }
             });
+        });
+        flyTextEvents.ForEach(e => DrawFlyTextWithIconAndOutlines(drawList, e));
     }
 
     private static Vector2 Center(FlyTextEvent flyTextEvent)
-            => new(flyTextEvent.Position.X - (flyTextEvent.Size.X / 2), flyTextEvent.Position.Y - (flyTextEvent.Size.Y / 2));
-
-    private static float VerticalDelta(FlyTextEvent a, FlyTextEvent b)
-        => Math.Abs(a.Position.Y - b.Position.Y);
+    {
+        return new(flyTextEvent.Position.X - (flyTextEvent.Size.X / 2), flyTextEvent.Position.Y - (flyTextEvent.Size.Y / 2));
+    }
 
     private static bool IsOverlapping(FlyTextEvent a, FlyTextEvent b)
-        => !(a.Position.X + a.Size.X < b.Position.X
-                || a.Position.X > b.Position.X + b.Size.X
-                || a.Position.Y + a.Size.Y < b.Position.Y
-                || a.Position.Y > b.Position.Y + b.Size.Y);
+    {
+        var aRect = new Rectangle(a.Position.X, a.Position.Y, a.Size.X, a.Size.Y);
+        var bRect = new Rectangle(b.Position.X, b.Position.Y, b.Size.X, b.Size.Y);
+
+        return aRect.Intersects(bRect);
+    }
+
+    private static float GetOverlap(FlyTextEvent a, FlyTextEvent b)
+    {
+        var aBottom = a.Position.Y + a.Size.Y;
+        var bBottom = b.Position.Y + b.Size.Y;
+
+        return Math.Max(0, Math.Min(aBottom, bBottom) - Math.Max(a.Position.Y, b.Position.Y));
+    }
 
     private static void AdjustOverlap(FlyTextEvent a, FlyTextEvent b)
     {
         if (IsOverlapping(a, b))
         {
-            a.Animation.Offset = a.Animation.Offset with { Y = a.Animation.Offset.Y + (b.Size.Y - VerticalDelta(a, b)) };
+            var toAdjust = a.Animation.TimeElapsed < b.Animation.TimeElapsed ? a : b;
+            toAdjust.Animation.Offset = new Vector2(toAdjust.Animation.Offset.X, toAdjust.Animation.Offset.Y + GetOverlap(a, b));
         }
     }
 
-    private static void DrawFlyText(ImDrawListPtr drawList, FlyTextEvent flyTextEvent)
+    private static void DrawFlyTextWithIconAndOutlines(ImDrawListPtr drawList, FlyTextEvent flyTextEvent)
     {
         using (ImRaii.PushStyle(ImGuiStyleVar.Alpha, flyTextEvent.Animation.Alpha))
         {

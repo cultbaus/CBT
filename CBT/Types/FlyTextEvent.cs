@@ -1,5 +1,6 @@
 namespace CBT.Types;
 
+using System;
 using System.Linq;
 using System.Numerics;
 using CBT.FlyText.Animations;
@@ -48,7 +49,24 @@ public unsafe partial class FlyTextEvent(FlyTextKind kind, Effect[] effects, Cha
     /// Gets the size of the FlyTextEvent rectangle.
     /// </summary>
     public Vector2 Size
-        => ImGui.CalcTextSize(this.Text); // TODO @cultbaus: This should calculate size including the icon.
+    {
+        // FIXME @cultbaus: This needs to get the font size to correctly calculate the size of the text.
+        // I don't know the performance implications of doing it this way.
+        get
+        {
+            var fontConfig = Service.Configuration.FlyTextKinds[this.Kind].Font;
+            using (Service.Fonts.Push(fontConfig.Name, fontConfig.Size))
+            {
+                var textSize = ImGui.CalcTextSize(this.Text);
+                var iconSize = this.Icon?.Size ?? Vector2.Zero;
+
+                var totalWidth = Math.Max(textSize.X, iconSize.X + textSize.X);
+                var totalHeight = Math.Max(textSize.Y, iconSize.Y);
+
+                return new Vector2(totalWidth, totalHeight);
+            }
+        }
+    }
 
     /// <summary>
     /// Gets the string representation of the FlyTextEvent Value1.
@@ -166,6 +184,7 @@ public unsafe partial class FlyTextEvent(FlyTextKind kind, Effect[] effects, Cha
         this.Animation.Apply(this, timeElapsed);
     }
 
+    // TODO @cultbaus: I want to use string formatting and text tags instead of this, but for now this can be a placeholder.
     private string Format(string originalValue)
     {
         var outMessage = originalValue;
