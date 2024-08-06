@@ -6,23 +6,14 @@ using System.Linq;
 using System.Numerics;
 using CBT.Helpers;
 using CBT.Types;
-using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
 
 /// <summary>
 /// FlyTextArtist draws FlyText to the main CBT Canvas.
 /// </summary>
-public class FlyTextArtist
+public unsafe class FlyTextArtist
 {
-    private static QuadTree quadTree;
-
-    static FlyTextArtist()
-    {
-        var size = ImGuiHelpers.MainViewport.Size;
-        quadTree = new QuadTree(0, new Rectangle(0, 0, size.X, size.Y));
-    }
-
     /// <summary>
     /// Draws events to the CBT canvas.
     /// </summary>
@@ -30,12 +21,18 @@ public class FlyTextArtist
     /// <param name="flyTextEvents">Events to draw to the canvas.</param>
     public static void Draw(ImDrawListPtr drawList, List<FlyTextEvent> flyTextEvents)
     {
-        quadTree.Clear();
+        QuadTreeManager.Clear();
 
-        flyTextEvents.ForEach(quadTree.Insert);
         flyTextEvents.ForEach(e =>
         {
-            var potentialCollisions = quadTree.Retrieve([], e);
+            QuadTree qt = QuadTreeManager.GetQuadTree(e.Target->GetGameObjectId().ObjectId);
+            qt.Insert(e);
+        });
+        flyTextEvents.ForEach(e =>
+        {
+            QuadTree qt = QuadTreeManager.GetQuadTree(e.Target->GetGameObjectId().ObjectId);
+
+            var potentialCollisions = qt.Retrieve([], e);
             potentialCollisions.ForEach(p =>
             {
                 if (p != e)

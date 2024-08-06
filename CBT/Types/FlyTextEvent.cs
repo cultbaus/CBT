@@ -54,13 +54,18 @@ public unsafe partial class FlyTextEvent(FlyTextKind kind, Effect[] effects, Cha
         // I don't know the performance implications of doing it this way.
         get
         {
-            var fontConfig = Service.Configuration.FlyTextKinds[this.Kind].Font;
-            using (Service.Fonts.Push(fontConfig.Name, fontConfig.Size))
+            using (Service.Fonts.Push(this.Config.Font.Name, this.Config.Font.Size))
             {
                 var textSize = ImGui.CalcTextSize(this.Text);
-                var iconSize = this.Icon?.Size ?? Vector2.Zero;
 
-                var totalWidth = Math.Max(textSize.X, iconSize.X + textSize.X);
+                if (!this.Config.Icon.Enabled)
+                {
+                    return textSize;
+                }
+
+                var iconSize = this.Config.Icon.Enabled ? this.Config.Icon.Size : Vector2.Zero;
+
+                var totalWidth = iconSize.X + textSize.X + this.Config.Icon.Offset.X;
                 var totalHeight = Math.Max(textSize.Y, iconSize.Y);
 
                 return new Vector2(totalWidth, totalHeight);
