@@ -1,14 +1,12 @@
 namespace CBT.FlyText;
 
 using System;
-using System.Numerics;
-using CBT.FlyText.Types;
+using CBT.Types;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Hooking;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
-using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using static FFXIVClientStructs.FFXIV.Client.Game.Character.ActionEffectHandler;
 using DalamudFlyText = Dalamud.Game.Gui.FlyText;
 
@@ -43,14 +41,6 @@ public unsafe partial class FlyTextReceiver : IDisposable
         int val3,
         int val4);
 
-    private delegate void ReceiveActionEffectDelegate(
-        uint casterEntityId,
-        Character* casterPtr,
-        Vector3* targetPos,
-        Header* header,
-        TargetEffects* effects,
-        GameObjectId* targetEntityIds);
-
     /// <inheritdoc/>
     public void Dispose()
     {
@@ -78,24 +68,10 @@ public unsafe partial class FlyTextReceiver : IDisposable
 
             if (weActuallyCare)
             {
-                var effects = this.GetEffects(target->GetActionEffectHandler());
+                var effects = GetEffects(target->GetActionEffectHandler());
                 var flyTextEvent = new FlyTextEvent(kind, effects, target, source, option, actionKind, actionID, val1, val2, val3, val4);
 
                 Service.Manager.Add(flyTextEvent);
-
-                var debugStr = string.Empty;
-
-                debugStr += $"Handled: {kind} ";
-                debugStr += $"for ability: {flyTextEvent.Name} ";
-
-                if (flyTextEvent.DamageKind != null)
-                {
-                    debugStr += $"with DamageKind: {flyTextEvent.DamageKind} ";
-                }
-
-                debugStr += $"with iconID: {flyTextEvent.IconID}";
-
-                Service.PluginLog.Info(debugStr);
             }
         }
         catch (Exception ex)
@@ -121,23 +97,6 @@ public unsafe partial class FlyTextReceiver : IDisposable
         Service.PluginLog.Debug($"FlyTextCreated event \"{kind}\" has been handled by CBT.");
 
         handled = true;
-    }
-
-    /// <summary>
-    /// There's an pointer to the action effect handler on the target that allows me to get at the action effects.
-    /// I can get the damage type from this, otherwise I need to share state between two delegates, and pointer arithmetic
-    /// seemed like the lesser of two evils.
-    /// </summary>
-    /// <param name="handler">Action Effect Handler associated with the target.</param>
-    /// <param name="effectEntryIndex">EffectEntry index. Maybe this changes someday.</param>
-    /// <returns>A copy of of all effects that an action had.</returns>
-    private Effect[] GetEffects(ActionEffectHandler* handler, int effectEntryIndex = 0)
-    {
-        var effectEntryPtr = (byte*)handler + (effectEntryIndex * 0x78);
-        var targetEffectsPtr = (TargetEffects*)(effectEntryPtr + 0x38);
-        var effectsSpan = targetEffectsPtr->Effects;
-
-        return effectsSpan.ToArray();
     }
 }
 
@@ -176,4 +135,21 @@ public unsafe partial class FlyTextReceiver
     /// <returns>True if the event is enabled.</returns>
     protected static bool Unfiltered(FlyTextKind kind)
         => Service.Configuration.FlyTextKinds[kind].Enabled;
+
+    /// <summary>
+    /// There's a pointer to the action effect handler on the target that allows me to get at the action effects.
+    /// I can get the damage type from this, otherwise I need to share state between two delegates, and pointer arithmetic
+    /// seemed like the lesser of two evils.
+    /// </summary>
+    /// <param name="handler">Action Effect Handler associated with the target.</param>
+    /// <param name="effectEntryIndex">EffectEntry index. Maybe this changes someday.</param>
+    /// <returns>A copy of of all effects that an action had.</returns>
+    protected static Effect[] GetEffects(ActionEffectHandler* handler, int effectEntryIndex = 0)
+    {
+        var effectEntryPtr = (byte*)handler + (effectEntryIndex * 0x78);
+        var targetEffectsPtr = (TargetEffects*)(effectEntryPtr + 0x38);
+        var effectsSpan = targetEffectsPtr->Effects;
+
+        return effectsSpan.ToArray();
+    }
 }

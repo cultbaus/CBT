@@ -1,7 +1,6 @@
-namespace CBT.FlyText.Types;
+namespace CBT.Types;
 
 using System.Linq;
-using System.Net.NetworkInformation;
 using System.Numerics;
 using CBT.FlyText.Animations;
 using CBT.FlyText.Configuration;
@@ -12,41 +11,21 @@ using ImGuiNET;
 using static FFXIVClientStructs.FFXIV.Client.Game.Character.ActionEffectHandler;
 
 /// <summary>
-/// FlyTextEvent is a CBT FlyTextEvent wrapper over the in-game event.
+/// Initializes a new instance of the <see cref="FlyTextEvent"/> class.
+/// <param name="kind">Kind of the FlyText event.</param>
+/// <param name="effects">An array of effects associated with this event.</param>
+/// <param name="target">Target for the incoming FlyText event.</param>
+/// <param name="source">Source of the FlyText event.</param>
+/// <param name="option">Option. Unused.</param>
+/// <param name="actionKind">ActionKind of the FlyText event.</param>
+/// <param name="actionID">ActionID of the FlyText event.</param>
+/// <param name="val1">Val1 of the FlyText event.</param>
+/// <param name="val2">Val2 of the FlyText event.</param>
+/// <param name="val3">Val3 of the FlyText event.</param>
+/// <param name="val4">Val4 of the FlyText event.</param>
 /// </summary>
-public unsafe partial class FlyTextEvent
+public unsafe partial class FlyTextEvent(FlyTextKind kind, Effect[] effects, Character* target, Character* source, int option, int actionKind, int actionID, int val1, int val2, int val3, int val4)
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="FlyTextEvent"/> class.
-    /// </summary>
-    /// <param name="kind">Kind of the FlyText event.</param>
-    /// <param name="effects">An array of effects associated with this event.</param>
-    /// <param name="target">Target for the incoming FlyText event.</param>
-    /// <param name="source">Source of the FlyText event.</param>
-    /// <param name="option">Option. Unused.</param>
-    /// <param name="actionKind">ActionKind of the FlyText event.</param>
-    /// <param name="actionID">ActionID of the FlyText event.</param>
-    /// <param name="val1">Val1 of the FlyText event.</param>
-    /// <param name="val2">Val2 of the FlyText event.</param>
-    /// <param name="val3">Val3 of the FlyText event.</param>
-    /// <param name="val4">Val4 of the FlyText event.</param>
-    public FlyTextEvent(FlyTextKind kind, Effect[] effects, Character* target, Character* source, int option, int actionKind, int actionID, int val1, int val2, int val3, int val4)
-    {
-        this.Config = new FlyTextConfiguration(kind);
-        this.Animation = FlyTextAnimation.Create(kind);
-        this.Kind = kind;
-        this.Effects = effects;
-        this.Target = target;
-        this.Source = source;
-        this.Option = option;
-        this.ActionKind = actionKind;
-        this.ActionID = actionID;
-        this.Value1 = val1;
-        this.Value2 = val2;
-        this.Value3 = val3;
-        this.Value4 = val4;
-    }
-
     /// <summary>
     /// gets a value indicating whether an event is expired.
     /// </summary>
@@ -69,7 +48,7 @@ public unsafe partial class FlyTextEvent
     /// Gets the size of the FlyTextEvent rectangle.
     /// </summary>
     public Vector2 Size
-        => ImGui.CalcTextSize(this.Text);
+        => ImGui.CalcTextSize(this.Text); // TODO @cultbaus: This should calculate size including the icon.
 
     /// <summary>
     /// Gets the string representation of the FlyTextEvent Value1.
@@ -115,67 +94,67 @@ public unsafe partial class FlyTextEvent
     /// <summary>
     /// Gets the fly text kind.
     /// </summary>
-    public FlyTextKind Kind { get; private set; }
+    public FlyTextKind Kind { get; private set; } = kind;
 
     /// <summary>
     /// Gets or sets the FlyTextConfiguration.
     /// </summary>
-    public FlyTextConfiguration Config { get; set; }
+    public FlyTextConfiguration Config { get; set; } = new FlyTextConfiguration(kind);
 
     /// <summary>
     /// Gets or sets the FlyTextAnimation.
     /// </summary>
-    public FlyTextAnimation Animation { get; set; }
+    public FlyTextAnimation Animation { get; set; } = FlyTextAnimation.Create(kind);
 
     /// <summary>
     /// Gets or sets the Effects associated with the event.
     /// </summary>
-    public Effect[] Effects { get; set; }
+    public Effect[] Effects { get; set; } = effects;
 
     /// <summary>
     /// Gets the Target from the original event.
     /// </summary>
-    public Character* Target { get; }
+    public Character* Target { get; } = target;
 
     /// <summary>
     /// Gets the Source from the original event.
     /// </summary>
-    public Character* Source { get; }
+    public Character* Source { get; } = source;
 
     /// <summary>
     /// Gets the Option from the original event.
     /// </summary>
-    public int Option { get; }
+    public int Option { get; } = option;
 
     /// <summary>
     /// Gets the ActionKind from the original event.
     /// </summary>
-    public int ActionKind { get; }
+    public int ActionKind { get; } = actionKind;
 
     /// <summary>
     /// Gets the ActionID from the original event.
     /// </summary>
-    public int ActionID { get; }
+    public int ActionID { get; } = actionID;
 
     /// <summary>
     /// Gets the Value1 from the original event.
     /// </summary>
-    public int Value1 { get; }
+    public int Value1 { get; } = val1;
 
     /// <summary>
     /// Gets the Value2 from the original event.
     /// </summary>
-    public int Value2 { get; }
+    public int Value2 { get; } = val2;
 
     /// <summary>
     /// Gets the Value3 from the original event.
     /// </summary>
-    public int Value3 { get; }
+    public int Value3 { get; } = val3;
 
     /// <summary>
     /// Gets the Value4 from the original event.
     /// </summary>
-    public int Value4 { get; }
+    public int Value4 { get; } = val4;
 
     /// <summary>
     /// Update applies state changes to the FlyText event.

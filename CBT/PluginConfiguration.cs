@@ -6,7 +6,7 @@ using System.Linq;
 using System.Numerics;
 using CBT.FlyText;
 using CBT.FlyText.Configuration;
-using CBT.FlyText.Types;
+using CBT.Types;
 using Dalamud.Configuration;
 
 /// <summary>
@@ -20,25 +20,23 @@ public class PluginConfiguration : IPluginConfiguration
     /// </summary>
     public PluginConfiguration()
     {
-        this.FlyTextKinds = Enum.GetValues<FlyTextKind>()
-        .Cast<FlyTextKind>()
-        .ToDictionary(
-            kind => kind,
-            kind => new FlyTextConfiguration());
+        this.FlyTextKinds = FlyTextKindExtension
+            .GetAll()
+            .ToDictionary(
+                kind => kind,
+                kind => new FlyTextConfiguration());
 
-        this.FlyTextCategories = Enum.GetValues<FlyTextCategory>()
-        .Cast<FlyTextCategory>()
-        .Where(category => category.IsCategory())
-        .ToDictionary(
-            kind => kind,
-            kind => new FlyTextConfiguration());
+        this.FlyTextCategories = FlyTextCategoryExtension
+            .GetAllCategories()
+            .ToDictionary(
+                kind => kind,
+                kind => new FlyTextConfiguration());
 
-        this.FlyTextGroups = Enum.GetValues<FlyTextCategory>()
-        .Cast<FlyTextCategory>()
-        .Where(category => category.IsGroup())
-        .ToDictionary(
-            kind => kind,
-            kind => new FlyTextConfiguration());
+        this.FlyTextGroups = FlyTextCategoryExtension
+            .GetAllGroups()
+            .ToDictionary(
+                kind => kind,
+                kind => new FlyTextConfiguration());
 
         FlyTextCategory.AbilityDamage
             .ForEach(kind =>
@@ -72,6 +70,21 @@ public class PluginConfiguration : IPluginConfiguration
             .ForEach(kind =>
             {
                 this.FlyTextKinds[kind].Enabled = false;
+            });
+
+        FlyTextCategory.NonCombat
+            .ForEach(kind =>
+            {
+                this.FlyTextKinds[kind].Enabled = false;
+            });
+
+        FlyTextCategory.Buff
+            .Where(kind => kind == FlyTextKind.DebuffFading || kind == FlyTextKind.BuffFading)
+            .ToList()
+            .ForEach(kind =>
+            {
+                this.FlyTextKinds[kind].Animation.Reversed = true;
+                this.FlyTextKinds[kind].Icon.Enabled = false;
             });
     }
 

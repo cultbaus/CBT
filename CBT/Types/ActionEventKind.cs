@@ -1,4 +1,4 @@
-namespace CBT.FlyText.Types;
+namespace CBT.Types;
 
 /// <summary>
 /// ActionEventKind are derived from the Action Event Handler on the target of a FlyTextEvent.
@@ -14,30 +14,30 @@ public enum ActionEventKind
     /// <summary>
     /// Damage event. Applies to both abilities and auto attacks. Has some additional parameters which coincide with criticals/dh/dhc.
     /// </summary>
-    Damage = (byte)3,
+    Damage = 3,
 
     /// <summary>
     /// Healing events, includes HpDrain. Has some additional parameters which coincide with criticals/dh/dhc.
     /// </summary>
-    Healing = (byte)4,
+    Healing = 4,
 
     /// <summary>
     /// PlayerAppliedDebuff - maybe. Some ambiguity around this.
     /// </summary>
-    PlayerAppliedDebuff = (byte)14,
+    PlayerAppliedDebuff = 14,
 
     /// <summary>
     /// PlayerAppliedBuff - maybe. Some ambiguity around this.
     /// </summary>
-    PlayerAppliedBuff = (byte)15,
+    PlayerAppliedBuff = 15,
 
     /// <summary>
     /// Some sort of combo action. Has some additional parameters which coincide with combo state.
     /// </summary>
-    ComboAction = (byte)27,
+    ComboAction = 27,
 
     /// <summary>
     /// Changes to the state of the Job Gauge.
     /// </summary>
-    JobGauge = (byte)62,
+    JobGauge = 62,
 }

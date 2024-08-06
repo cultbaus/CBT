@@ -1,7 +1,7 @@
 namespace CBT.Attributes;
 
 using System;
-using CBT.FlyText.Types;
+using CBT.Types;
 
 /// <summary>
 /// FlyTextCategoryAttribute decorates a <see cref="FlyTextKind"/> with a Category.

@@ -8,6 +8,16 @@ public class FlyTextMessageConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="FlyTextMessageConfiguration"/> class.
     /// </summary>
+    public FlyTextMessageConfiguration()
+    {
+        this.Prefix = string.Empty;
+        this.Suffix = string.Empty;
+        this.Format = Defaults.DefaultMessageFormat;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FlyTextMessageConfiguration"/> class.
+    /// </summary>
     /// <param name="prefix">What to prefix the message with.</param>
     /// <param name="suffix">What to postfix the message with.</param>
     /// <param name="format">Whether or not to format the string.</param>

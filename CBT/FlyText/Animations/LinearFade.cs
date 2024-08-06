@@ -1,7 +1,7 @@
 namespace CBT.FlyText.Animations;
 
 using System;
-using CBT.FlyText.Types;
+using CBT.Types;
 
 /// <summary>
 /// LinearFade is the default animation style for <see cref="FlyTextEvent"/>s.
@@ -21,10 +21,12 @@ public class LinearFade : FlyTextAnimation
     /// <inheritdoc/>
     public override void Apply(FlyTextEvent flyTextEvent, float timeSinceCreated)
     {
-        float yOffset = this.Offset.Y - (this.Speed * timeSinceCreated);
-        float alpha = Math.Max(0.0f, 1.0f - Math.Min(this.TimeElapsed / this.Duration, 1.0f));
-
-        this.Offset = this.Offset with { Y = yOffset };
-        this.Alpha = alpha;
+        this.Offset = this.Offset with { Y = this.GetDirection(flyTextEvent, timeSinceCreated) };
+        this.Alpha = Math.Max(0.0f, 1.0f - Math.Min(this.TimeElapsed / this.Duration, 1.0f));
     }
+
+    private float GetDirection(FlyTextEvent flyTextEvent, float timeSinceCreated)
+        => flyTextEvent.Animation.Reversed
+               ? this.Offset.Y + (this.Speed * timeSinceCreated)
+               : this.Offset.Y - (this.Speed * timeSinceCreated);
 }

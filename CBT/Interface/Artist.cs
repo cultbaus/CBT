@@ -2,11 +2,15 @@ namespace CBT.Interface;
 
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Numerics;
+using System.Reflection.Emit;
+using System.Text;
 using CBT.FlyText.Configuration;
 using CBT.Interface.Tabs;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
+using FFXIVClientStructs.FFXIV.Common.Lua;
 using ImGuiNET;
 
 /// <summary>
@@ -14,15 +18,24 @@ using ImGuiNET;
 /// </summary>
 public class Artist
 {
-    /// <summary>
+    private const float LongElementWidth = 250f;
+    private const float ShortElementWidth = 50f;
+
+    /// <summaryNone
     /// Draws an ImGUI Checkbox.
     /// </summary>
     /// <param name="label">Checkbox label.</param>
+    /// <param name="sameLine">Should this element be on the same line.</param>
     /// <param name="value">Reference to the checkbox state.</param>
     /// <param name="onChanged">Action to handle changing states.</param>
-    public static void Checkbox(string label, bool value, Action<bool>? onChanged = null)
+    public static void Checkbox(string label, bool sameLine, bool value, Action<bool> onChanged)
     {
-        if (ImGui.Checkbox(label, ref value) && onChanged != null)
+        if (sameLine)
+        {
+            ImGui.SameLine();
+        }
+
+        if (ImGui.Checkbox($"##{label}", ref value))
         {
             onChanged(value);
         }
@@ -32,10 +45,16 @@ public class Artist
     /// Draws a selectable label from the Tab state.
     /// </summary>
     /// <param name="tab">Tab to draw.</param>
+    /// <param name="sameLine">Should this be on the same line.</param>
     /// <param name="selected">Whether the tab has been selected.</param>
     /// <param name="onClicked">What to do when clicked.</param>
-    public static void SelectableTab(Tab tab, bool selected, Action<Tab> onClicked)
+    public static void SelectableTab(ITab tab, bool sameLine, bool selected, Action<ITab> onClicked)
     {
+        if (sameLine)
+        {
+            ImGui.SameLine();
+        }
+
         if (ImGui.Selectable($"{tab.Name}##{tab.Kind}_TAB", selected))
         {
             onClicked(tab);
@@ -46,9 +65,15 @@ public class Artist
     /// Created a button with the assigned label and on-click handler.
     /// </summary>
     /// <param name="label">What the button says.</param>
+    /// <param name="sameLine">Should this be on the same line.</param>
     /// <param name="onButtonPress">What the button does.</param>
-    public static void Button(string label, Action onButtonPress)
+    public static void Button(string label, bool sameLine, Action onButtonPress)
     {
+        if (sameLine)
+        {
+            ImGui.SameLine();
+        }
+
         if (ImGui.Button(label))
         {
             onButtonPress();
@@ -59,19 +84,23 @@ public class Artist
     /// Draws a styled button.
     /// </summary>
     /// <param name="label">Text label.</param>
+    /// <param name="sameLine">Should this be on the same line.</param>
     /// <param name="colors">A list of style vars and colors to push.</param>
     /// <param name="onButtonPress">Action on push.</param>
-    public static void StyledButton(string label, List<(ImGuiCol Style, Vector4 Color)> colors, Action onButtonPress)
+    public static void ColoredButton(string label, bool sameLine, List<(ImGuiCol Style, Vector4 Color)> colors, Action onButtonPress)
     {
         colors.ForEach(color =>
         {
             ImGui.PushStyleColor(color.Style, color.Color);
         });
 
+        if (sameLine)
+        {
+            ImGui.SameLine();
+        }
+
         using (Service.Fonts.Push(Defaults.DefaultFontName, 24f))
         {
-            DrawSeperator();
-
             if (ImGui.Button(label))
             {
                 onButtonPress();
@@ -88,14 +117,14 @@ public class Artist
     /// <param name="size">Size of the content area.</param>
     /// <param name="margin">Margin.</param>
     /// <param name="drawContent">Content action.</param>
-    public static void DrawChildWithMargin(string childId, Vector2 size, float margin, Action drawContent)
+    public static void DrawChildWithMargin(string childId, Vector2 size, float margin, Action drawContent, ImGuiWindowFlags flags)
     {
         using (ImRaii.Child(childId, size, false))
         {
             ImGui.SetCursorPos(new Vector2(margin * 2, margin));
 
             var regionSize = ImGui.GetContentRegionAvail() - new Vector2(2 * margin, 2 * margin);
-            using (ImRaii.Child($"##{childId}##CONTENT", regionSize, false, ImGuiWindowFlags.NoDecoration))
+            using (ImRaii.Child($"##{childId}##CONTENT", regionSize, false, flags))
             {
                 drawContent();
             }
@@ -103,15 +132,24 @@ public class Artist
     }
 
     /// <summary>
-    /// Draw Select Picker for the FlyTextKind/FlyTextCategory options.
+    /// Draw Select Picker.
     /// </summary>
     /// <typeparam name="T">An enum.</typeparam>
     /// <param name="label">A label for the select picker.</param>
+    /// <param name="sameLine">Should this be on the same line.</param>
     /// <param name="currentValue">The current value from which the preview is derived.</param>
     /// <param name="values">A list of values.</param>
     /// <param name="action">An action to take with kind T.</param>
-    public static void DrawSelectPicker<T>(string label, T currentValue, List<T> values, Action<T> action)
+    /// <param name="size">Size of the input width.</param>
+    public static void DrawSelectPicker<T>(string label, bool sameLine, T currentValue, List<T> values, Action<T> action, float size = LongElementWidth)
     {
+        if (sameLine)
+        {
+            ImGui.SameLine();
+        }
+
+        ImGui.SetNextItemWidth(size);
+
         using var combo = ImRaii.Combo($"##{label}", currentValue?.ToString()!);
 
         if (!combo)
@@ -142,13 +180,21 @@ public class Artist
     /// Draws a color picker.
     /// </summary>
     /// <param name="label">String label for the picker.</param>
+    /// <param name="sameLine">Should draw on the same line.</param>
     /// <param name="currentColor">Current color of the option to change, initial value.</param>
     /// <param name="action">Action to take with the new color.</param>
-    public static void DrawColorPicker(string label, Vector4 currentColor, Action<Vector4> action)
+    public static void DrawColorPicker(string label, bool sameLine, Vector4 currentColor, Action<Vector4> action)
     {
         var colorPicker = currentColor;
 
-        if (ImGui.ColorEdit4(label, ref colorPicker))
+        if (sameLine)
+        {
+            ImGui.SameLine();
+        }
+
+        ImGui.SetNextItemWidth(LongElementWidth);
+
+        if (ImGui.ColorEdit4($"##{label}", ref colorPicker))
         {
             action(colorPicker);
         }
@@ -168,20 +214,110 @@ public class Artist
     }
 
     /// <summary>
-    /// Draws a Tab title.
+    /// Draws a title.
     /// </summary>
     /// <param name="titleText">The text of the title.</param>
     /// <param name="fontSize">The font size for the title.</param>
-    public static void DrawTabTitle(string titleText, float fontSize = 22f)
+    public static void DrawTitle(string titleText, float fontSize = 24f)
     {
         using (Service.Fonts.Push(Defaults.DefaultFontName, fontSize))
         {
             using (ImRaii.PushColor(ImGuiCol.Text, ImGui.GetColorU32(new Vector4(1, 1, 0, 1))))
             {
                 ImGui.Text(titleText);
-
                 DrawSeperator();
             }
+        }
+    }
+
+    /// <summary>
+    /// Draws a title.
+    /// </summary>
+    /// <param name="titleText">The text of the title.</param>
+    /// <param name="fontSize">The font size for the title.</param>
+    public static void DrawSubTitle(string titleText, float fontSize = 18f)
+    {
+        using (Service.Fonts.Push(Defaults.DefaultFontName, fontSize))
+        {
+            using (ImRaii.PushColor(ImGuiCol.Text, ImGui.GetColorU32(new Vector4(0, 1, 1, 1))))
+            {
+                DrawSeperator();
+                ImGui.Text(titleText);
+                DrawSeperator();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Draws label prefix. Automatically inlines following element.
+    /// </summary>
+    /// <param name="titleText">The text of the title.</param>
+    /// <param name="sameLine">Should appear on the same line.</param>
+    /// <param name="fontSize">The font size for the title.</param>
+    public static void DrawLabelPrefix(string titleText, bool sameLine, float fontSize = 14f)
+    {
+        if (sameLine)
+        {
+            ImGui.SameLine();
+        }
+
+        using (Service.Fonts.Push(Defaults.DefaultFontName, fontSize))
+        {
+            using (ImRaii.PushColor(ImGuiCol.Text, ImGui.GetColorU32(new Vector4(1, 1, 0, 1))))
+            {
+                ImGui.Text(titleText);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Draw an input int picker.
+    /// </summary>
+    /// <param name="label">Label for the componenet.</param>
+    /// <param name="sameLine">Should appear on the same line.</param>
+    /// <param name="value">Value to set.</param>
+    /// <param name="min">Min value.</param>
+    /// <param name="max">Max value.</param>
+    /// <param name="onChange">What to do when input changes.</param>
+    public static void DrawInputInt(string label, bool sameLine, int value, int min, int max, Action<int> onChange)
+    {
+        if (sameLine)
+        {
+            ImGui.SameLine();
+        }
+
+        ImGui.SetNextItemWidth(ShortElementWidth * 2);
+
+        if (ImGui.InputInt($"##{label}", ref value, step: 1, step_fast: 2))
+        {
+            value = Math.Clamp(value, min, max);
+            onChange(value);
+        }
+    }
+
+    /// <summary>
+    /// Draw an input string picker.
+    /// </summary>
+    /// <param name="label">Label for the component.</param>
+    /// <param name="sameLine">Should appear on the same line.</param>
+    /// <param name="value">Input original value.</param>
+    /// <param name="onChange">What to do when input changes.</param>
+    public static void DrawStringInput(string label, bool sameLine, string value, Action<string> onChange)
+    {
+        if (sameLine)
+        {
+            ImGui.SameLine();
+        }
+
+        byte[] buffer = new byte[256];
+        Encoding.UTF8.GetBytes(value, 0, value.Length, buffer, 0);
+
+        ImGui.SetNextItemWidth(ShortElementWidth * 3);
+
+        if (ImGui.InputText($"##{label}", buffer, (uint)buffer.Length))
+        {
+            var input = Encoding.UTF8.GetString(buffer).TrimEnd('\0');
+            onChange(input);
         }
     }
 

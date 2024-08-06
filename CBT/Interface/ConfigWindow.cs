@@ -15,11 +15,12 @@ using ImGuiNET;
 /// </summary>
 public partial class ConfigWindow : Window
 {
-    private static readonly List<Tab> Tabs = new List<Tab>()
+    private static readonly List<ITab> Tabs = new List<ITab>()
     {
-        new KindTab(),
+        // new KindTab(),
         new CategoryTab(),
-        new GroupTab(),
+
+        // new GroupTab(),
     };
 
     private static TabKind currentTab = TabKind.Kind;
@@ -84,7 +85,7 @@ public partial class ConfigWindow : Window
                     {
                         using (Service.Fonts.Push(Defaults.DefaultFontName, 16f))
                         {
-                            Artist.SelectableTab(tab, isSelected, t => { currentTab = t.Kind; });
+                            Artist.SelectableTab(tab, false, isSelected, t => { currentTab = t.Kind; });
                         }
                     }
                 });
@@ -125,9 +126,6 @@ public partial class ConfigWindow : Window
     private static void DrawRightColumn()
     {
         ImGui.TableNextColumn();
-        Artist.DrawChildWithMargin("##RIGHT_COLUMN_CHILD", Vector2.Zero, Artist.Scale(5f), () =>
-        {
-            Tabs.FirstOrDefault(tab => tab.Kind == currentTab)?.Draw();
-        });
+        Artist.DrawChildWithMargin("##RIGHT_COLUMN_CHILD", Vector2.Zero, Artist.Scale(5f), () => { Tabs.FirstOrDefault(tab => tab.Kind == currentTab)?.Draw(); }, ImGuiWindowFlags.None);
     }
 }

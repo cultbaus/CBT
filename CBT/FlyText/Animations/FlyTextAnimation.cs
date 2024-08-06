@@ -3,7 +3,7 @@ namespace CBT.FlyText.Animations;
 using System;
 using System.Numerics;
 
-using CBT.FlyText.Types;
+using CBT.Types;
 
 /// <summary>
 /// FlyTextAnimationKind enumerates the kinds of animations for <see cref="FlyTextEvent"/>s.
@@ -37,6 +37,12 @@ public abstract class FlyTextAnimation
     /// </summary>
     public float Speed
         => Service.Configuration.FlyTextKinds[this.FlyTextKind].Animation.Speed;
+
+    /// <summary>
+    /// Gets a value indicating whether the animation direction should be reversed.
+    /// </summary>
+    public bool Reversed
+        => Service.Configuration.FlyTextKinds[this.FlyTextKind].Animation.Reversed;
 
     /// <summary>
     /// Gets or sets the FlyAnimationKind.

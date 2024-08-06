@@ -1,6 +1,6 @@
 namespace CBT.FlyText.Animations;
 
-using CBT.FlyText.Types;
+using CBT.Types;
 
 /// <summary>
 ///  None is the No-op animation for <see cref="FlyTextEvent"/>s.

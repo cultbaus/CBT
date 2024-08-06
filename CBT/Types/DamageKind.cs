@@ -1,4 +1,4 @@
-namespace CBT.FlyText.Types;
+namespace CBT.Types;
 
 /// <summary>
 /// DamageKind is the type of damage.

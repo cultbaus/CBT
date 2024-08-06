@@ -56,7 +56,12 @@ public record Defaults
     /// <summary>
     /// Default icon zoom.
     /// </summary>
-    public const float DefaultIconZoom = 0f;
+    public const float DefaultIconZoom = 0.7f;
+
+    /// <summary>
+    /// Default outline reversed.
+    /// </summary>
+    public const bool DefaultAnimationReversed = false;
 
     /// <summary>
     /// Default font color.
@@ -72,4 +77,9 @@ public record Defaults
     /// Default icon size.
     /// </summary>
     public static readonly Vector2 DefaultIconSize = new Vector2(DefaultFontSize, DefaultFontSize);
+
+    /// <summary>
+    /// Default icon offset.
+    /// </summary>
+    public static readonly Vector2 DefaultIconOffset = new Vector2(-10, 0);
 }
