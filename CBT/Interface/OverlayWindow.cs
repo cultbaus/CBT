@@ -20,8 +20,6 @@ public class OverlayWindow : Window
             | ImGuiWindowFlags.NoSavedSettings
             | ImGuiWindowFlags.NoTitleBar;
 
-    private DateTime lastFrame = DateTime.Now;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="OverlayWindow"/> class.
     /// </summary>
@@ -54,22 +52,6 @@ public class OverlayWindow : Window
     public override void Draw()
     {
         var drawList = ImGui.GetWindowDrawList();
-        var timeElapsed = this.TimeSince(this.lastFrame);
-
-        Service.Manager.Update(timeElapsed);
         Service.Manager.Draw(drawList);
-    }
-
-    /// <summary>
-    /// Calculates the time since the last frame.
-    /// </summary>
-    /// <param name="lastFrame">Previous DateTime persisted to the OverlayWindow.</param>
-    /// <returns>Returns the Time Elapsed since the last Draw.</returns>
-    public float TimeSince(DateTime lastFrame)
-    {
-        float timeElapsed = (float)(DateTime.Now - lastFrame).TotalSeconds;
-        this.lastFrame = DateTime.Now;
-
-        return timeElapsed;
     }
 }

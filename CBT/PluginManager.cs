@@ -4,21 +4,31 @@ using System;
 using System.Collections.Generic;
 using CBT.FlyText;
 using CBT.Types;
+using Dalamud.Plugin.Services;
 using ImGuiNET;
 
 /// <summary>
-/// Initializes a new isntance of the <see cref="PluginManager"/> class.
+/// PluginManager instance.
 /// </summary>
-public class PluginManager() : IDisposable
+public class PluginManager : IDisposable
 {
     private readonly List<FlyTextEvent> eventStream = [];
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PluginManager"/> class.
+    /// </summary>
+    public PluginManager()
+    {
+        Service.Framework.Update += this.FrameworkUpdate;
+    }
 
     /// <summary>
     /// Dispose of unhandled FlyTextEvents lingering in the stream.
     /// </summary>
     public void Dispose()
     {
-        this.eventStream.Clear();
+        Service.Framework.Update -= this.FrameworkUpdate;
+
         GC.SuppressFinalize(this);
     }
 
@@ -40,13 +50,9 @@ public class PluginManager() : IDisposable
         FlyTextArtist.Draw(drawList, this.eventStream);
     }
 
-    /// <summary>
-    /// Update a FlyTextEvent by passing time and removing events which have timed out.
-    /// </summary>
-    /// <param name="timeElapsed">Time that has passed since the last Draw frame.</param>
-    public void Update(float timeElapsed)
+    private void FrameworkUpdate(IFramework framework)
     {
-        this.eventStream.ForEach(e => e.Update(timeElapsed));
+        this.eventStream.ForEach(e => e.Update(framework.UpdateDelta.Milliseconds));
         this.eventStream.RemoveAll(e => e.IsExpired);
     }
 }

@@ -14,6 +14,7 @@ using ImGuiNET;
 /// </summary>
 public unsafe class FlyTextArtist
 {
+
     /// <summary>
     /// Draws events to the CBT canvas.
     /// </summary>

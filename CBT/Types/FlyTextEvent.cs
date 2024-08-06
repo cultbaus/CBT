@@ -185,8 +185,8 @@ public unsafe partial class FlyTextEvent(FlyTextKind kind, Effect[] effects, Cha
     /// <param name="timeElapsed">Time since the last frame.</param>
     public void Update(float timeElapsed)
     {
-        this.Animation.TimeElapsed += timeElapsed;
-        this.Animation.Apply(this, timeElapsed);
+        this.Animation.TimeElapsed += timeElapsed / 1000;
+        this.Animation.Apply(this, timeElapsed / 1000);
     }
 
     // TODO @cultbaus: I want to use string formatting and text tags instead of this, but for now this can be a placeholder.
