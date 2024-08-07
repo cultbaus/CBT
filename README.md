@@ -12,6 +12,8 @@ An ImGui replacement for FlyText in Final Fantasy XIV.
 
 # Quick Start
 
+I'll preface this section saying that, at the time of writing, this is still very much in development, and all releases should be considered unstable. There *will* be breaking changes that will not have migration support. You have been warned!
+
 Add the repository to your custom repos list in Dalamud -> Settings -> Experimental: `https://raw.githubusercontent.com/cultbaus/MyDalamudPlugins/main/repo.json`, then install the plugin. Use `/cbt` to configure.
 
 # Prior Art
@@ -23,8 +25,8 @@ Thank you to the creators & maintainers of [FlyTextFilter][1] and [DamageInfo][2
 Additionally, thank you to the creators & maintainers of [DelvUI][4] and [XIVComboExpanded][3] for providing additional reference material and implementation details that were lost on me from the official documentation sources. Similar to the aforementioned prior art, these plugins were instrumental in providing me a basis for which I could begin.
 
 # Help Wanted
-* The [Interface](./CBT/Interface/) needs a LOT of work from someone that's good with ImGUI.
 * Localization support
+* [FontManager](./CBT/Helpers/FontManager.cs) could use improvement - perhaps using the Dalamud global picker to load all the fonts available to a user.
 
 [1]: https://github.com/Aireil/FlyTextFilter
 [2]: https://github.com/lmcintyre/DamageInfoPlugin

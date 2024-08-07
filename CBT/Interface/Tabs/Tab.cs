@@ -264,6 +264,9 @@ where TKey : notnull
 
                 Artist.DrawLabelPrefix("Enabled On Enemy", sameLine: false);
                 Artist.Checkbox($"Enabled On Enemy_{this.Name}", sameLine: true, this.CurrentEnabledForEnemy, enabled => { this.CurrentEnabledForEnemy = enabled; });
+
+                Artist.DrawLabelPrefix("Enabled On Party", sameLine: false);
+                Artist.Checkbox($"Enabled On Party_{this.Name}", sameLine: true, this.CurrentEnabledForParty, enabled => { this.CurrentEnabledForParty = enabled; });
             }
         }
     }

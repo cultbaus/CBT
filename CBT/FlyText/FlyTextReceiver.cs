@@ -71,7 +71,7 @@ public unsafe partial class FlyTextReceiver : IDisposable
             var kindConfig = GetConfig(kind);
             var weActuallyCare = false;
 
-            weActuallyCare = weActuallyCare || (kindConfig.Filter.Enemy && IsEnemy(target));
+            weActuallyCare = weActuallyCare || (kindConfig.Filter.Enemy && IsEnemy(target) && IsPlayerCharacter(source));
             weActuallyCare = weActuallyCare || (kindConfig.Filter.Self && IsPlayerCharacter(target));
             weActuallyCare = weActuallyCare || (kindConfig.Filter.Party && IsPartyMember(source));
             weActuallyCare = weActuallyCare || (kindConfig.Filter.Party && IsPartyMember(target));
