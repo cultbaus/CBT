@@ -254,6 +254,23 @@ public class Artist
     }
 
     /// <summary>
+    /// Draws a warning labe.
+    /// </summary>
+    /// <param name="message">Warning message.</param>
+    /// <param name="fontSize">Size of the warning.</param>
+    public static void DrawWarning(string message, float fontSize = 16f)
+    {
+        using (Service.Fonts.Push(Defaults.DefaultFontName, fontSize))
+        {
+            using (ImRaii.PushColor(ImGuiCol.Text, ImGui.GetColorU32(new Vector4(1, 0, 0, 1))))
+            {
+                ImGui.Text(message);
+                DrawSeperator();
+            }
+        }
+    }
+
+    /// <summary>
     /// Draws label prefix. Automatically inlines following element.
     /// </summary>
     /// <param name="titleText">The text of the title.</param>

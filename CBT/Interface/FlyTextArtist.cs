@@ -25,7 +25,7 @@ public unsafe class FlyTextArtist
 
         flyTextEvents.ForEach(e =>
         {
-            var qt = QuadTreeManager.GetQuadTree(e.Target->GetGameObjectId().ObjectId);
+            var qt = QuadTreeManager.GetQuadTree(e.Target->GetGameObjectId().ObjectId, e.Config.Animation.Reversed);
 
             qt.Insert(e);
             qt.Retrieve([], e)

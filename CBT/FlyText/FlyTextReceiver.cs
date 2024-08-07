@@ -73,6 +73,9 @@ public unsafe partial class FlyTextReceiver : IDisposable
 
             weActuallyCare = weActuallyCare || (kindConfig.Filter.Enemy && IsEnemy(target));
             weActuallyCare = weActuallyCare || (kindConfig.Filter.Self && IsPlayerCharacter(target));
+            weActuallyCare = weActuallyCare || (kindConfig.Filter.Party && IsPartyMember(source));
+            weActuallyCare = weActuallyCare || (kindConfig.Filter.Party && IsPartyMember(target));
+            weActuallyCare = weActuallyCare && kindConfig.Enabled;
 
             if (weActuallyCare)
             {
@@ -135,6 +138,14 @@ public unsafe partial class FlyTextReceiver
     /// <returns>A bool if they're a bad guy.</returns>
     protected static bool IsEnemy(Character* target)
         => target->ObjectKind == ObjectKind.BattleNpc && target->SubKind == 5;
+
+    /// <summary>
+    /// Is the source a party member.
+    /// </summary>
+    /// <param name="source">Target of the event.</param>
+    /// <returns>Are they in our party.</returns>
+    protected static bool IsPartyMember(Character* source)
+        => source->IsPartyMember;
 
     /// <summary>
     /// Determines if a character instance is the player character.

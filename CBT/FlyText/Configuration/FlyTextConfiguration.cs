@@ -12,6 +12,7 @@ public class FlyTextConfiguration
     /// </summary>
     public FlyTextConfiguration()
     {
+        this.Enabled = true;
         this.Font = new FlyTextFontConfiguration();
         this.Animation = new FlyTextAnimationConfiguration();
         this.Icon = new FlyTextIconConfiguration();
@@ -27,6 +28,7 @@ public class FlyTextConfiguration
     {
         FlyTextConfiguration config = Service.Configuration.FlyTextKinds[kind];
 
+        this.Enabled = config.Enabled;
         this.Font = new FlyTextFontConfiguration(config.Font);
         this.Animation = new FlyTextAnimationConfiguration(config.Animation);
         this.Icon = new FlyTextIconConfiguration(config.Icon);

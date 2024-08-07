@@ -92,6 +92,16 @@ public static class FlyTextCategoryExtension
             .Where(kind => IsCategory(category) ? kind.InCategory(category) : kind.InGroup(category));
 
     /// <summary>
+    /// Get categories for a group.
+    /// </summary>
+    /// <param name="group">The group to iterate.</param>
+    /// <returns>Enumerable result of categories in that group.</returns>
+    public static IEnumerable<FlyTextCategory> GetCategoriesFor(FlyTextCategory group)
+        => Enum.GetValues<FlyTextCategory>()
+            .Cast<FlyTextCategory>()
+            .Where(category => category.IsCategory() && category.HasFlag(group));
+
+    /// <summary>
     /// Implements a filter over fly text categories.
     /// </summary>
     /// <param name="category">The category to filter over.</param>
@@ -106,9 +116,21 @@ public static class FlyTextCategoryExtension
     /// </summary>
     /// <param name="category">The category or group to iterate.</param>
     /// <param name="action">The action to perform.</param>
-    public static void ForEach(this FlyTextCategory category, Action<FlyTextKind> action)
+    public static void ForEachKind(this FlyTextCategory category, Action<FlyTextKind> action)
     {
         GetKindsFor(category)
+           .ToList()
+           .ForEach(action);
+    }
+
+    /// <summary>
+    /// Iterates the kinds of a category or group and performs an action.
+    /// </summary>
+    /// <param name="category">The category or group to iterate.</param>
+    /// <param name="action">The action to perform.</param>
+    public static void ForEachCategory(this FlyTextCategory category, Action<FlyTextCategory> action)
+    {
+        GetCategoriesFor(category)
            .ToList()
            .ForEach(action);
     }

@@ -1,301 +1,226 @@
-// // Here be dragons.
+namespace CBT.Interface.Tabs;
 
-// namespace CBT.Interface.Tabs;
+using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
+using CBT.FlyText.Configuration;
+using CBT.Helpers;
+using CBT.Types;
 
-// using System;
-// using System.Collections.Generic;
-// using System.Linq;
-// using System.Numerics;
-// using CBT.FlyText.Configuration;
-// using CBT.Types;
-// using Dalamud.Interface.Utility.Raii;
-// using ImGuiNET;
+/// <summary>
+/// GroupTab configures settings for FlyTextCategory Groups.
+/// </summary>
+public class GroupTab : Tab<FlyTextCategory>
+{
+    private static readonly List<FlyTextCategory> GroupPickerValues = [.. FlyTextCategoryExtension.GetAllGroups()];
 
-// /// <summary>
-// /// GroupTab configures settings for FlyTextGroup Groups.
-// /// </summary>
-// public class GroupTab : Tab
-// {
-//     private static FlyTextCategory currentGroup = Enum.GetValues<FlyTextCategory>().Cast<FlyTextCategory>().FirstOrDefault(c => c.IsGroup());
+    private static FlyTextCategory currentGroup = FlyTextCategoryExtension.GetAllGroups().First();
 
-//     private static Dictionary<FlyTextCategory, FlyTextConfiguration> tmpConfig = new Dictionary<FlyTextCategory, FlyTextConfiguration>();
+    private static Dictionary<FlyTextCategory, FlyTextConfiguration>? tmpConfig;
 
-//     /// <summary>
-//     /// Gets the Name of the Tab.
-//     /// </summary>
-//     public override string Name => TabKind.Group.ToString();
+    /// <inheritdoc/>
+    public override string Name => TabKind.Group.ToString();
 
-//     /// <summary>
-//     /// Gets the Kind of the Window drawn within the tab.
-//     /// </summary>
-//     public override TabKind Kind => TabKind.Group;
+    /// <inheritdoc/>
+    public override TabKind Kind => TabKind.Group;
 
-//     private static FlyTextCategory CurrentGroup
-//     {
-//         get => currentGroup;
-//         set => currentGroup = value;
-//     }
+    /// <inheritdoc/>
+    protected override Dictionary<FlyTextCategory, FlyTextConfiguration> TmpConfig
+    {
+        get =>
+            tmpConfig ??= Service.Configuration.FlyTextGroups
+                .ToDictionary(
+                    entry => entry.Key,
+                    entry => new FlyTextConfiguration(entry.Value));
 
-//     private static bool CurrentGroupEnabled
-//     {
-//         get => GetValue(config => config.Enabled);
-//         set => SetValue((config, val) => config.Enabled = val, value);
-//     }
+        set
+        {
+            tmpConfig = value;
+            Service.Configuration.FlyTextGroups = tmpConfig;
+        }
+    }
 
-//     private static string CurrentFont
-//     {
-//         get => GetValue(config => config.Font.Name);
-//         set => SetValue((config, val) => config.Font.Name = val, value);
-//     }
+    /// <inheritdoc />
+    protected override Dictionary<FlyTextCategory, FlyTextConfiguration> Configuration
+    {
+        get => Service.Configuration.FlyTextGroups;
+    }
 
-//     private static Vector4 CurrentFontColor
-//     {
-//         get => GetValue(config => config.Font.Color);
-//         set => SetValue((config, val) => config.Font.Color = val, value);
-//     }
+    /// <inheritdoc/>
+    protected override FlyTextCategory Current
+    {
+        get => currentGroup;
+        set => currentGroup = value;
+    }
 
-//     private static float CurrentFontSize
-//     {
-//         get => GetValue(config => config.Font.Size);
-//         set => SetValue((config, val) => config.Font.Size = val, value);
-//     }
+    /// <inheritdoc/>
+    protected override bool CurrentEnabled
+    {
+        get => this.GetValue(config => config.Enabled);
+        set => this.SetValue((config, val) => config.Enabled = val, value);
+    }
 
-//     private static bool CurrentOutlineEnabled
-//     {
-//         get => GetValue(config => config.Font.Outline.Enabled);
-//         set => SetValue((config, val) => config.Font.Outline.Enabled = val, value);
-//     }
+    /// <inheritdoc/>
+    protected override bool CurrentEnabledForSelf
+    {
+        get => this.GetValue(config => config.Filter.Self);
+        set => this.SetValue((config, val) => config.Filter.Self = val, value);
+    }
 
-//     private static int CurrentOutlineThickness
-//     {
-//         get => GetValue(config => config.Font.Outline.Size);
-//         set => SetValue((config, val) => config.Font.Outline.Size = val, value);
-//     }
+    /// <inheritdoc/>
+    protected override bool CurrentEnabledForEnemy
+    {
+        get => this.GetValue(config => config.Filter.Enemy);
+        set => this.SetValue((config, val) => config.Filter.Enemy = val, value);
+    }
 
-//     private static Vector4 CurrentOutlineColor
-//     {
-//         get => GetValue(config => config.Font.Outline.Color);
-//         set => SetValue((config, val) => config.Font.Outline.Color = val, value);
-//     }
+    /// <inheritdoc/>
+    protected override bool CurrentEnabledForParty
+    {
+        get => this.GetValue(config => config.Filter.Party);
+        set => this.SetValue((config, val) => config.Filter.Party = val, value);
+    }
 
-//     /// <inheritdoc/>
-//     public override void Draw()
-//     {
-//         // var textPickerWidth = 250f;
-//         // var numPickerWidth = 50f;
+    /// <inheritdoc/>
+    protected override string CurrentFont
+    {
+        get => this.GetValue(config => config.Font.Name);
+        set => this.SetValue((config, val) => config.Font.Name = val, value);
+    }
 
-//         // // Title bar
-//         // Artist.DrawTabTitle("FlyText Groups Configuration");
-//         // Artist.DrawSeperator();
+    /// <inheritdoc/>
+    protected override Vector4 CurrentFontColor
+    {
+        get => this.GetValue(config => config.Font.Color);
+        set => this.SetValue((config, val) => config.Font.Color = val, value);
+    }
 
-//         // // Configuration options
-//         // using (Service.Fonts.Push(Defaults.DefaultFontName, 16f))
-//         // {
-//         //     Artist.DrawSeperator();
+    /// <inheritdoc/>
+    protected override float CurrentFontSize
+    {
+        get => this.GetValue(config => config.Font.Size);
+        set => this.SetValue((config, val) => config.Font.Size = val, value);
+    }
 
-//         //     if (DrawGroupConfiguration(textPickerWidth))
-//         //     {
-//         //         Artist.DrawSeperator();
-//         //         DrawFontConfiguration(textPickerWidth, numPickerWidth);
-//         //     }
-//         // }
+    /// <inheritdoc/>
+    protected override bool CurrentFontOutlineEnabled
+    {
+        get => this.GetValue(config => config.Font.Outline.Enabled);
+        set => this.SetValue((config, val) => config.Font.Outline.Enabled = val, value);
+    }
 
-//         // DrawSaveButton();
-//     }
+    /// <inheritdoc/>
+    protected override int CurrentFontOutlineThickness
+    {
+        get => this.GetValue(config => config.Font.Outline.Size);
+        set => this.SetValue((config, val) => config.Font.Outline.Size = val, value);
+    }
 
-//     /// <inheritdoc/>
-//     public override void OnClose()
-//     {
-//         // tmpConfig.Clear();
-//     }
+    /// <inheritdoc/>
+    protected override Vector4 CurrentFontOutlineColor
+    {
+        get => this.GetValue(config => config.Font.Outline.Color);
+        set => this.SetValue((config, val) => config.Font.Outline.Color = val, value);
+    }
 
-//     private static void OnSave()
-//     {
-//         // if (tmpConfig.TryGetValue(CurrentGroup, out var currentConfig))
-//         // {
-//         //     CurrentGroup.ForEach(kind =>
-//         //     {
-//         //         Service.Configuration.FlyTextKinds[kind] = new FlyTextConfiguration(currentConfig);
-//         //     });
-//         //     Service.Configuration.FlyTextGroups[CurrentGroup] = new FlyTextConfiguration(currentConfig);
-//         // }
-//     }
+    /// <inheritdoc/>
+    protected override bool CurrentIconEnabled
+    {
+        get => this.GetValue(config => config.Icon.Enabled);
+        set => this.SetValue((config, val) => config.Icon.Enabled = val, value);
+    }
 
-//     private static T GetValue<T>(Func<FlyTextConfiguration, T> selector)
-//     {
-//         return tmpConfig.TryGetValue(CurrentGroup, out var currentConfig) ? selector(currentConfig) : selector(Service.Configuration.FlyTextGroups[CurrentGroup]);
-//     }
+    /// <inheritdoc/>
+    protected override float CurrentIconSize
+    {
+        get => this.GetValue(config => config.Icon.Size.X);
+        set => this.SetValue((config, val) => config.Icon.Size = new Vector2(val, val), value);
+    }
 
-//     private static void SetValue<T>(Action<FlyTextConfiguration, T> setter, T value)
-//     {
-//         if (!tmpConfig.TryGetValue(CurrentGroup, out var currentConfig))
-//         {
-//             currentConfig = new FlyTextConfiguration(Service.Configuration.FlyTextGroups[CurrentGroup]);
-//             tmpConfig[CurrentGroup] = currentConfig;
-//         }
+    /// <inheritdoc/>
+    protected override bool CurrentIconOutlineEnabled
+    {
+        get => this.GetValue(config => config.Icon.Outline.Enabled);
+        set => this.SetValue((config, val) => config.Icon.Outline.Enabled = val, value);
+    }
 
-//         setter(currentConfig, value);
-//     }
+    /// <inheritdoc/>
+    protected override int CurrentIconOutlineThickness
+    {
+        get => this.GetValue(config => config.Icon.Outline.Size);
+        set => this.SetValue((config, val) => config.Icon.Outline.Size = val, value);
+    }
 
-//     // private static void DrawSaveButton()
-//     // {
-//     //     var colors = new List<(ImGuiCol Style, Vector4 Color)>
-//     // {
-//     //     (ImGuiCol.Text, new Vector4(1, 1, 1, 1)),
-//     //     (ImGuiCol.Button, new Vector4(206 / 255f, 39 / 255f, 187 / 255f, 1.0f)),
-//     //     (ImGuiCol.ButtonHovered, new Vector4(39 / 255f, 187 / 255f, 206 / 255f, 1.0f)),
-//     //     (ImGuiCol.ButtonActive, new Vector4(1, 1, 0, 1)),
-//     // };
+    /// <inheritdoc/>
+    protected override Vector4 CurrentIconOutlineColor
+    {
+        get => this.GetValue(config => config.Icon.Outline.Color);
+        set => this.SetValue((config, val) => config.Icon.Outline.Color = val, value);
+    }
 
-//     //     Artist.StyledButton("Save##Group", colors, OnSave);
-//     // }
+    /// <inheritdoc/>
+    protected override bool CurrentAnimationReversed
+    {
+        get => this.GetValue(config => config.Animation.Reversed);
+        set => this.SetValue((config, val) => config.Animation.Reversed = val, value);
+    }
 
-//     // private static void DrawGroupTitle()
-//     // {
-//     //     using (Service.Fonts.Push(Defaults.DefaultFontName, 18f))
-//     //     {
-//     //         ImGui.Text("Group Configuration");
-//     //         ImGui.Spacing();
-//     //     }
-//     // }
+    /// <inheritdoc/>
+    public override void Draw()
+    {
+        Artist.DrawTitle("Group Configuration Settings");
 
-//     // private static void DrawGroupPicker(float textPickerWidth)
-//     // {
-//     //     using (ImRaii.PushColor(ImGuiCol.Text, ImGui.GetColorU32(new Vector4(1, 1, 0, 1))))
-//     //     {
-//     //         ImGui.Text("Select Group: ");
-//     //     }
+        this.DrawCurrentConfigurations(GroupPickerValues);
 
-//     //     ImGui.SameLine();
-//     //     ImGui.SetNextItemWidth(textPickerWidth);
-//     //     Artist.DrawSelectPicker("Group", CurrentGroup, Enum.GetValues<FlyTextCategory>().Cast<FlyTextCategory>().Where(group => group.IsGroup()).ToList(), group => { CurrentGroup = group; });
-//     // }
+        if (this.CurrentEnabled)
+        {
+            this.DrawFontConfigurations();
+            this.DrawIconConfigurations();
+            this.DrawAnimationConfigurations();
+        }
 
-//     // private static bool DrawGroupEnabledCheckbox()
-//     // {
-//     //     ImGui.SameLine();
-//     //     Artist.Checkbox("Enabled", CurrentGroupEnabled, enabled =>
-//     //     {
-//     //         CurrentGroupEnabled = enabled;
-//     //     });
+        Artist.DrawSeperator();
+        Artist.ColoredButton("Save##Group", sameLine: false, ButtonColors, this.OnSave);
+    }
 
-//     //     return CurrentGroupEnabled;
-//     // }
+    /// <inheritdoc/>
+    public override void OnClose()
+    {
+        this.ResetTmp();
+        ResetCurrent();
+    }
 
-//     // private static bool DrawGroupConfiguration(float textPickerWidth)
-//     // {
-//     //     DrawGroupTitle();
-//     //     DrawGroupPicker(textPickerWidth);
-//     //     return DrawGroupEnabledCheckbox();
-//     // }
+    /// <inheritdoc/>
+    public override void ResetTmp()
+    {
+        this.TmpConfig = Service.Configuration.FlyTextGroups
+            .ToDictionary(
+                entry => entry.Key,
+                entry => new FlyTextConfiguration(entry.Value));
+    }
 
-//     // private static void DrawFontTitle()
-//     // {
-//     //     using (Service.Fonts.Push(Defaults.DefaultFontName, 18f))
-//     //     {
-//     //         ImGui.Text("Font Configuration");
-//     //         ImGui.Spacing();
-//     //     }
-//     // }
+    private static void ResetCurrent()
+    {
+        currentGroup = FlyTextCategoryExtension.GetAllGroups().First();
+    }
 
-//     // private static void DrawFontPicker(float textPickerWidth)
-//     // {
-//     //     using (ImRaii.PushColor(ImGuiCol.Text, ImGui.GetColorU32(new Vector4(1, 1, 0, 1))))
-//     //     {
-//     //         ImGui.Text("Select Font: ");
-//     //     }
+    private void OnSave()
+    {
+        this.TmpConfig.Keys.ToList().ForEach(group =>
+        {
+            if (this.TmpConfig.TryGetValue(group, out var currentConfig))
+            {
+                group.ForEachCategory(category =>
+                {
+                    Service.Configuration.FlyTextCategories[category] = new FlyTextConfiguration(currentConfig);
 
-//     //     ImGui.SameLine();
-//     //     ImGui.SetNextItemWidth(textPickerWidth);
-//     //     Artist.DrawSelectPicker("Font", CurrentFont, PluginConfiguration.Fonts.Keys.ToList(), name =>
-//     //     {
-//     //         CurrentFont = name;
-//     //     });
-//     // }
+                    category.ForEachKind(kind => { Service.Configuration.FlyTextKinds[kind] = new FlyTextConfiguration(currentConfig); });
+                });
 
-//     // private static void DrawFontSizePicker(float numPickerWidth)
-//     // {
-//     //     ImGui.SameLine();
-//     //     ImGui.SetNextItemWidth(numPickerWidth);
-//     //     Artist.DrawSelectPicker("FontSize", CurrentFontSize, PluginConfiguration.Fonts[CurrentFont], size =>
-//     //     {
-//     //         CurrentFontSize = size;
-//     //     });
-//     // }
+                Service.Configuration.FlyTextGroups[group] = new FlyTextConfiguration(currentConfig);
+            }
+        });
 
-//     // private static void DrawFontColorPicker(float textPickerWidth)
-//     // {
-//     //     using (ImRaii.PushColor(ImGuiCol.Text, ImGui.GetColorU32(new Vector4(1, 1, 0, 1))))
-//     //     {
-//     //         ImGui.Text("Select Font Color: ");
-//     //     }
-
-//     //     ImGui.SameLine();
-//     //     ImGui.SetNextItemWidth(textPickerWidth);
-//     //     Artist.DrawColorPicker("Color##Font", CurrentFontColor, color =>
-//     //     {
-//     //         CurrentFontColor = color;
-//     //     });
-//     // }
-
-//     // private static bool DrawFontOutlinePicker()
-//     // {
-//     //     using (ImRaii.PushColor(ImGuiCol.Text, ImGui.GetColorU32(new Vector4(1, 1, 0, 1))))
-//     //     {
-//     //         ImGui.Text("Select Font Outline: ");
-//     //     }
-
-//     //     ImGui.SameLine();
-//     //     Artist.Checkbox("Outline", CurrentOutlineEnabled, enabled =>
-//     //     {
-//     //         CurrentOutlineEnabled = enabled;
-//     //     });
-
-//     //     return CurrentOutlineEnabled;
-//     // }
-
-//     // private static void DrawFontOutlineThicknessPicker(float numPickerWidth)
-//     // {
-//     //     using (ImRaii.PushColor(ImGuiCol.Text, ImGui.GetColorU32(new Vector4(1, 1, 0, 1))))
-//     //     {
-//     //         ImGui.Text("Select Outline Thickness: ");
-//     //     }
-
-//     //     ImGui.SameLine();
-//     //     ImGui.SetNextItemWidth(numPickerWidth * 2);
-//     //     var userInput = CurrentOutlineThickness;
-//     //     if (ImGui.InputInt("##Outline Thickness", ref userInput, step: 1, step_fast: 2))
-//     //     {
-//     //         userInput = Math.Clamp(userInput, 1, 5);
-//     //         CurrentOutlineThickness = userInput;
-//     //     }
-//     // }
-
-//     // private static void DrawFontOutlineColorPicker(float textPickerWidth)
-//     // {
-//     //     using (ImRaii.PushColor(ImGuiCol.Text, ImGui.GetColorU32(new Vector4(1, 1, 0, 1))))
-//     //     {
-//     //         ImGui.Text("Select Outline Color: ");
-//     //     }
-
-//     //     ImGui.SameLine();
-//     //     ImGui.SetNextItemWidth(textPickerWidth);
-//     //     Artist.DrawColorPicker("Color##Outline", CurrentOutlineColor, color =>
-//     //     {
-//     //         CurrentOutlineColor = color;
-//     //     });
-//     // }
-
-//     // private static void DrawFontConfiguration(float textPickerWidth, float numPickerWidth)
-//     // {
-//     //     DrawFontTitle();
-//     //     DrawFontPicker(textPickerWidth);
-//     //     DrawFontSizePicker(numPickerWidth);
-//     //     DrawFontColorPicker(textPickerWidth);
-//     //     if (DrawFontOutlinePicker())
-//     //     {
-//     //         DrawFontOutlineThicknessPicker(numPickerWidth);
-//     //         DrawFontOutlineColorPicker(textPickerWidth);
-//     //     }
-//     // }
-// }
+        this.ResetTmp();
+    }
+}

@@ -1,6 +1,7 @@
 namespace CBT.Helpers;
 
 using System.Collections.Generic;
+using System.Linq;
 using CBT.Types;
 
 /// <summary>
@@ -93,7 +94,8 @@ public class QuadTree(int level, Rectangle bounds)
             this.nodes[index].Retrieve(potentialCollisions, e);
         }
 
-        potentialCollisions.AddRange(this.events);
+        // Only interested in collisions where animation kinds are the same.
+        potentialCollisions.AddRange(this.events.Where(p => p.Config.Animation.Kind == e.Config.Animation.Kind));
 
         return potentialCollisions;
     }

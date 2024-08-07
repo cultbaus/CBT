@@ -16,15 +16,7 @@ using ImGuiNET;
 /// </summary>
 public partial class ConfigWindow : Window
 {
-    private static readonly List<ITab> Tabs =
-    [
-        // new KindTab(),
-        new CategoryTab(),
-
-        // new GroupTab(),
-    ];
-
-    private static TabKind currentTab = TabKind.Kind;
+    private static TabKind currentTab = TabKind.Settings;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConfigWindow"/> class.
@@ -64,7 +56,7 @@ public partial class ConfigWindow : Window
     /// <inheritdoc/>
     public override void OnClose()
     {
-        Tabs.ForEach(tab => tab.OnClose());
+        SettingsTab.Tabs.ForEach(tab => tab.OnClose());
 
         Service.Configuration.Save();
     }
@@ -81,7 +73,7 @@ public partial class ConfigWindow : Window
             // Do not scale this
             using (ImRaii.PushStyle(ImGuiStyleVar.SelectableTextAlign, new Vector2(0.5f, 0.5f)))
             {
-                Tabs.ForEach(tab =>
+                SettingsTab.Tabs.ForEach(tab =>
                 {
                     var isSelected = currentTab == tab.Kind;
 
@@ -99,7 +91,7 @@ public partial class ConfigWindow : Window
 
     private static void DrawLogo(Vector2 imageSize)
     {
-        var imagePath = Path.Combine(Service.Interface.AssemblyLocation.DirectoryName!, "Data\\icon.png");
+        var imagePath = Path.Combine(Service.Interface.AssemblyLocation.DirectoryName!, "images\\icon.png");
         var logoImage = Service.TextureProvider.GetFromFile(imagePath).GetWrapOrDefault();
 
         var regionSize = ImGui.GetContentRegionAvail();
@@ -129,7 +121,14 @@ public partial class ConfigWindow : Window
 
     private static void DrawRightColumn()
     {
+        static void DrawContent()
+        {
+            var tab = SettingsTab.Tabs.FirstOrDefault(tab => tab.Kind == currentTab);
+            tab?.ResetTmp();
+            tab?.Draw();
+        }
+
         ImGui.TableNextColumn();
-        Artist.DrawChildWithMargin("##RIGHT_COLUMN_CHILD", Vector2.Zero, Artist.Scale(5f), () => { Tabs.FirstOrDefault(tab => tab.Kind == currentTab)?.Draw(); }, ImGuiWindowFlags.None);
+        Artist.DrawChildWithMargin("##RIGHT_COLUMN_CHILD", Vector2.Zero, Artist.Scale(5f), DrawContent, ImGuiWindowFlags.None);
     }
 }
