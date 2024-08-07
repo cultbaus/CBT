@@ -16,6 +16,7 @@ public class FlyTextConfiguration
         this.Animation = new FlyTextAnimationConfiguration();
         this.Icon = new FlyTextIconConfiguration();
         this.Message = new FlyTextMessageConfiguration();
+        this.Filter = new FlyTextFilterConfiguration();
     }
 
     /// <summary>
@@ -30,6 +31,7 @@ public class FlyTextConfiguration
         this.Animation = new FlyTextAnimationConfiguration(config.Animation);
         this.Icon = new FlyTextIconConfiguration(config.Icon);
         this.Message = new FlyTextMessageConfiguration(config.Message);
+        this.Filter = new FlyTextFilterConfiguration(config.Filter);
     }
 
     /// <summary>
@@ -43,6 +45,7 @@ public class FlyTextConfiguration
         this.Animation = new FlyTextAnimationConfiguration(toCopy.Animation);
         this.Icon = new FlyTextIconConfiguration(toCopy.Icon);
         this.Message = new FlyTextMessageConfiguration(toCopy.Message);
+        this.Filter = new FlyTextFilterConfiguration(toCopy.Filter);
     }
 
     /// <summary>
@@ -69,4 +72,9 @@ public class FlyTextConfiguration
     /// Gets or sets the message configuration.
     /// </summary>
     public FlyTextMessageConfiguration Message { get; set; }
+
+    /// <summary>
+    /// Gets or sets the filter configuration.
+    /// </summary>
+    public FlyTextFilterConfiguration Filter { get; set; }
 }

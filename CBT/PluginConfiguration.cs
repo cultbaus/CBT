@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using CBT.FlyText;
 using CBT.FlyText.Configuration;
 using CBT.Types;
 using Dalamud.Configuration;

@@ -77,8 +77,16 @@ public unsafe partial class FlyTextEvent(FlyTextKind kind, Effect[] effects, Cha
     /// Gets the string representation of the FlyTextEvent Value1.
     /// </summary>
     public string Text
-        => this.Kind.IsStatus() ?
-            this.Format(this.Name) : this.Format(this.Value1.ToString("N0"));
+    {
+        get
+        {
+            return this.Kind.IsStatus()
+                ? this.Format(this.Name)
+                : this.Kind.IsMessage()
+                    ? this.Format(this.Kind.Pretty())
+                    : this.Format(this.Value1.ToString("N0"));
+        }
+    }
 
     /// <summary>
     /// Gets the Dalamud Texture Wrap for the ActionID.

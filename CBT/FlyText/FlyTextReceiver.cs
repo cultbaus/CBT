@@ -1,12 +1,14 @@
 namespace CBT.FlyText;
 
 using System;
+using CBT.FlyText.Configuration;
 using CBT.Types;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Hooking;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
+using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using static FFXIVClientStructs.FFXIV.Client.Game.Character.ActionEffectHandler;
 using DalamudFlyText = Dalamud.Game.Gui.FlyText;
 
@@ -48,6 +50,8 @@ public unsafe partial class FlyTextReceiver : IDisposable
         this.addScreenLogHook.Dispose();
 
         Service.FlyTextGui.FlyTextCreated -= this.FlyTextCreated;
+
+        GC.SuppressFinalize(this);
     }
 
     private void AddScreenLogDetour(
@@ -64,7 +68,11 @@ public unsafe partial class FlyTextReceiver : IDisposable
     {
         try
         {
-            var weActuallyCare = InvolvesMe(source, target) && Unfiltered(kind);
+            var kindConfig = GetConfig(kind);
+            var weActuallyCare = false;
+
+            weActuallyCare = weActuallyCare || (kindConfig.Filter.Enemy && IsEnemy(target));
+            weActuallyCare = weActuallyCare || (kindConfig.Filter.Self && IsPlayerCharacter(target));
 
             if (weActuallyCare)
             {
@@ -96,6 +104,7 @@ public unsafe partial class FlyTextReceiver : IDisposable
     {
         Service.PluginLog.Debug($"FlyTextCreated event \"{kind}\" has been handled by CBT.");
 
+        // TODO @cultbaus: Allow user to decide if this event is ignored.
         handled = true;
     }
 }
@@ -110,6 +119,22 @@ public unsafe partial class FlyTextReceiver
     /// </summary>
     protected static IPlayerCharacter? LocalPlayer
         => Service.ClientState.LocalPlayer;
+
+    /// <summary>
+    /// Get the config for the kind.
+    /// </summary>
+    /// <param name="kind">Kind to query config for.</param>
+    /// <returns>The configuration options.</returns>
+    protected static FlyTextConfiguration GetConfig(FlyTextKind kind)
+        => Service.Configuration.FlyTextKinds[kind];
+
+    /// <summary>
+    /// Is the target an enemy.
+    /// </summary>
+    /// <param name="target">Target of the event.</param>
+    /// <returns>A bool if they're a bad guy.</returns>
+    protected static bool IsEnemy(Character* target)
+        => target->ObjectKind == ObjectKind.BattleNpc && target->SubKind == 5;
 
     /// <summary>
     /// Determines if a character instance is the player character.

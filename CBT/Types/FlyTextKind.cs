@@ -258,6 +258,14 @@ public static class FlyTextKindExtension
         => kind.InCategory(FlyTextCategory.Buff) || kind.InCategory(FlyTextCategory.Debuff);
 
     /// <summary>
+    /// Checks if a kind is a message-only.
+    /// </summary>
+    /// <param name="kind">FlyTextKind.</param>
+    /// <returns>Bool indicating if the kind is a message-only kind.</returns>
+    public static bool IsMessage(this FlyTextKind kind)
+        => kind.InCategory(FlyTextCategory.Miss) || kind.InCategory(FlyTextCategory.CC);
+
+    /// <summary>
     /// Checks if a kind is a spell.
     /// </summary>
     /// <param name="kind">FlyTextKind.</param>
@@ -272,4 +280,28 @@ public static class FlyTextKindExtension
     public static IEnumerable<FlyTextKind> GetAll()
         => Enum.GetValues<FlyTextKind>()
             .Cast<FlyTextKind>();
+
+    /// <summary>
+    /// Pretty print a value.
+    /// </summary>
+    /// <param name="kind">Kind to print.</param>
+    /// <returns>A pretty string.</returns>
+    public static string Pretty(this FlyTextKind kind)
+    {
+        return kind switch
+        {
+            FlyTextKind.Miss => "Miss",
+            FlyTextKind.NamedMiss => "Miss",
+            FlyTextKind.Dodge => "Dodge",
+            FlyTextKind.NamedDodge => "Dodge",
+            FlyTextKind.DebuffNoEffect => "No Effect",
+            FlyTextKind.DebuffResisted => "Resisted",
+            FlyTextKind.Incapacitated => "Incapacitated",
+            FlyTextKind.FullyResisted => "Resisted",
+            FlyTextKind.HasNoEffect => "No Effect",
+            FlyTextKind.DebuffInvulnerable => "Invulnerable",
+            FlyTextKind.Resist => "Resisted",
+            _ => string.Empty,
+        };
+    }
 }

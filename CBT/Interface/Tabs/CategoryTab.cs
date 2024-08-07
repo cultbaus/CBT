@@ -6,8 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using CBT.FlyText.Configuration;
+using CBT.Helpers;
 using CBT.Types;
-using ImGuiNET;
+using static FFXIVClientStructs.FFXIV.Client.UI.Info.InfoProxyCommonList.CharacterData;
 
 /// <summary>
 /// CatgeoryTab configures settings for FlyTextcategory Categories.

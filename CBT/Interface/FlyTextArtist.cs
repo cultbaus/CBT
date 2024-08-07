@@ -1,4 +1,4 @@
-namespace CBT.FlyText;
+namespace CBT.Interface;
 
 using System;
 using System.Collections.Generic;
@@ -14,7 +14,6 @@ using ImGuiNET;
 /// </summary>
 public unsafe class FlyTextArtist
 {
-
     /// <summary>
     /// Draws events to the CBT canvas.
     /// </summary>
@@ -26,23 +25,20 @@ public unsafe class FlyTextArtist
 
         flyTextEvents.ForEach(e =>
         {
-            QuadTree qt = QuadTreeManager.GetQuadTree(e.Target->GetGameObjectId().ObjectId);
-            qt.Insert(e);
-        });
-        flyTextEvents.ForEach(e =>
-        {
-            QuadTree qt = QuadTreeManager.GetQuadTree(e.Target->GetGameObjectId().ObjectId);
+            var qt = QuadTreeManager.GetQuadTree(e.Target->GetGameObjectId().ObjectId);
 
-            var potentialCollisions = qt.Retrieve([], e);
-            potentialCollisions.ForEach(p =>
-            {
-                if (p != e)
+            qt.Insert(e);
+            qt.Retrieve([], e)
+                .ForEach(p =>
                 {
-                    AdjustOverlap(e, p);
-                }
-            });
+                    if (p != e)
+                    {
+                        AdjustOverlap(e, p);
+                    }
+                });
+
+            DrawFlyTextWithIconAndOutlines(drawList, e);
         });
-        flyTextEvents.ForEach(e => DrawFlyTextWithIconAndOutlines(drawList, e));
     }
 
     private static Vector2 Center(FlyTextEvent flyTextEvent)

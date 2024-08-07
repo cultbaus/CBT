@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using CBT.FlyText.Configuration;
+using CBT.Helpers;
 using CBT.Interface.Tabs;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
@@ -15,13 +16,13 @@ using ImGuiNET;
 /// </summary>
 public partial class ConfigWindow : Window
 {
-    private static readonly List<ITab> Tabs = new List<ITab>()
-    {
+    private static readonly List<ITab> Tabs =
+    [
         // new KindTab(),
         new CategoryTab(),
 
         // new GroupTab(),
-    };
+    ];
 
     private static TabKind currentTab = TabKind.Kind;
 
@@ -42,7 +43,7 @@ public partial class ConfigWindow : Window
     {
         using (Service.Fonts.Push(Defaults.DefaultFontName, 14f))
         {
-            using (ImRaii.PushStyle(ImGuiStyleVar.CellPadding, new Vector2(5, 30)))
+            using (ImRaii.PushStyle(ImGuiStyleVar.CellPadding, new Vector2(Artist.Scale(5), Artist.Scale(30))))
             {
                 using (ImRaii.Table("##CONFIGURATION_TABLE", 2, ImGuiTableFlags.BordersInnerV))
                 {
@@ -70,11 +71,14 @@ public partial class ConfigWindow : Window
 
     private static void DrawLeftColumn()
     {
+        var regionSize = ImGui.GetContentRegionAvail();
+
         ImGui.TableNextColumn();
         using (ImRaii.Child("##LEFT_COLUMN_CHILD", ImGui.GetContentRegionAvail(), false, ImGuiWindowFlags.NoDecoration))
         {
             DrawLogo(new Vector2(Artist.Scale(125f), Artist.Scale(67f)));
 
+            // Do not scale this
             using (ImRaii.PushStyle(ImGuiStyleVar.SelectableTextAlign, new Vector2(0.5f, 0.5f)))
             {
                 Tabs.ForEach(tab =>
@@ -100,7 +104,7 @@ public partial class ConfigWindow : Window
 
         var regionSize = ImGui.GetContentRegionAvail();
 
-        using (ImRaii.Child("##LOGO", regionSize with { Y = 67f * 1.25f }, false, ImGuiWindowFlags.NoDecoration))
+        using (ImRaii.Child("##LOGO", regionSize with { Y = imageSize.Y * 1.25f }, false, ImGuiWindowFlags.NoDecoration))
         {
             if (logoImage != null)
             {

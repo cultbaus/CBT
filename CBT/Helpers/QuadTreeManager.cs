@@ -6,7 +6,7 @@ using Dalamud.Interface.Utility;
 /// <summary>
 /// Quad Tree manager. This should be smarter than it is, but for now, it just is.
 /// </summary>
-public static class QuadTreeManager
+public class QuadTreeManager
 {
     private static readonly Dictionary<uint, QuadTree> Cache = [];
 

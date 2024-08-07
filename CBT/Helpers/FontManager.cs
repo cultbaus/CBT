@@ -71,6 +71,7 @@ public class FontManager : IDisposable
     {
         try
         {
+            Service.PluginLog.Info($"Global Scale: {Service.Interface.UiBuilder.FontAtlas.IsGlobalScaled}");
             IFontHandle fontHandle = Service.Interface.UiBuilder.FontAtlas.NewDelegateFontHandle(e =>
             {
                 e.OnPreBuild(tk => tk.AddFontFromFile(Path.Combine(this.mediaPath, $"{fontName}.ttf"), new SafeFontConfig { SizePx = size }));

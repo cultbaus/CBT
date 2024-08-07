@@ -1,16 +1,13 @@
-namespace CBT.Interface;
+namespace CBT.Helpers;
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Numerics;
-using System.Reflection.Emit;
 using System.Text;
 using CBT.FlyText.Configuration;
 using CBT.Interface.Tabs;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
-using FFXIVClientStructs.FFXIV.Common.Lua;
 using ImGuiNET;
 
 /// <summary>
@@ -120,6 +117,8 @@ public class Artist
     /// <param name="flags">ImGUI Window Flags.</param>
     public static void DrawChildWithMargin(string childId, Vector2 size, float margin, Action drawContent, ImGuiWindowFlags flags)
     {
+        margin = Scale(margin);
+
         using (ImRaii.Child(childId, size, false))
         {
             ImGui.SetCursorPos(new Vector2(margin * 2, margin));
@@ -144,6 +143,8 @@ public class Artist
     /// <param name="size">Size of the input width.</param>
     public static void DrawSelectPicker<T>(string label, bool sameLine, T currentValue, List<T> values, Action<T> action, float size = LongElementWidth)
     {
+        size = Scale(size);
+
         if (sameLine)
         {
             ImGui.SameLine();
@@ -184,8 +185,11 @@ public class Artist
     /// <param name="sameLine">Should draw on the same line.</param>
     /// <param name="currentColor">Current color of the option to change, initial value.</param>
     /// <param name="action">Action to take with the new color.</param>
-    public static void DrawColorPicker(string label, bool sameLine, Vector4 currentColor, Action<Vector4> action)
+    /// <param name="size">Size of the picker.</param>
+    public static void DrawColorPicker(string label, bool sameLine, Vector4 currentColor, Action<Vector4> action, float size = LongElementWidth)
     {
+        size = Scale(size);
+
         var colorPicker = currentColor;
 
         if (sameLine)
@@ -193,7 +197,7 @@ public class Artist
             ImGui.SameLine();
         }
 
-        ImGui.SetNextItemWidth(LongElementWidth);
+        ImGui.SetNextItemWidth(size);
 
         if (ImGui.ColorEdit4($"##{label}", ref colorPicker))
         {
@@ -313,7 +317,7 @@ public class Artist
         byte[] buffer = new byte[256];
         Encoding.UTF8.GetBytes(value, 0, value.Length, buffer, 0);
 
-        ImGui.SetNextItemWidth(ShortElementWidth * 3);
+        ImGui.SetNextItemWidth(Scale(ShortElementWidth * 3));
 
         if (ImGui.InputText($"##{label}", buffer, (uint)buffer.Length))
         {
@@ -328,5 +332,5 @@ public class Artist
     /// <param name="f">Floating value before UI Scale adjustment.</param>
     /// <returns>Float that has been adjusted for UI scale.</returns>
     public static float Scale(float f)
-        => f * ImGuiHelpers.GlobalScale * (Service.Interface.UiBuilder.DefaultFontSpec.SizePt / 12f);
+        => f * ImGuiHelpers.GlobalScale;
 }

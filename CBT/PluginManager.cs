@@ -2,7 +2,7 @@ namespace CBT;
 
 using System;
 using System.Collections.Generic;
-using CBT.FlyText;
+using CBT.Interface;
 using CBT.Types;
 using Dalamud.Plugin.Services;
 using ImGuiNET;
