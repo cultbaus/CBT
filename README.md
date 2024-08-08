@@ -1,8 +1,12 @@
 <div align="center">
 
-<img height="100px" src="./res/icon.png" />
+<img height="200px" src="./res/icon.png" />
 
 ## Cultbaus Battle Text
+
+<a href="https://discord.gg/xPxfMSWwjq"> ![Discord](https://img.shields.io/badge/discord-join-7289da?style=for-the-badge&logo=discord) </a>
+
+[Quick Start](#quick-start) • [Prior Art](#prior-art) • [Attribution](#attribution) • [Help Wanted](#help-wanted)
 
 <img height="400px" src="./res/record.gif" />
 
@@ -25,6 +29,7 @@ Thank you to the creators & maintainers of [FlyTextFilter][1] and [DamageInfo][2
 Additionally, thank you to the creators & maintainers of [DelvUI][4] and [XIVComboExpanded][3] for providing additional reference material and implementation details that were lost on me from the official documentation sources. Similar to the aforementioned prior art, these plugins were instrumental in providing me a basis for which I could begin.
 
 # Help Wanted
+
 * Localization support
 * [FontManager](./CBT/Helpers/FontManager.cs) could use improvement - perhaps using the Dalamud global picker to load all the fonts available to a user.
 
