@@ -21,11 +21,11 @@ public unsafe class FlyTextArtist
     /// <param name="flyTextEvents">Events to draw to the canvas.</param>
     public static void Draw(ImDrawListPtr drawList, List<FlyTextEvent> flyTextEvents)
     {
-        QuadTreeManager.Clear();
+        Service.Tree.Clear();
 
         flyTextEvents.ForEach(e =>
         {
-            var qt = QuadTreeManager.GetQuadTree(e.Target->GetGameObjectId().ObjectId, e.Config.Animation.Reversed);
+            var qt = Service.Tree.GetQuadTree(e.Target->GetGameObjectId().ObjectId);
 
             qt.Insert(e);
             qt.Retrieve([], e)
@@ -39,6 +39,95 @@ public unsafe class FlyTextArtist
 
             DrawFlyTextWithIconAndOutlines(drawList, e);
         });
+    }
+
+    private static void DrawFlyTextWithIconAndOutlines(ImDrawListPtr drawList, FlyTextEvent flyTextEvent)
+    {
+        using (ImRaii.PushStyle(ImGuiStyleVar.Alpha, flyTextEvent.Animation.Alpha))
+        {
+            using (Service.Fonts.Push(flyTextEvent.Config.Font.Name, flyTextEvent.Config.Font.Size))
+            {
+                if (flyTextEvent.Config.Icon.Enabled)
+                {
+                    DrawIcon(drawList, flyTextEvent);
+                }
+
+                DrawText(drawList, flyTextEvent);
+            }
+        }
+    }
+
+    private static void DrawText(ImDrawListPtr drawList, FlyTextEvent flyTextEvent)
+    {
+        if (!flyTextEvent.Config.Font.Outline.Enabled)
+        {
+            return;
+        }
+
+        DrawTextOutline(drawList, flyTextEvent);
+
+        drawList.AddText(Center(flyTextEvent), ImGui.GetColorU32(flyTextEvent.Color), flyTextEvent.Text);
+    }
+
+    private static void DrawTextOutline(ImDrawListPtr drawList, FlyTextEvent flyTextEvent)
+    {
+        static Vector2[] MakeVectors(int i)
+        {
+            return
+            [
+                new Vector2(-i, i),
+                new Vector2(0, i),
+                new Vector2(i, i),
+                new Vector2(-i, 0),
+                new Vector2(i, 0),
+                new Vector2(-i, -i),
+                new Vector2(0, -i),
+                new Vector2(i, -i),
+            ];
+        }
+
+        var textPosition = Center(flyTextEvent);
+        var outlineColor = ImGui.GetColorU32(flyTextEvent.Config.Font.Outline.Color);
+
+        Enumerable
+            .Range(1, flyTextEvent.Config.Font.Outline.Size)
+            .SelectMany(MakeVectors)
+            .ToList()
+            .ForEach(offset => drawList.AddText(textPosition + offset, outlineColor, flyTextEvent.Text));
+    }
+
+    private static void DrawIcon(ImDrawListPtr drawList, FlyTextEvent flyTextEvent)
+    {
+        if (flyTextEvent.Icon == null)
+        {
+            return;
+        }
+
+        var textPos = Center(flyTextEvent);
+        var iconConfig = flyTextEvent.Config.Icon;
+        var iconSize = iconConfig.Size;
+        var iconAlpha = (uint)(flyTextEvent.Animation.Alpha * 255.0f) << 24 | 0x00FFFFFF;
+
+        var iconPos = CalculateIconPosition(flyTextEvent, textPos, iconSize);
+
+        if (iconConfig.Outline.Enabled)
+        {
+            DrawIconOutline(drawList, flyTextEvent, iconPos, iconSize);
+        }
+
+        var (uvMin, uvMax) = CalculateUvMinMax(iconConfig.Zoom);
+
+        drawList.AddImage(flyTextEvent.Icon.ImGuiHandle, iconPos, iconPos + iconSize, uvMin, uvMax, iconAlpha);
+    }
+
+    private static void DrawIconOutline(ImDrawListPtr drawList, FlyTextEvent flyTextEvent, Vector2 iconPos, Vector2 iconSize)
+    {
+        var borderSize = flyTextEvent.Config.Icon.Outline.Size;
+        var borderColor = ImGui.GetColorU32(flyTextEvent.Config.Icon.Outline.Color);
+        var borderMin = new Vector2(iconPos.X - borderSize, iconPos.Y - borderSize);
+        var borderMax = new Vector2(iconPos.X + iconSize.X + borderSize, iconPos.Y + iconSize.Y + borderSize);
+
+        drawList.AddRect(borderMin, borderMax, borderColor, 0.0f, ImDrawFlags.None, borderSize);
     }
 
     private static Vector2 Center(FlyTextEvent flyTextEvent)
@@ -64,94 +153,33 @@ public unsafe class FlyTextArtist
 
     private static void AdjustOverlap(FlyTextEvent a, FlyTextEvent b)
     {
-        if (IsOverlapping(a, b))
-        {
-            var toAdjust = a.Animation.TimeElapsed < b.Animation.TimeElapsed ? a : b;
-            toAdjust.Animation.Offset = new Vector2(toAdjust.Animation.Offset.X, toAdjust.Animation.Offset.Y + GetOverlap(a, b));
-        }
-    }
-
-    private static void DrawFlyTextWithIconAndOutlines(ImDrawListPtr drawList, FlyTextEvent flyTextEvent)
-    {
-        using (ImRaii.PushStyle(ImGuiStyleVar.Alpha, flyTextEvent.Animation.Alpha))
-        {
-            using (Service.Fonts.Push(flyTextEvent.Config.Font.Name, flyTextEvent.Config.Font.Size))
-            {
-                if (flyTextEvent.Config.Icon.Enabled)
-                {
-                    DrawIcon(drawList, flyTextEvent);
-                }
-
-                DrawText(drawList, flyTextEvent);
-            }
-        }
-    }
-
-    private static void DrawText(ImDrawListPtr drawList, FlyTextEvent flyTextEvent)
-    {
-        if (flyTextEvent.Config.Font.Outline.Enabled)
-        {
-            DrawTextOutline(drawList, flyTextEvent);
-        }
-
-        drawList.AddText(Center(flyTextEvent), ImGui.GetColorU32(flyTextEvent.Config.Font.Color), flyTextEvent.Text);
-    }
-
-    private static void DrawIcon(ImDrawListPtr drawList, FlyTextEvent flyTextEvent)
-    {
-        if (flyTextEvent.Icon == null)
+        if (!IsOverlapping(a, b))
         {
             return;
         }
 
-        var textPos = Center(flyTextEvent);
-        var iconSize = flyTextEvent.Config.Icon.Size;
-        var iconAlpha = (uint)(flyTextEvent.Animation.Alpha * 255.0f) << 24 | 0x00FFFFFF;
+        if (a.Animation.AnimationKind != b.Animation.AnimationKind)
+        {
+            return;
+        }
+
+        if (a.Animation.Reversed != b.Animation.Reversed)
+        {
+            return;
+        }
+
+        (a.Animation.TimeElapsed < b.Animation.TimeElapsed ? a : b).Animation.Offset += new Vector2(0, GetOverlap(a, b));
+    }
+
+    private static Vector2 CalculateIconPosition(FlyTextEvent flyTextEvent, Vector2 textPos, Vector2 iconSize)
+    {
         var verticalOffset = (ImGui.CalcTextSize(flyTextEvent.Text).Y - iconSize.Y) / 2.0f;
-        var iconPos = new Vector2(textPos.X - iconSize.X + flyTextEvent.Config.Icon.Offset.X, textPos.Y + verticalOffset + flyTextEvent.Config.Icon.Offset.Y);
-        var uvOffset = (1.0f - flyTextEvent.Config.Icon.Zoom) / 2.0f;
-        var uvMin = new Vector2(uvOffset, uvOffset);
-        var uvMax = new Vector2(1.0f - uvOffset, 1.0f - uvOffset);
-
-        if (flyTextEvent.Config.Icon.Outline.Enabled)
-        {
-            DrawIconOutline(drawList, flyTextEvent, iconPos, iconSize);
-        }
-
-        drawList.AddImage(flyTextEvent.Icon.ImGuiHandle, iconPos, iconPos + iconSize, uvMin, uvMax, iconAlpha);
+        return new Vector2(textPos.X - iconSize.X + flyTextEvent.Config.Icon.Offset.X, textPos.Y + verticalOffset + flyTextEvent.Config.Icon.Offset.Y);
     }
 
-    private static void DrawIconOutline(ImDrawListPtr drawList, FlyTextEvent flyTextEvent, Vector2 iconPos, Vector2 iconSize)
+    private static (Vector2 Min, Vector2 Max) CalculateUvMinMax(float zoom)
     {
-        var borderSize = flyTextEvent.Config.Icon.Outline.Size;
-        var borderColor = ImGui.GetColorU32(flyTextEvent.Config.Icon.Outline.Color);
-        var borderMin = new Vector2(iconPos.X - borderSize, iconPos.Y - borderSize);
-        var borderMax = new Vector2(iconPos.X + iconSize.X + borderSize, iconPos.Y + iconSize.Y + borderSize);
-
-        drawList.AddRect(borderMin, borderMax, borderColor, 0.0f, ImDrawFlags.None, borderSize);
-    }
-
-    private static void DrawTextOutline(ImDrawListPtr drawList, FlyTextEvent flyTextEvent)
-    {
-        var textPosition = Center(flyTextEvent);
-        var outlineColor = ImGui.GetColorU32(flyTextEvent.Config.Font.Outline.Color);
-
-        var offsets = Enumerable.Range(1, flyTextEvent.Config.Font.Outline.Size)
-            .SelectMany(i => new[]
-            {
-                new Vector2(-i, i),
-                new Vector2(0, i),
-                new Vector2(i, i),
-                new Vector2(-i, 0),
-                new Vector2(i, 0),
-                new Vector2(-i, -i),
-                new Vector2(0, -i),
-                new Vector2(i, -i),
-            });
-
-        foreach (var offset in offsets)
-        {
-            drawList.AddText(textPosition + offset, outlineColor, flyTextEvent.Text);
-        }
+        var uvOffset = (1.0f - zoom) / 2.0f;
+        return (Min: new Vector2(uvOffset, uvOffset), Max: new Vector2(1.0f - uvOffset, 1.0f - uvOffset));
     }
 }

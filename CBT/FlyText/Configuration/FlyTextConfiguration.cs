@@ -13,6 +13,7 @@ public class FlyTextConfiguration
     public FlyTextConfiguration()
     {
         this.Enabled = true;
+        this.Positionals = false;
         this.Font = new FlyTextFontConfiguration();
         this.Animation = new FlyTextAnimationConfiguration();
         this.Icon = new FlyTextIconConfiguration();
@@ -29,6 +30,7 @@ public class FlyTextConfiguration
         FlyTextConfiguration config = Service.Configuration.FlyTextKinds[kind];
 
         this.Enabled = config.Enabled;
+        this.Positionals = config.Positionals;
         this.Font = new FlyTextFontConfiguration(config.Font);
         this.Animation = new FlyTextAnimationConfiguration(config.Animation);
         this.Icon = new FlyTextIconConfiguration(config.Icon);
@@ -43,6 +45,7 @@ public class FlyTextConfiguration
     public FlyTextConfiguration(FlyTextConfiguration toCopy)
     {
         this.Enabled = toCopy.Enabled;
+        this.Positionals = toCopy.Positionals;
         this.Font = new FlyTextFontConfiguration(toCopy.Font);
         this.Animation = new FlyTextAnimationConfiguration(toCopy.Animation);
         this.Icon = new FlyTextIconConfiguration(toCopy.Icon);
@@ -54,6 +57,11 @@ public class FlyTextConfiguration
     /// Gets or sets a value indicating whether or not the kind is enabled.
     /// </summary>
     public bool Enabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether or positional data is enabled.
+    /// </summary>
+    public bool Positionals { get; set; }
 
     /// <summary>
     /// Gets or sets the font configuration.

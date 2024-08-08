@@ -1,28 +1,36 @@
 namespace CBT.Helpers;
 
+using System;
 using System.Collections.Generic;
 using Dalamud.Interface.Utility;
 
 /// <summary>
 /// Quad Tree manager. This should be smarter than it is, but for now, it just is.
 /// </summary>
-public class QuadTreeManager
+public class QuadTreeManager : IDisposable
 {
-    private static readonly Dictionary<(uint Target, bool Reversed), QuadTree> Cache = [];
+    private readonly Dictionary<uint, QuadTree> cache = [];
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="QuadTreeManager"/> class.
+    /// </summary>
+    public QuadTreeManager()
+    {
+        this.cache = [];
+    }
 
     /// <summary>
     /// Get a quad tree for a target.
     /// </summary>
     /// <param name="objectID">Target ID.</param>
-    /// <param name="reversed">Animation direction of the tree.</param>
     /// <returns>A quadtree instance.</returns>
-    public static QuadTree GetQuadTree(uint objectID, bool reversed)
+    public QuadTree GetQuadTree(uint objectID)
     {
-        if (!Cache.TryGetValue((Target: objectID, Reversed: reversed), out var quadTree))
+        if (!this.cache.TryGetValue(objectID, out var quadTree))
         {
             var size = ImGuiHelpers.MainViewport.Size;
-            quadTree = new QuadTree(0, new Rectangle(0, 0, size.X / 10, size.Y / 10));
-            Cache[(Target: objectID, Reversed: reversed)] = quadTree;
+            quadTree = new QuadTree(0, new Rectangle(0, 0, size.X, size.Y));
+            this.cache[objectID] = quadTree;
         }
 
         return quadTree;
@@ -31,13 +39,20 @@ public class QuadTreeManager
     /// <summary>
     /// Clear the quad trees and the cache. This is not the best way, we can do better.
     /// </summary>
-    public static void Clear()
+    public void Clear()
     {
-        foreach (var quadTree in Cache.Values)
+        foreach (var quadTree in this.cache.Values)
         {
             quadTree.Clear();
         }
 
-        Cache.Clear();
+        this.cache.Clear();
+    }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        this.Clear();
+        GC.SuppressFinalize(this);
     }
 }

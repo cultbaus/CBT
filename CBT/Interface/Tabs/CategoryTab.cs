@@ -54,118 +54,6 @@ public class CategoryTab : Tab<FlyTextCategory>
     }
 
     /// <inheritdoc/>
-    protected override bool CurrentEnabled
-    {
-        get => this.GetValue(config => config.Enabled);
-        set => this.SetValue((config, val) => config.Enabled = val, value);
-    }
-
-    /// <inheritdoc/>
-    protected override bool CurrentEnabledForSelf
-    {
-        get => this.GetValue(config => config.Filter.Self);
-        set => this.SetValue((config, val) => config.Filter.Self = val, value);
-    }
-
-    /// <inheritdoc/>
-    protected override bool CurrentEnabledForEnemy
-    {
-        get => this.GetValue(config => config.Filter.Enemy);
-        set => this.SetValue((config, val) => config.Filter.Enemy = val, value);
-    }
-
-    /// <inheritdoc/>
-    protected override bool CurrentEnabledForParty
-    {
-        get => this.GetValue(config => config.Filter.Party);
-        set => this.SetValue((config, val) => config.Filter.Party = val, value);
-    }
-
-    /// <inheritdoc/>
-    protected override string CurrentFont
-    {
-        get => this.GetValue(config => config.Font.Name);
-        set => this.SetValue((config, val) => config.Font.Name = val, value);
-    }
-
-    /// <inheritdoc/>
-    protected override Vector4 CurrentFontColor
-    {
-        get => this.GetValue(config => config.Font.Color);
-        set => this.SetValue((config, val) => config.Font.Color = val, value);
-    }
-
-    /// <inheritdoc/>
-    protected override float CurrentFontSize
-    {
-        get => this.GetValue(config => config.Font.Size);
-        set => this.SetValue((config, val) => config.Font.Size = val, value);
-    }
-
-    /// <inheritdoc/>
-    protected override bool CurrentFontOutlineEnabled
-    {
-        get => this.GetValue(config => config.Font.Outline.Enabled);
-        set => this.SetValue((config, val) => config.Font.Outline.Enabled = val, value);
-    }
-
-    /// <inheritdoc/>
-    protected override int CurrentFontOutlineThickness
-    {
-        get => this.GetValue(config => config.Font.Outline.Size);
-        set => this.SetValue((config, val) => config.Font.Outline.Size = val, value);
-    }
-
-    /// <inheritdoc/>
-    protected override Vector4 CurrentFontOutlineColor
-    {
-        get => this.GetValue(config => config.Font.Outline.Color);
-        set => this.SetValue((config, val) => config.Font.Outline.Color = val, value);
-    }
-
-    /// <inheritdoc/>
-    protected override bool CurrentIconEnabled
-    {
-        get => this.GetValue(config => config.Icon.Enabled);
-        set => this.SetValue((config, val) => config.Icon.Enabled = val, value);
-    }
-
-    /// <inheritdoc/>
-    protected override float CurrentIconSize
-    {
-        get => this.GetValue(config => config.Icon.Size.X);
-        set => this.SetValue((config, val) => config.Icon.Size = new Vector2(val, val), value);
-    }
-
-    /// <inheritdoc/>
-    protected override bool CurrentIconOutlineEnabled
-    {
-        get => this.GetValue(config => config.Icon.Outline.Enabled);
-        set => this.SetValue((config, val) => config.Icon.Outline.Enabled = val, value);
-    }
-
-    /// <inheritdoc/>
-    protected override int CurrentIconOutlineThickness
-    {
-        get => this.GetValue(config => config.Icon.Outline.Size);
-        set => this.SetValue((config, val) => config.Icon.Outline.Size = val, value);
-    }
-
-    /// <inheritdoc/>
-    protected override Vector4 CurrentIconOutlineColor
-    {
-        get => this.GetValue(config => config.Icon.Outline.Color);
-        set => this.SetValue((config, val) => config.Icon.Outline.Color = val, value);
-    }
-
-    /// <inheritdoc/>
-    protected override bool CurrentAnimationReversed
-    {
-        get => this.GetValue(config => config.Animation.Reversed);
-        set => this.SetValue((config, val) => config.Animation.Reversed = val, value);
-    }
-
-    /// <inheritdoc/>
     public override void Draw()
     {
         Artist.DrawTitle("Category Configuration Settings");
@@ -175,6 +63,12 @@ public class CategoryTab : Tab<FlyTextCategory>
         if (this.CurrentEnabled)
         {
             this.DrawFontConfigurations();
+
+            if (this.Current == FlyTextCategory.AbilityDamage)
+            {
+                this.DrawPositionalPickers();
+            }
+
             this.DrawIconConfigurations();
             this.DrawAnimationConfigurations();
         }

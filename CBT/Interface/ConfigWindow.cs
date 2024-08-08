@@ -68,7 +68,7 @@ public partial class ConfigWindow : Window
         ImGui.TableNextColumn();
         using (ImRaii.Child("##LEFT_COLUMN_CHILD", ImGui.GetContentRegionAvail(), false, ImGuiWindowFlags.NoDecoration))
         {
-            DrawLogo(new Vector2(Artist.Scale(125f), Artist.Scale(67f)));
+            DrawLogo(new Vector2(Artist.Scale(125f), Artist.Scale(125f)));
 
             // Do not scale this
             using (ImRaii.PushStyle(ImGuiStyleVar.SelectableTextAlign, new Vector2(0.5f, 0.5f)))
@@ -96,7 +96,7 @@ public partial class ConfigWindow : Window
 
         var regionSize = ImGui.GetContentRegionAvail();
 
-        using (ImRaii.Child("##LOGO", regionSize with { Y = imageSize.Y * 1.25f }, false, ImGuiWindowFlags.NoDecoration))
+        using (ImRaii.Child("##LOGO", regionSize with { Y = imageSize.Y }, false, ImGuiWindowFlags.NoDecoration))
         {
             if (logoImage != null)
             {

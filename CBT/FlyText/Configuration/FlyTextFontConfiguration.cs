@@ -16,21 +16,8 @@ public class FlyTextFontConfiguration
         this.Size = Defaults.DefaultFontSize;
         this.Name = Defaults.DefaultFontName;
         this.Color = Defaults.DefaultFontColor;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="FlyTextFontConfiguration"/> class.
-    /// </summary>
-    /// <param name="size">Size of the font in pixels.</param>
-    /// <param name="name">Name of the font.</param>
-    /// <param name="color">Color of the font.</param>
-    /// <param name="outlineConfig">Text outline configuration.</param>
-    public FlyTextFontConfiguration(float size, string name, Vector4 color, FlyTextOutlineConfiguration outlineConfig)
-    {
-        this.Outline = outlineConfig;
-        this.Size = size;
-        this.Name = name;
-        this.Color = color;
+        this.ColorSuccess = Defaults.DefaultFontColor;
+        this.ColorFailed = Defaults.DefaultFontColor;
     }
 
     /// <summary>
@@ -43,6 +30,8 @@ public class FlyTextFontConfiguration
         this.Size = toCopy.Size;
         this.Name = toCopy.Name;
         this.Color = toCopy.Color;
+        this.ColorSuccess = toCopy.ColorSuccess;
+        this.ColorFailed = toCopy.ColorFailed;
     }
 
     /// <summary>
@@ -64,4 +53,14 @@ public class FlyTextFontConfiguration
     /// Gets or sets the color of the font.
     /// </summary>
     public Vector4 Color { get; set; }
+
+    /// <summary>
+    /// Gets or sets the color of the font for positional success.
+    /// </summary>
+    public Vector4 ColorSuccess { get; set; }
+
+    /// <summary>
+    /// Gets or sets the color of the font for positional failures.
+    /// </summary>
+    public Vector4 ColorFailed { get; set; }
 }

@@ -22,12 +22,12 @@ public class SettingsTab : ITab
     {
         Tabs = [new KindTab(), new SettingsTab()];
 
-        if (Service.Configuration.Options[TabKind.Group])
+        if (Service.Configuration.Options[TabKind.Group.ToString()])
         {
             AddTab(new GroupTab());
         }
 
-        if (Service.Configuration.Options[TabKind.Category])
+        if (Service.Configuration.Options[TabKind.Category.ToString()])
         {
             AddTab(new CategoryTab());
         }
@@ -55,15 +55,36 @@ public class SettingsTab : ITab
 
         Artist.DrawTitle("CBT Configuration Settings");
 
-        Artist.DrawSubTitle("Bulk Configurations");
+        Artist.DrawSubTitle("Configuration Options");
 
+        Artist.DrawLabelPrefix("Enable Native FlyText Passthrough", sameLine: false);
+        if (Service.Configuration.Options.TryGetValue(GlobalOption.NativeUnhandled.ToString(), out var nativeUnhandled))
+        {
+            Artist.Checkbox("Enable Native FlyText Passthrough", sameLine: true, nativeUnhandled, enabled =>
+            {
+                Service.Configuration.Options[GlobalOption.NativeUnhandled.ToString()] = enabled;
+                Service.Configuration.Save();
+            });
+        }
+
+        Artist.DrawLabelPrefix("Unlock Player Anchor", sameLine: false);
+        if (Service.Configuration.Options.TryGetValue(GlobalOption.PlayerAnchor.ToString(), out var playerAnchor))
+        {
+            Artist.Checkbox("Unlock Player Anchor", sameLine: true, playerAnchor, enabled =>
+            {
+                Service.Configuration.Options[GlobalOption.PlayerAnchor.ToString()] = enabled;
+                Service.Configuration.Save();
+            });
+        }
+
+        Artist.DrawSubTitle("Bulk Configurations");
         Artist.DrawWarning("Warning: These configurations will overwrite individual FlyText Kind configurations.", 14f);
         Artist.DrawLabelPrefix("Enable Category Configurations", sameLine: false);
-        if (Service.Configuration.Options.TryGetValue(TabKind.Category, out var categoryConfig))
+        if (Service.Configuration.Options.TryGetValue(TabKind.Category.ToString(), out var categoryConfig))
         {
             Artist.Checkbox("EnableCategoryConfigurations_Checkbox", sameLine: true, categoryConfig, enabled =>
             {
-                Service.Configuration.Options[TabKind.Category] = enabled;
+                Service.Configuration.Options[TabKind.Category.ToString()] = enabled;
 
                 if (!enabled)
                 {
@@ -84,11 +105,11 @@ public class SettingsTab : ITab
 
         Artist.DrawWarning("Warning: These configurations will overwrite individual FlyText Kind & FlyText Category configurations.", 14f);
         Artist.DrawLabelPrefix("Enable Group Configurations", sameLine: false);
-        if (Service.Configuration.Options.TryGetValue(TabKind.Group, out var groupConfig))
+        if (Service.Configuration.Options.TryGetValue(TabKind.Group.ToString(), out var groupConfig))
         {
             Artist.Checkbox("EnableGroupConfigurations_Checkbox", sameLine: true, groupConfig, enabled =>
             {
-                Service.Configuration.Options[TabKind.Group] = enabled;
+                Service.Configuration.Options[TabKind.Group.ToString()] = enabled;
 
                 if (!enabled)
                 {

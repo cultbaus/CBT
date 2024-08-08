@@ -4,11 +4,27 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using System.Runtime.InteropServices;
 using CBT.FlyText.Configuration;
 using CBT.Interface.Tabs;
 using CBT.Types;
 using Dalamud.Configuration;
+using ImGuiNET;
+
+/// <summary>
+/// Global options.
+/// </summary>
+public enum GlobalOption
+{
+    /// <summary>
+    /// Displays native FlyText for unhandled Kinds.
+    /// </summary>
+    NativeUnhandled,
+
+    /// <summary>
+    /// Unhook the anchor from the local player.
+    /// </summary>
+    PlayerAnchor,
+}
 
 /// <summary>
 /// Dalamud plugin configuration implementation.
@@ -21,8 +37,13 @@ public class PluginConfiguration : IPluginConfiguration
     /// </summary>
     public PluginConfiguration()
     {
-        this.Options.Add(TabKind.Category, false);
-        this.Options.Add(TabKind.Group, false);
+        this.Options.Add(TabKind.Category.ToString(), false);
+        this.Options.Add(TabKind.Group.ToString(), false);
+        this.Options.Add(GlobalOption.NativeUnhandled.ToString(), false);
+        this.Options.Add(GlobalOption.PlayerAnchor.ToString(), false);
+
+        var size = ImGui.GetMainViewport().Size;
+        this.FreeMoveAnchor = new Vector2(size.X / 2, size.Y / 2);
 
         this.FlyTextKinds = FlyTextKindExtension
             .GetAll()
@@ -115,7 +136,12 @@ public class PluginConfiguration : IPluginConfiguration
     /// <summary>
     /// Gets or sets the plugin options.
     /// </summary>
-    public Dictionary<TabKind, bool> Options { get; set; } = [];
+    public Dictionary<string, bool> Options { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets the free move anchor.
+    /// </summary>
+    public Vector2 FreeMoveAnchor { get; set; }
 
     /// <summary>
     /// Gets or sets the Configuration Version.

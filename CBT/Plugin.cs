@@ -62,11 +62,14 @@ public sealed partial class Plugin : IDalamudPlugin
         Service.Manifest = new ManifestManager(assemblyLocation + Path.GetFileNameWithoutExtension(Service.Interface.AssemblyLocation.FullName) + ".json");
         Service.Receiver = new FlyTextReceiver(gameInteropProvider);
         Service.Ability = new AbilityManager();
+        Service.Tree = new QuadTreeManager();
     }
 
     /// <inheritdoc/>
     public void Dispose()
     {
+        Service.Tree.Dispose();
+        Service.Ability.Dispose();
         Service.Receiver.Dispose();
         Service.Manager.Dispose();
         Service.Manifest.Dispose();

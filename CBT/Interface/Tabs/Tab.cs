@@ -101,86 +101,6 @@ where TKey : notnull
     protected abstract TKey Current { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether current is enabled.
-    /// </summary>
-    protected abstract bool CurrentEnabled { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether enabled for self.
-    /// </summary>
-    protected abstract bool CurrentEnabledForSelf { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether enabled for enemies.
-    /// </summary>
-    protected abstract bool CurrentEnabledForEnemy { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether enabled for party members.
-    /// </summary>
-    protected abstract bool CurrentEnabledForParty { get; set; }
-
-    /// <summary>
-    /// Gets or sets the current font.
-    /// </summary>
-    protected abstract string CurrentFont { get; set; }
-
-    /// <summary>
-    /// Gets or sets the current font color.
-    /// </summary>
-    protected abstract Vector4 CurrentFontColor { get; set; }
-
-    /// <summary>
-    /// Gets or sets the current font size.
-    /// </summary>
-    protected abstract float CurrentFontSize { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the font outline is enabled.
-    /// </summary>
-    protected abstract bool CurrentFontOutlineEnabled { get; set; }
-
-    /// <summary>
-    /// Gets or sets the font outline thickness.
-    /// </summary>
-    protected abstract int CurrentFontOutlineThickness { get; set; }
-
-    /// <summary>
-    /// Gets or sets the font outline color.
-    /// </summary>
-    protected abstract Vector4 CurrentFontOutlineColor { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the icon is enabled.
-    /// </summary>
-    protected abstract bool CurrentIconEnabled { get; set; }
-
-    /// <summary>
-    /// Gets or sets the icon size.
-    /// </summary>
-    protected abstract float CurrentIconSize { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether icon outline is enabled.
-    /// </summary>
-    protected abstract bool CurrentIconOutlineEnabled { get; set; }
-
-    /// <summary>
-    /// Gets or sets the icon outline thickness.
-    /// </summary>
-    protected abstract int CurrentIconOutlineThickness { get; set; }
-
-    /// <summary>
-    /// Gets or sets the icon outline color.
-    /// </summary>
-    protected abstract Vector4 CurrentIconOutlineColor { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the animation is reversed.
-    /// </summary>
-    protected abstract bool CurrentAnimationReversed { get; set; }
-
-    /// <summary>
     /// Gets or sets a cache of the current configuration items.
     /// </summary>
     protected abstract Dictionary<TKey, FlyTextConfiguration> TmpConfig { get; set; }
@@ -189,6 +109,177 @@ where TKey : notnull
     /// Gets the persisted configuration items.
     /// </summary>
     protected abstract Dictionary<TKey, FlyTextConfiguration> Configuration { get; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether.
+    /// </summary>
+    protected bool CurrentEnabled
+    {
+        get => this.GetValue(config => config.Enabled);
+        set => this.SetValue((config, val) => config.Enabled = val, value);
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether.
+    /// </summary>
+    protected bool CurrentEnabledForSelf
+    {
+        get => this.GetValue(config => config.Filter.Self);
+        set => this.SetValue((config, val) => config.Filter.Self = val, value);
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether.
+    /// </summary>
+    protected bool CurrentEnabledForEnemy
+    {
+        get => this.GetValue(config => config.Filter.Enemy);
+        set => this.SetValue((config, val) => config.Filter.Enemy = val, value);
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether.
+    /// </summary>
+    protected bool CurrentEnabledForParty
+    {
+        get => this.GetValue(config => config.Filter.Party);
+        set => this.SetValue((config, val) => config.Filter.Party = val, value);
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether.
+    /// </summary>
+    protected string CurrentFont
+    {
+        get => this.GetValue(config => config.Font.Name);
+        set => this.SetValue((config, val) => config.Font.Name = val, value);
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether.
+    /// </summary>
+    protected Vector4 CurrentFontColor
+    {
+        get => this.GetValue(config => config.Font.Color);
+        set => this.SetValue((config, val) => config.Font.Color = val, value);
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether.
+    /// </summary>
+    protected float CurrentFontSize
+    {
+        get => this.GetValue(config => config.Font.Size);
+        set => this.SetValue((config, val) => config.Font.Size = val, value);
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether.
+    /// </summary>
+    protected bool CurrentFontOutlineEnabled
+    {
+        get => this.GetValue(config => config.Font.Outline.Enabled);
+        set => this.SetValue((config, val) => config.Font.Outline.Enabled = val, value);
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether.
+    /// </summary>
+    protected int CurrentFontOutlineThickness
+    {
+        get => this.GetValue(config => config.Font.Outline.Size);
+        set => this.SetValue((config, val) => config.Font.Outline.Size = val, value);
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether.
+    /// </summary>
+    protected Vector4 CurrentFontOutlineColor
+    {
+        get => this.GetValue(config => config.Font.Outline.Color);
+        set => this.SetValue((config, val) => config.Font.Outline.Color = val, value);
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether.
+    /// </summary>
+    protected bool CurrentIconEnabled
+    {
+        get => this.GetValue(config => config.Icon.Enabled);
+        set => this.SetValue((config, val) => config.Icon.Enabled = val, value);
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether.
+    /// </summary>
+    protected float CurrentIconSize
+    {
+        get => this.GetValue(config => config.Icon.Size.X);
+        set => this.SetValue((config, val) => config.Icon.Size = new Vector2(val, val), value);
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether.
+    /// </summary>
+    protected bool CurrentIconOutlineEnabled
+    {
+        get => this.GetValue(config => config.Icon.Outline.Enabled);
+        set => this.SetValue((config, val) => config.Icon.Outline.Enabled = val, value);
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether.
+    /// </summary>
+    protected int CurrentIconOutlineThickness
+    {
+        get => this.GetValue(config => config.Icon.Outline.Size);
+        set => this.SetValue((config, val) => config.Icon.Outline.Size = val, value);
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether.
+    /// </summary>
+    protected Vector4 CurrentIconOutlineColor
+    {
+        get => this.GetValue(config => config.Icon.Outline.Color);
+        set => this.SetValue((config, val) => config.Icon.Outline.Color = val, value);
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether.
+    /// </summary>
+    protected bool CurrentAnimationReversed
+    {
+        get => this.GetValue(config => config.Animation.Reversed);
+        set => this.SetValue((config, val) => config.Animation.Reversed = val, value);
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether.
+    /// </summary>
+    protected bool CurrentPositionalsEnabled
+    {
+        get => this.GetValue(config => config.Positionals);
+        set => this.SetValue((config, val) => config.Positionals = val, value);
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether.
+    /// </summary>
+    protected Vector4 CurrentFontColorSuccess
+    {
+        get => this.GetValue(config => config.Font.ColorSuccess);
+        set => this.SetValue((config, val) => config.Font.ColorSuccess = val, value);
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether.
+    /// </summary>
+    protected Vector4 CurrentFontColorFailed
+    {
+        get => this.GetValue(config => config.Font.ColorFailed);
+        set => this.SetValue((config, val) => config.Font.ColorFailed = val, value);
+    }
 
     /// <summary>
     /// Dispose.
@@ -346,6 +437,27 @@ where TKey : notnull
         {
             Artist.DrawLabelPrefix("Reverse Animation", sameLine: false);
             Artist.Checkbox($"Reverse Animation_{this.Name}", sameLine: true, this.CurrentAnimationReversed, enabled => { this.CurrentAnimationReversed = enabled; });
+        }
+    }
+
+    /// <summary>
+    /// Draw positional color pickers.
+    /// </summary>
+    protected void DrawPositionalPickers()
+    {
+        Artist.DrawSubTitle("Positional Color Configuration");
+        {
+            Artist.DrawLabelPrefix("Enable Positional Recolor", sameLine: false);
+            Artist.Checkbox($"Enable Positional Recolor_{this.Name}", sameLine: true, this.CurrentPositionalsEnabled, enabled => { this.CurrentPositionalsEnabled = enabled; });
+
+            if (this.CurrentPositionalsEnabled)
+            {
+                Artist.DrawLabelPrefix("Select Positional Success Color", sameLine: false);
+                Artist.DrawColorPicker($"Font Positional Success Color_{this.Name}", sameLine: true, this.CurrentFontColorSuccess, color => { this.CurrentFontColorSuccess = color; });
+
+                Artist.DrawLabelPrefix("Select Positional Failed Color", sameLine: false);
+                Artist.DrawColorPicker($"Font Positional Failed Color_{this.Name}", sameLine: true, this.CurrentFontColorFailed, color => { this.CurrentFontColorFailed = color; });
+            }
         }
     }
 }

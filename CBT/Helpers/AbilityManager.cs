@@ -3,17 +3,27 @@ namespace CBT.Helpers;
 using System.Collections.Generic;
 using Lumina.Excel;
 using Lumina.Excel.GeneratedSheets;
+using S = System;
 
 /// <summary>
 /// ActionManager accesses the Dalamud ActionManager.
 /// </summary>
-public unsafe class AbilityManager
+public unsafe class AbilityManager : S.IDisposable
 {
     private static readonly ExcelSheet<Action>? LuminaActionSheet = Service.DataManager.GetExcelSheet<Action>();
     private static readonly ExcelSheet<Status>? LuminaStatusSheet = Service.DataManager.GetExcelSheet<Status>();
 
-    private readonly Dictionary<int, Action?> actionCache = new Dictionary<int, Action?>();
-    private readonly Dictionary<int, Status?> statusCache = new Dictionary<int, Status?>();
+    private readonly Dictionary<int, Action?> actionCache = [];
+    private readonly Dictionary<int, Status?> statusCache = [];
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        this.actionCache.Clear();
+        this.statusCache.Clear();
+
+        S.GC.SuppressFinalize(this);
+    }
 
     /// <summary>
     /// Get an Icon ID for the given actionID.

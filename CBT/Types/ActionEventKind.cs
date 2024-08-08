@@ -4,7 +4,7 @@ namespace CBT.Types;
 /// ActionEventKind are derived from the Action Event Handler on the target of a FlyTextEvent.
 /// This is, clearly, not exhaustive.
 /// </summary>
-public enum ActionEventKind
+public enum ActionEventKind : byte
 {
     /// <summary>
     /// None.

@@ -1,10 +1,13 @@
 namespace CBT.Types;
 
 using System;
+using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using CBT.FlyText;
 using CBT.FlyText.Animations;
 using CBT.FlyText.Configuration;
+using CBT.Helpers;
 using Dalamud.Interface.Textures;
 using Dalamud.Interface.Textures.TextureWraps;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
@@ -37,7 +40,22 @@ public unsafe partial class FlyTextEvent(FlyTextKind kind, Effect[] effects, Cha
     /// Gets a value indicating the world anchor of the event.
     /// </summary>
     public Vector2 Anchor
-        => Service.GameGui.WorldToScreen(this.Target->Position, out Vector2 currentPosition) ? currentPosition : Vector2.Zero;
+    {
+        get
+        {
+            if (PluginManager.IsPlayerCharacter(this.Target))
+            {
+                Service.Configuration.Options.TryGetValue(GlobalOption.PlayerAnchor.ToString(), out var isAnchorFree);
+
+                if (isAnchorFree)
+                {
+                    return Service.Configuration.FreeMoveAnchor;
+                }
+            }
+
+            return Service.GameGui.WorldToScreen(this.Target->Position, out Vector2 currentPosition) ? currentPosition : Vector2.Zero;
+        }
+    }
 
     /// <summary>
     /// Gets the position of the FlyTextEvent with the animation offset applied.
@@ -77,16 +95,7 @@ public unsafe partial class FlyTextEvent(FlyTextKind kind, Effect[] effects, Cha
     /// Gets the string representation of the FlyTextEvent Value1.
     /// </summary>
     public string Text
-    {
-        get
-        {
-            return this.Kind.IsStatus()
-                ? this.Format(this.Name)
-                : this.Kind.IsMessage()
-                    ? this.Format(this.Kind.Pretty())
-                    : this.Format(this.Value1.ToString("N0"));
-        }
-    }
+        => this.Kind.IsStatus() ? this.Format(this.Name) : this.Kind.IsMessage() ? this.Format(this.Kind.Pretty()) : this.Format(this.Value1.ToString("N0"));
 
     /// <summary>
     /// Gets the Dalamud Texture Wrap for the ActionID.
@@ -121,6 +130,39 @@ public unsafe partial class FlyTextEvent(FlyTextKind kind, Effect[] effects, Cha
                 .FirstOrDefault(default(Effect))
             .Param1 & 0xF)
             : null;
+
+    /// <summary>
+    /// Gets the positional state for an action.
+    /// </summary>
+    public PositionalState PositionalState
+        => this.Kind.InCategory(FlyTextCategory.AbilityDamage)
+            ? PositionalManager
+                .PositionalSucceeded(this.ActionID, this.Effects.ToList().Where(effect => (ActionEventKind)effect.Type == ActionEventKind.Damage).FirstOrDefault().Param2)
+            : PositionalState.None;
+
+    /// <summary>
+    /// Gets the color for a flytext event.
+    /// </summary>
+    public Vector4 Color
+    {
+        get
+        {
+            if (this.Config.Positionals)
+            {
+                return this.PositionalState switch
+                {
+                    PositionalState.None => this.Config.Font.Color,
+                    PositionalState.Success => this.Config.Font.ColorSuccess,
+                    PositionalState.Failed => this.Config.Font.ColorFailed,
+                    _ => throw new ArgumentOutOfRangeException(nameof(this.PositionalState), this.PositionalState, null),
+                };
+            }
+            else
+            {
+                return this.Config.Font.Color;
+            }
+        }
+    }
 
     /// <summary>
     /// Gets the fly text kind.

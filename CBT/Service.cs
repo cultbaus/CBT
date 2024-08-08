@@ -48,6 +48,11 @@ public class Service
     public static AbilityManager Ability { get; set; } = null!;
 
     /// <summary>
+    /// Gets or sets the CBT QuadTree manager.
+    /// </summary>
+    public static QuadTreeManager Tree { get; set; } = null!;
+
+    /// <summary>
     /// Gets the Dalamud ClientState.
     /// </summary>
     [PluginService]
