@@ -53,6 +53,11 @@ public class Service
     public static QuadTreeManager Tree { get; set; } = null!;
 
     /// <summary>
+    /// Gets or sets the CBT FlyText Pool.
+    /// </summary>
+    public static FlyTextPool Pool { get; set; } = null!;
+
+    /// <summary>
     /// Gets the Dalamud ClientState.
     /// </summary>
     [PluginService]

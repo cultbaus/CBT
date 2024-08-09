@@ -88,7 +88,13 @@ public unsafe partial class FlyTextReceiver : IDisposable
                 if (weActuallyCare)
                 {
                     var effects = GetEffects(target->GetActionEffectHandler());
-                    var flyTextEvent = new FlyTextEvent(kind, effects, target, source, option, actionKind, actionID, val1, val2, val3, val4);
+
+                    // var flyTextEvent = new FlyTextEvent(kind, effects, target, source, option, actionKind, actionID, val1, val2, val3, val4);
+
+                    var flyTextEvent = Service.Pool.Get();
+                    flyTextEvent.Hydrate(kind, effects, target, source, option, actionKind, actionID, val1, val2, val3, val4);
+
+                    // Service.PluginLog.Info($"{flyTextEvent.Position}");
 
                     Service.Manager.Add(flyTextEvent);
                 }

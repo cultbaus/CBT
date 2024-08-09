@@ -31,7 +31,7 @@ public unsafe partial class PluginManager : IDisposable
     /// </summary>
     public void Dispose()
     {
-        this.eventStream.Clear();
+        this.eventStream?.Clear();
 
         Service.Framework.Update -= this.FrameworkUpdate;
 
@@ -44,7 +44,7 @@ public unsafe partial class PluginManager : IDisposable
     /// <param name="flyTextEvent">A FlyText event.</param>
     public void Add(FlyTextEvent flyTextEvent)
     {
-        this.eventStream.Add(flyTextEvent);
+        this.eventStream?.Add(flyTextEvent);
     }
 
     /// <summary>
@@ -58,8 +58,28 @@ public unsafe partial class PluginManager : IDisposable
 
     private void FrameworkUpdate(IFramework framework)
     {
-        this.eventStream.ForEach(e => e.Update(framework.UpdateDelta.Milliseconds));
-        this.eventStream.RemoveAll(e => e.IsExpired);
+        if (this.eventStream.Count == 0)
+        {
+            return;
+        }
+
+        var expiredEvents = new List<FlyTextEvent>();
+
+        this.eventStream?.ForEach(e =>
+        {
+            e.Update(framework.UpdateDelta.Milliseconds);
+
+            if (e.IsExpired)
+            {
+                expiredEvents.Add(e);
+            }
+        });
+        expiredEvents.ForEach(e =>
+        {
+            this.eventStream?.Remove(e);
+
+            Service.Pool.Put(e);
+        });
     }
 }
 

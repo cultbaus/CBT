@@ -22,6 +22,11 @@ public enum FlyTextCategory
     /// </summary>
     NonCombat = 1 << 1,
 
+    /// <summary>
+    /// None group.
+    /// </summary>
+    GroupNone = 1 << 2,
+
     // Categories
 
     /// <summary>
@@ -58,6 +63,11 @@ public enum FlyTextCategory
     /// CC category. Member of the Combat group.
     /// </summary>
     CC = 1 << 16 | Combat,
+
+    /// <summary>
+    /// CC category. Member of the Combat group.
+    /// </summary>
+    CategoryNone = 1 << 17 | GroupNone,
 }
 
 /// <summary>

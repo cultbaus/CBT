@@ -5,23 +5,18 @@ using System.IO;
 using Newtonsoft.Json;
 
 /// <summary>
-/// ManifestManager loads the Plugin manifest from the assembly directory.
+/// Initializes a new instance of the <see cref="ManifestManager"/> class.
 /// </summary>
-public class ManifestManager : IDisposable
+/// <remarks>
+/// ManifestManager loads the Plugin manifest from the assembly directory.
+/// </remarks>
+/// <param name="manifestPath">Path to the Assembly directory where manifest is located.</param>
+public class ManifestManager(string manifestPath) : IDisposable
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ManifestManager"/> class.
-    /// </summary>
-    /// <param name="manifestPath">Path to the Assembly directory where manifest is located.</param>
-    public ManifestManager(string manifestPath)
-    {
-        this.Manifest = JsonConvert.DeserializeObject<Manifest>(File.ReadAllText(manifestPath)) ?? new Manifest();
-    }
-
     /// <summary>
     /// Gets the PluginManifest.
     /// </summary>
-    public Manifest? Manifest { get; private set; }
+    public Manifest? Manifest { get; private set; } = JsonConvert.DeserializeObject<Manifest>(File.ReadAllText(manifestPath)) ?? new Manifest();
 
     /// <inheritdoc/>
     public void Dispose()

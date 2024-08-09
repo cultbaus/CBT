@@ -114,7 +114,15 @@ public enum FlyTextKind
     * EpRegen,
     * CpRegen,
     * GpRegen,
-    * None,
+    */
+
+    /// <summary>
+    /// None.
+    /// </summary>
+    [FlyTextCategory(FlyTextCategory.CategoryNone)]
+    None = DalamudFlyText.None,
+
+    /*
     * Invulnerable,
     * Interrupted,
     * CraftingProgress,

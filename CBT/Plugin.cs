@@ -63,11 +63,13 @@ public sealed partial class Plugin : IDalamudPlugin
         Service.Receiver = new FlyTextReceiver(gameInteropProvider);
         Service.Ability = new AbilityManager();
         Service.Tree = new QuadTreeManager();
+        Service.Pool = new FlyTextPool();
     }
 
     /// <inheritdoc/>
     public void Dispose()
     {
+        Service.Pool.Dispose();
         Service.Tree.Dispose();
         Service.Ability.Dispose();
         Service.Receiver.Dispose();

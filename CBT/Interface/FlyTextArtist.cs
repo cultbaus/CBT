@@ -21,27 +21,35 @@ public unsafe class FlyTextArtist
     /// <param name="flyTextEvents">Events to draw to the canvas.</param>
     public static void Draw(ImDrawListPtr drawList, List<FlyTextEvent> flyTextEvents)
     {
+        if (flyTextEvents == null || flyTextEvents.Count == 0)
+        {
+            return;
+        }
+
         Service.Tree.Clear();
 
         flyTextEvents.ForEach(e =>
         {
-            var qt = Service.Tree.GetQuadTree(e.Target->GetGameObjectId().ObjectId);
+            if (e.Kind != FlyTextKind.None)
+            {
+                var qt = Service.Tree.GetQuadTree(e.Target->GetGameObjectId().ObjectId);
 
-            qt.Insert(e);
-            qt.Retrieve([], e)
-                .ForEach(p =>
-                {
-                    if (p != e)
+                qt.Insert(e);
+                qt.Retrieve([], e)
+                    .ForEach(p =>
                     {
-                        AdjustOverlap(e, p);
-                    }
-                });
+                        if (p != e)
+                        {
+                            AdjustOverlap(ref e, ref p);
+                        }
+                    });
 
-            DrawFlyTextWithIconAndOutlines(drawList, e);
+                DrawFlyTextWithIconAndOutlines(drawList, ref e);
+            }
         });
     }
 
-    private static void DrawFlyTextWithIconAndOutlines(ImDrawListPtr drawList, FlyTextEvent flyTextEvent)
+    private static void DrawFlyTextWithIconAndOutlines(ImDrawListPtr drawList, ref FlyTextEvent flyTextEvent)
     {
         using (ImRaii.PushStyle(ImGuiStyleVar.Alpha, flyTextEvent.Animation.Alpha))
         {
@@ -49,27 +57,27 @@ public unsafe class FlyTextArtist
             {
                 if (flyTextEvent.Config.Icon.Enabled)
                 {
-                    DrawIcon(drawList, flyTextEvent);
+                    DrawIcon(drawList, ref flyTextEvent);
                 }
 
-                DrawText(drawList, flyTextEvent);
+                DrawText(drawList, ref flyTextEvent);
             }
         }
     }
 
-    private static void DrawText(ImDrawListPtr drawList, FlyTextEvent flyTextEvent)
+    private static void DrawText(ImDrawListPtr drawList, ref FlyTextEvent flyTextEvent)
     {
         if (!flyTextEvent.Config.Font.Outline.Enabled)
         {
             return;
         }
 
-        DrawTextOutline(drawList, flyTextEvent);
+        DrawTextOutline(drawList, ref flyTextEvent);
 
         drawList.AddText(Center(flyTextEvent), ImGui.GetColorU32(flyTextEvent.Color), flyTextEvent.Text);
     }
 
-    private static void DrawTextOutline(ImDrawListPtr drawList, FlyTextEvent flyTextEvent)
+    private static void DrawTextOutline(ImDrawListPtr drawList, ref FlyTextEvent flyTextEvent)
     {
         static Vector2[] MakeVectors(int i)
         {
@@ -88,15 +96,16 @@ public unsafe class FlyTextArtist
 
         var textPosition = Center(flyTextEvent);
         var outlineColor = ImGui.GetColorU32(flyTextEvent.Config.Font.Outline.Color);
+        var flyTextMessage = flyTextEvent.Text;
 
         Enumerable
             .Range(1, flyTextEvent.Config.Font.Outline.Size)
             .SelectMany(MakeVectors)
             .ToList()
-            .ForEach(offset => drawList.AddText(textPosition + offset, outlineColor, flyTextEvent.Text));
+            .ForEach(offset => drawList.AddText(textPosition + offset, outlineColor, flyTextMessage));
     }
 
-    private static void DrawIcon(ImDrawListPtr drawList, FlyTextEvent flyTextEvent)
+    private static void DrawIcon(ImDrawListPtr drawList, ref FlyTextEvent flyTextEvent)
     {
         if (flyTextEvent.Icon == null)
         {
@@ -108,19 +117,19 @@ public unsafe class FlyTextArtist
         var iconSize = iconConfig.Size;
         var iconAlpha = (uint)(flyTextEvent.Animation.Alpha * 255.0f) << 24 | 0x00FFFFFF;
 
-        var iconPos = CalculateIconPosition(flyTextEvent, textPos, iconSize);
+        var iconPos = CalculateIconPosition(ref flyTextEvent, ref textPos, ref iconSize);
 
         if (iconConfig.Outline.Enabled)
         {
-            DrawIconOutline(drawList, flyTextEvent, iconPos, iconSize);
+            DrawIconOutline(drawList, ref flyTextEvent, ref iconPos, ref iconSize);
         }
 
         var (uvMin, uvMax) = CalculateUvMinMax(iconConfig.Zoom);
 
-        drawList.AddImage(flyTextEvent.Icon.ImGuiHandle, iconPos, iconPos + iconSize, uvMin, uvMax, iconAlpha);
+        drawList.AddImage(flyTextEvent.Icon?.ImGuiHandle ?? 0, iconPos, iconPos + iconSize, uvMin, uvMax, iconAlpha);
     }
 
-    private static void DrawIconOutline(ImDrawListPtr drawList, FlyTextEvent flyTextEvent, Vector2 iconPos, Vector2 iconSize)
+    private static void DrawIconOutline(ImDrawListPtr drawList, ref FlyTextEvent flyTextEvent, ref Vector2 iconPos, ref Vector2 iconSize)
     {
         var borderSize = flyTextEvent.Config.Icon.Outline.Size;
         var borderColor = ImGui.GetColorU32(flyTextEvent.Config.Icon.Outline.Color);
@@ -135,7 +144,7 @@ public unsafe class FlyTextArtist
         return new(flyTextEvent.Position.X - (flyTextEvent.Size.X / 2), flyTextEvent.Position.Y - (flyTextEvent.Size.Y / 2));
     }
 
-    private static bool IsOverlapping(FlyTextEvent a, FlyTextEvent b)
+    private static bool IsOverlapping(ref FlyTextEvent a, ref FlyTextEvent b)
     {
         var aRect = new Rectangle(a.Position.X, a.Position.Y, a.Size.X, a.Size.Y);
         var bRect = new Rectangle(b.Position.X, b.Position.Y, b.Size.X, b.Size.Y);
@@ -143,7 +152,7 @@ public unsafe class FlyTextArtist
         return aRect.Intersects(bRect);
     }
 
-    private static float GetOverlap(FlyTextEvent a, FlyTextEvent b)
+    private static float GetOverlap(ref FlyTextEvent a, ref FlyTextEvent b)
     {
         var aBottom = a.Position.Y + a.Size.Y;
         var bBottom = b.Position.Y + b.Size.Y;
@@ -151,9 +160,9 @@ public unsafe class FlyTextArtist
         return Math.Max(0, Math.Min(aBottom, bBottom) - Math.Max(a.Position.Y, b.Position.Y));
     }
 
-    private static void AdjustOverlap(FlyTextEvent a, FlyTextEvent b)
+    private static void AdjustOverlap(ref FlyTextEvent a, ref FlyTextEvent b)
     {
-        if (!IsOverlapping(a, b))
+        if (!IsOverlapping(ref a, ref b))
         {
             return;
         }
@@ -168,10 +177,10 @@ public unsafe class FlyTextArtist
             return;
         }
 
-        (a.Animation.TimeElapsed < b.Animation.TimeElapsed ? a : b).Animation.Offset += new Vector2(0, GetOverlap(a, b));
+        (a.Animation.TimeElapsed < b.Animation.TimeElapsed ? a : b).Animation.Offset += new Vector2(0, GetOverlap(ref a, ref b));
     }
 
-    private static Vector2 CalculateIconPosition(FlyTextEvent flyTextEvent, Vector2 textPos, Vector2 iconSize)
+    private static Vector2 CalculateIconPosition(ref FlyTextEvent flyTextEvent, ref Vector2 textPos, ref Vector2 iconSize)
     {
         var verticalOffset = (ImGui.CalcTextSize(flyTextEvent.Text).Y - iconSize.Y) / 2.0f;
         return new Vector2(textPos.X - iconSize.X + flyTextEvent.Config.Icon.Offset.X, textPos.Y + verticalOffset + flyTextEvent.Config.Icon.Offset.Y);

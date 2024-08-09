@@ -26,7 +26,14 @@ public class LinearFade : FlyTextAnimation
     }
 
     private float GetDirection(FlyTextEvent flyTextEvent, float timeSinceCreated)
-        => flyTextEvent.Animation.Reversed
-               ? this.Offset.Y + (this.Speed * timeSinceCreated)
-               : this.Offset.Y - (this.Speed * timeSinceCreated);
+    {
+        if (flyTextEvent.Animation != null)
+        {
+            return flyTextEvent.Animation.Reversed
+                   ? this.Offset.Y + (this.Speed * timeSinceCreated)
+                   : this.Offset.Y - (this.Speed * timeSinceCreated);
+        }
+
+        return 0;
+    }
 }
