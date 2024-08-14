@@ -123,8 +123,13 @@ public enum FlyTextKind
     [FlyTextCategory(FlyTextCategory.AbilityHealing)]
     Healing = DalamudFlyText.Healing,
 
+    /// <summary>
+    /// MpRegen ticks.
+    /// </summary>
+    [FlyTextFilter([FlyTextFilter.Enemy])]
+    [FlyTextCategory(FlyTextCategory.AbilityHealing)]
+    MpRegen = DalamudFlyText.MpRegen,
     /*
-    * MpRegen,
     * NamedTp2,
     * EpRegen,
     * CpRegen,
@@ -284,7 +289,7 @@ public static class FlyTextKindExtension
     /// <param name="filter">Filter to compare.</param>
     /// <returns>Bool.</returns>
     public static bool ShouldFilter(this FlyTextKind kind, FlyTextFilter filter)
-        => kind.GetFilter().Contains(filter);
+        => kind.GetFilter().Length > 0 && kind.GetFilter().Contains(filter);
 
     /// <summary>
     /// Opposite of ShouldFilter.

@@ -87,10 +87,8 @@ public unsafe partial class FlyTextReceiver : IDisposable
         {
             var kindConfig = PluginManager.GetConfigForKind(kind);
 
-            var handler = target->GetActionEffectHandler();
-
-            var effects = GetEffects(handler);
-            var sourceObjectID = GetGameObjectId(handler);
+            var effects = GetEffects(target->GetActionEffectHandler());
+            var sourceObjectID = GetGameObjectId(target->GetActionEffectHandler());
 
             if (ShouldManageEvent(kind, source, target, sourceObjectID.ObjectId) && (kindConfig?.Enabled ?? false))
             {
@@ -216,8 +214,6 @@ public unsafe partial class FlyTextReceiver
             kind == FlyTextKind.Healing
                 && PluginManager.IsPartyMember(source)
                 && PluginManager.LocalPlayer?.GameObjectId == sourceObjectID;
-
-        Service.PluginLog.Info($"IsPartyMember: {PluginManager.IsPartyMember(source)}, Kind: {PluginManager.IsPartyMember(source)}, PlayerIsSource: {PluginManager.LocalPlayer?.GameObjectId == sourceObjectID}");
 
         var conditionTable = new (bool Condition, FlyTextFilter Filter)[]
         {

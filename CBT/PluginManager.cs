@@ -109,8 +109,7 @@ public unsafe partial class PluginManager
     /// <param name="target">Target of the event.</param>
     /// <returns>A bool if they're a bad guy.</returns>
     public static bool IsEnemy(Character* target)
-        // => target->ObjectKind == ObjectKind.BattleNpc && target->SubKind == 5;
-        => target->IsHostile;
+        => target->ObjectKind == ObjectKind.BattleNpc && target->SubKind == 5;
 
     /// <summary>
     /// Is the source a party member.
