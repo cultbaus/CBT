@@ -231,7 +231,7 @@ public unsafe partial class FlyTextEvent
     /// <summary>
     /// Gets or sets the Effects associated with the event.
     /// </summary>
-    public Effect[]? Effects { get; set; }
+    public Effect[] Effects { get; set; }
 
     /// <summary>
     /// Gets or sets the Target from the original event.
@@ -363,7 +363,6 @@ public unsafe partial class FlyTextEvent
 
             if (this.Config.Message.Suffix != string.Empty)
             {
-                ;
                 outMessage = $"{outMessage} {this.Config.Message.Prefix}";
             }
 

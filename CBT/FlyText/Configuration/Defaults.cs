@@ -64,6 +64,11 @@ public record Defaults
     public const bool DefaultAnimationReversed = false;
 
     /// <summary>
+    /// Default outline reversed.
+    /// </summary>
+    public const FlyTextAlignment DefaultAnimationAlignment = FlyTextAlignment.Left;
+
+    /// <summary>
     /// Default font color.
     /// </summary>
     public static readonly Vector4 DefaultFontColor = Vector4.One;

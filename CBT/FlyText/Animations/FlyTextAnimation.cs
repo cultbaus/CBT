@@ -22,6 +22,32 @@ public enum FlyTextAnimationKind
 }
 
 /// <summary>
+/// Alignment for fly text animations.
+/// </summary>
+public enum FlyTextAlignment
+{
+    /// <summary>
+    /// Alignment no-op.
+    /// </summary>
+    None = 0,
+
+    /// <summary>
+    /// Center alignment.
+    /// </summary>
+    Center = 1,
+
+    /// <summary>
+    /// Left alignment.
+    /// </summary>
+    Left = 2,
+
+    /// <summary>
+    /// Right alignment.
+    /// </summary>
+    Right = 3,
+}
+
+/// <summary>
 /// FlyTextAnimation defines the abstract class which must be implemented by Animations.
 /// </summary>
 public abstract class FlyTextAnimation
@@ -43,6 +69,12 @@ public abstract class FlyTextAnimation
     /// </summary>
     public bool Reversed
         => Service.Configuration.FlyTextKinds[this.FlyTextKind].Animation.Reversed;
+
+    /// <summary>
+    /// Gets the alignment of an element.
+    /// </summary>
+    public FlyTextAlignment Alignment
+        => Service.Configuration.FlyTextKinds[this.FlyTextKind].Animation.Alignment;
 
     /// <summary>
     /// Gets or sets the FlyAnimationKind.
@@ -70,6 +102,26 @@ public abstract class FlyTextAnimation
     public float Alpha { get; set; }
 
     /// <summary>
+    /// Center align an element.
+    /// </summary>
+    /// <param name="flyTextEvent">The event.</param>
+    /// <returns>The new position after adjusting.</returns>
+    public static Vector2 Center(FlyTextEvent flyTextEvent)
+    {
+        return new(flyTextEvent.Position.X - (flyTextEvent.Size.X / 2), flyTextEvent.Position.Y - (flyTextEvent.Size.Y / 2));
+    }
+
+    /// <summary>
+    /// Left align an element.
+    /// </summary>
+    /// <param name="flyTextEvent">The event.</param>
+    /// <returns>The new position after adjusting.</returns>
+    public static Vector2 Left(FlyTextEvent flyTextEvent)
+    {
+        return flyTextEvent.Position;
+    }
+
+    /// <summary>
     /// Create an instance of a FlyTextAnimation type.
     /// </summary>
     /// <param name="flyTextKind">FlyTextKind determines the animation type.</param>
@@ -82,7 +134,7 @@ public abstract class FlyTextAnimation
         {
             FlyTextAnimationKind.None => new None(flyTextKind),
             FlyTextAnimationKind.LinearFade => new LinearFade(flyTextKind),
-            _ => throw new ArgumentOutOfRangeException(nameof(animationKind), animationKind, null),
+            _ => throw new ArgumentOutOfRangeException(nameof(flyTextKind), animationKind, null),
         };
     }
 
@@ -92,4 +144,17 @@ public abstract class FlyTextAnimation
     /// <param name="flyTextEvent">FlyTextEvent which is being animated.</param>
     /// <param name="timeSinceCreated">Time since the event was first drawn to the screen.</param>
     public abstract void Apply(FlyTextEvent flyTextEvent, float timeSinceCreated);
+
+    /// <summary>
+    /// Align the element.
+    /// </summary>
+    /// <param name="e">Event to align.</param>
+    /// <returns>The adjusted position of the element.</returns>
+    public Vector2 Align(FlyTextEvent e) => this.Alignment switch
+    {
+        FlyTextAlignment.Center => Center(e),
+        FlyTextAlignment.Left => Left(e),
+        FlyTextAlignment.Right => throw new NotImplementedException(nameof(this.Alignment)),
+        _ => throw new ArgumentOutOfRangeException(nameof(e), this.Alignment, null),
+    };
 }

@@ -14,84 +14,98 @@ public enum FlyTextKind
     /// <summary>
     /// Auto attack or dot.
     /// </summary>
+    [FlyTextFilter([FlyTextFilter.Party])]
     [FlyTextCategory(FlyTextCategory.AutoAttack)]
     AutoAttackOrDot = DalamudFlyText.AutoAttackOrDot,
 
     /// <summary>
     /// Auto attack or dot direct hit.
     /// </summary>
+    [FlyTextFilter([FlyTextFilter.Party])]
     [FlyTextCategory(FlyTextCategory.AutoAttack)]
     AutoAttackOrDotDh = DalamudFlyText.AutoAttackOrDotDh,
 
     /// <summary>
     /// Auto attack or dot crit.
     /// </summary>
+    [FlyTextFilter([FlyTextFilter.Party])]
     [FlyTextCategory(FlyTextCategory.AutoAttack)]
     AutoAttackOrDotCrit = DalamudFlyText.AutoAttackOrDotCrit,
 
     /// <summary>
     /// Auto attack or dot direct-hit-crit.
     /// </summary>
+    [FlyTextFilter([FlyTextFilter.Party])]
     [FlyTextCategory(FlyTextCategory.AutoAttack)]
     AutoAttackOrDotCritDh = DalamudFlyText.AutoAttackOrDotCritDh,
 
     /// <summary>
     /// Ability damage.
     /// </summary>
+    [FlyTextFilter([FlyTextFilter.Party])]
     [FlyTextCategory(FlyTextCategory.AbilityDamage)]
     Damage = DalamudFlyText.Damage,
 
     /// <summary>
     /// Ability damage direct hit.
     /// </summary>
+    [FlyTextFilter([FlyTextFilter.Party])]
     [FlyTextCategory(FlyTextCategory.AbilityDamage)]
     DamageDh = DalamudFlyText.DamageDh,
 
     /// <summary>
     /// Ability damage crit.
     /// </summary>
+    [FlyTextFilter([FlyTextFilter.Party])]
     [FlyTextCategory(FlyTextCategory.AbilityDamage)]
     DamageCrit = DalamudFlyText.DamageCrit,
 
     /// <summary>
     /// Ability damage direct-hit-crit.
     /// </summary>
+    [FlyTextFilter([FlyTextFilter.Party])]
     [FlyTextCategory(FlyTextCategory.AbilityDamage)]
     DamageCritDh = DalamudFlyText.DamageCritDh,
 
     /// <summary>
     /// Miss, but sometimes dodge.
     /// </summary>
+    [FlyTextFilter([FlyTextFilter.Party])]
     [FlyTextCategory(FlyTextCategory.Miss)]
     Miss = DalamudFlyText.Miss,
 
     /// <summary>
     /// Named miss.
     /// </summary>
+    [FlyTextFilter([FlyTextFilter.Party])]
     [FlyTextCategory(FlyTextCategory.Miss)]
     NamedMiss = DalamudFlyText.NamedMiss,
 
     /// <summary>
     /// Dodge.
     /// </summary>
+    [FlyTextFilter([FlyTextFilter.Party])]
     [FlyTextCategory(FlyTextCategory.Miss)]
     Dodge = DalamudFlyText.Dodge,
 
     /// <summary>
     /// Dodge.
     /// </summary>
+    [FlyTextFilter([FlyTextFilter.Party])]
     [FlyTextCategory(FlyTextCategory.Miss)]
     NamedDodge = DalamudFlyText.NamedDodge,
 
     /// <summary>
     /// Buff.
     /// </summary>
+    [FlyTextFilter([FlyTextFilter.Enemy])]
     [FlyTextCategory(FlyTextCategory.Buff)]
     Buff = DalamudFlyText.Buff,
 
     /// <summary>
     /// Debuff.
     /// </summary>
+    [FlyTextFilter([FlyTextFilter.Party])]
     [FlyTextCategory(FlyTextCategory.Debuff)]
     Debuff = DalamudFlyText.Debuff,
 
@@ -105,6 +119,7 @@ public enum FlyTextKind
     /// <summary>
     /// Healing.
     /// </summary>
+    [FlyTextFilter([FlyTextFilter.Enemy])]
     [FlyTextCategory(FlyTextCategory.AbilityHealing)]
     Healing = DalamudFlyText.Healing,
 
@@ -119,6 +134,7 @@ public enum FlyTextKind
     /// <summary>
     /// None.
     /// </summary>
+    [FlyTextFilter([FlyTextFilter.Party, FlyTextFilter.Enemy, FlyTextFilter.Self])]
     [FlyTextCategory(FlyTextCategory.CategoryNone)]
     None = DalamudFlyText.None,
 
@@ -133,24 +149,28 @@ public enum FlyTextKind
     /// <summary>
     /// Healing crit.
     /// </summary>
+    [FlyTextFilter([FlyTextFilter.Enemy])]
     [FlyTextCategory(FlyTextCategory.AbilityHealing)]
     HealingCrit = DalamudFlyText.HealingCrit,
 
     /// <summary>
     /// Debuff "has no effect".
     /// </summary>
+    [FlyTextFilter([FlyTextFilter.Party])]
     [FlyTextCategory(FlyTextCategory.Miss)]
     DebuffNoEffect = DalamudFlyText.DebuffNoEffect,
 
     /// <summary>
     /// Buff with faded text.
     /// </summary>
+    [FlyTextFilter([FlyTextFilter.Enemy])]
     [FlyTextCategory(FlyTextCategory.Buff)]
     BuffFading = DalamudFlyText.BuffFading,
 
     /// <summary>
     /// Debuff with faded text.
     /// </summary>
+    [FlyTextFilter([FlyTextFilter.Party])]
     [FlyTextCategory(FlyTextCategory.Debuff)]
     DebuffFading = DalamudFlyText.DebuffFading,
 
@@ -161,42 +181,49 @@ public enum FlyTextKind
     /// <summary>
     /// Debuff was resisted.
     /// </summary>
+    [FlyTextFilter([FlyTextFilter.Party])]
     [FlyTextCategory(FlyTextCategory.Miss)]
     DebuffResisted = DalamudFlyText.DebuffResisted,
 
     /// <summary>
     /// Target is incapacitated.
     /// </summary>
+    [FlyTextFilter([FlyTextFilter.None])]
     [FlyTextCategory(FlyTextCategory.CC)]
     Incapacitated = DalamudFlyText.Incapacitated,
 
     /// <summary>
     /// Ability is fully resisted.
     /// </summary>
+    [FlyTextFilter([FlyTextFilter.Party])]
     [FlyTextCategory(FlyTextCategory.Miss)]
     FullyResisted = DalamudFlyText.FullyResisted,
 
     /// <summary>
     /// Ability has no effect.
     /// </summary>
+    [FlyTextFilter([FlyTextFilter.Party])]
     [FlyTextCategory(FlyTextCategory.Miss)]
     HasNoEffect = DalamudFlyText.HasNoEffect,
 
     /// <summary>
     /// HP Drain, bloodbath.
     /// </summary>
+    [FlyTextFilter([FlyTextFilter.Party])]
     [FlyTextCategory(FlyTextCategory.AbilityHealing)]
     HpDrain = DalamudFlyText.HpDrain,
 
     /// <summary>
     /// Debuff immued due to invuln.
     /// </summary>
+    [FlyTextFilter([FlyTextFilter.Party])]
     [FlyTextCategory(FlyTextCategory.Miss)]
     DebuffInvulnerable = DalamudFlyText.DebuffInvulnerable,
 
     /// <summary>
     /// Resisted.
     /// </summary>
+    [FlyTextFilter([FlyTextFilter.Party])]
     [FlyTextCategory(FlyTextCategory.Miss)]
     Resist = DalamudFlyText.Resist,
 
@@ -232,6 +259,41 @@ public static class FlyTextKindExtension
             ? ((FlyTextCategoryAttribute)attr[0]).Category
             : throw new ArgumentOutOfRangeException(nameof(kind), kind, null);
     }
+
+    /// <summary>
+    /// Get the constant filter for an event.
+    /// </summary>
+    /// <param name="kind">FlyTextKidn enum.</param>
+    /// <returns>The filter for the kind.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Throws if the kind has no filter.</exception>
+    public static FlyTextFilter[] GetFilter(this FlyTextKind kind)
+    {
+        var attr = typeof(FlyTextKind)
+            .GetMember(kind.ToString())[0]
+            .GetCustomAttributes(typeof(FlyTextFilterAttribute), false);
+
+        return attr.Length > 0
+            ? ((FlyTextFilterAttribute)attr[0]).Filter
+            : throw new ArgumentOutOfRangeException(nameof(kind), kind, null);
+    }
+
+    /// <summary>
+    /// Whether the event should filter against the type.
+    /// </summary>
+    /// <param name="kind">Kind to filter.</param>
+    /// <param name="filter">Filter to compare.</param>
+    /// <returns>Bool.</returns>
+    public static bool ShouldFilter(this FlyTextKind kind, FlyTextFilter filter)
+        => kind.GetFilter().Contains(filter);
+
+    /// <summary>
+    /// Opposite of ShouldFilter.
+    /// </summary>
+    /// <param name="kind">Kind to allow.</param>
+    /// <param name="filter">Filter to compare.</param>
+    /// <returns>Bool.</returns>
+    public static bool ShouldAllow(this FlyTextKind kind, FlyTextFilter filter)
+        => !kind.ShouldFilter(filter);
 
     /// <summary>
     /// Checks if a kind is in a category.

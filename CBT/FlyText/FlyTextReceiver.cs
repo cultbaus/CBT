@@ -1,6 +1,7 @@
 namespace CBT.FlyText;
 
 using System;
+using CBT.Attributes;
 using CBT.Types;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Hooking;
@@ -68,33 +69,45 @@ public unsafe partial class FlyTextReceiver : IDisposable
             var kindConfig = PluginManager.GetConfigForKind(kind);
             var weActuallyCare = false;
 
+            // I am leaving this exactly the way it is and you can't stop me.
             if (kindConfig?.Enabled ?? false)
             {
-                if (kindConfig.Filter.Party)
-                {
-                    weActuallyCare = PluginManager.IsPartyMember(target);
-                }
+                var isOurAbility = PluginManager.IsPlayerCharacter(source);
+                var isAgainstUs = PluginManager.IsPlayerCharacter(target);
 
-                if (kindConfig.Filter.Enemy)
-                {
-                    weActuallyCare = weActuallyCare || (PluginManager.IsEnemy(target) && PluginManager.IsPlayerCharacter(source));
-                }
+                var isAllyAbility = PluginManager.IsPartyMember(source);
+                var isAgainstAlly = PluginManager.IsPartyMember(target);
 
-                if (kindConfig.Filter.Self)
+                var isEnemyAbility = PluginManager.IsEnemy(source);
+                var isAgainstEnemy = PluginManager.IsEnemy(target);
+
+                if (isOurAbility && isAgainstEnemy && kind.ShouldAllow(FlyTextFilter.Enemy))
                 {
-                    weActuallyCare = weActuallyCare || PluginManager.IsPlayerCharacter(source) || PluginManager.IsPlayerCharacter(target);
+                    weActuallyCare = true;
+                }
+                else if (isOurAbility && isAgainstUs && kind.ShouldAllow(FlyTextFilter.Self))
+                {
+                    weActuallyCare = true;
+                }
+                else if (isOurAbility && isAgainstAlly && kind.ShouldAllow(FlyTextFilter.Party))
+                {
+                    weActuallyCare = true;
+                }
+                else if (isAllyAbility && isAgainstUs && kind.ShouldAllow(FlyTextFilter.Self))
+                {
+                    weActuallyCare = true;
+                }
+                else if (isEnemyAbility && isAgainstUs && kind.ShouldAllow(FlyTextFilter.Self))
+                {
+                    weActuallyCare = true;
                 }
 
                 if (weActuallyCare)
                 {
                     var effects = GetEffects(target->GetActionEffectHandler());
 
-                    // var flyTextEvent = new FlyTextEvent(kind, effects, target, source, option, actionKind, actionID, val1, val2, val3, val4);
-
                     var flyTextEvent = Service.Pool.Get();
                     flyTextEvent.Hydrate(kind, effects, target, source, option, actionKind, actionID, val1, val2, val3, val4);
-
-                    // Service.PluginLog.Info($"{flyTextEvent.Position}");
 
                     Service.Manager.Add(flyTextEvent);
                 }

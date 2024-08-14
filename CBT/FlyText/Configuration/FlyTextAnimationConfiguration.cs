@@ -16,21 +16,7 @@ public class FlyTextAnimationConfiguration
         this.Duration = Defaults.DefaultAnimationDuration;
         this.Speed = Defaults.DefaultAnimationSpeed;
         this.Reversed = Defaults.DefaultAnimationReversed;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="FlyTextAnimationConfiguration"/> class.
-    /// </summary>
-    /// <param name="kind">Kind of animation.</param>
-    /// <param name="duration">Duration of the animation.</param>
-    /// <param name="speed">Speed which the animation should reach the end state.</param>
-    /// <param name="reversed">Should the animation axis reverse.</param>
-    public FlyTextAnimationConfiguration(FlyTextAnimationKind kind, float duration, float speed, bool reversed)
-    {
-        this.Kind = kind;
-        this.Duration = duration;
-        this.Speed = speed;
-        this.Reversed = reversed;
+        this.Alignment = Defaults.DefaultAnimationAlignment;
     }
 
     /// <summary>
@@ -43,6 +29,7 @@ public class FlyTextAnimationConfiguration
         this.Duration = toCopy.Duration;
         this.Speed = toCopy.Speed;
         this.Reversed = toCopy.Reversed;
+        this.Alignment = toCopy.Alignment;
     }
 
     /// <summary>
@@ -64,4 +51,9 @@ public class FlyTextAnimationConfiguration
     /// Gets or sets a value indicating whether the animation axis should be reversed.
     /// </summary>
     public bool Reversed { get; set; }
+
+    /// <summary>
+    /// Gets or sets the alignment.
+    /// </summary>
+    public FlyTextAlignment Alignment { get; set; }
 }

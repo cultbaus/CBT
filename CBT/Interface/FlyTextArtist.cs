@@ -7,6 +7,7 @@ using System.Numerics;
 using CBT.Helpers;
 using CBT.Types;
 using Dalamud.Interface.Utility.Raii;
+using FFXIVClientStructs;
 using ImGuiNET;
 
 /// <summary>
@@ -74,7 +75,7 @@ public unsafe class FlyTextArtist
 
         DrawTextOutline(drawList, ref flyTextEvent);
 
-        drawList.AddText(Center(flyTextEvent), ImGui.GetColorU32(flyTextEvent.Color), flyTextEvent.Text);
+        drawList.AddText(flyTextEvent.Animation.Align(flyTextEvent), ImGui.GetColorU32(flyTextEvent.Color), flyTextEvent.Text);
     }
 
     private static void DrawTextOutline(ImDrawListPtr drawList, ref FlyTextEvent flyTextEvent)
@@ -94,7 +95,7 @@ public unsafe class FlyTextArtist
             ];
         }
 
-        var textPosition = Center(flyTextEvent);
+        var textPosition = flyTextEvent.Animation.Align(flyTextEvent);
         var outlineColor = ImGui.GetColorU32(flyTextEvent.Config.Font.Outline.Color);
         var flyTextMessage = flyTextEvent.Text;
 
@@ -112,7 +113,7 @@ public unsafe class FlyTextArtist
             return;
         }
 
-        var textPos = Center(flyTextEvent);
+        var textPos = flyTextEvent.Animation.Align(flyTextEvent);
         var iconConfig = flyTextEvent.Config.Icon;
         var iconSize = iconConfig.Size;
         var iconAlpha = (uint)(flyTextEvent.Animation.Alpha * 255.0f) << 24 | 0x00FFFFFF;
@@ -139,11 +140,6 @@ public unsafe class FlyTextArtist
         drawList.AddRect(borderMin, borderMax, borderColor, 0.0f, ImDrawFlags.None, borderSize);
     }
 
-    private static Vector2 Center(FlyTextEvent flyTextEvent)
-    {
-        return new(flyTextEvent.Position.X - (flyTextEvent.Size.X / 2), flyTextEvent.Position.Y - (flyTextEvent.Size.Y / 2));
-    }
-
     private static bool IsOverlapping(ref FlyTextEvent a, ref FlyTextEvent b)
     {
         var aRect = new Rectangle(a.Position.X, a.Position.Y, a.Size.X, a.Size.Y);
@@ -157,7 +153,7 @@ public unsafe class FlyTextArtist
         var aBottom = a.Position.Y + a.Size.Y;
         var bBottom = b.Position.Y + b.Size.Y;
 
-        return Math.Max(0, Math.Min(aBottom, bBottom) - Math.Max(a.Position.Y, b.Position.Y));
+        return Math.Max(0, Math.Min(aBottom, bBottom) - Math.Max(a.Position.Y, b.Position.Y)) + 50;
     }
 
     private static void AdjustOverlap(ref FlyTextEvent a, ref FlyTextEvent b)
