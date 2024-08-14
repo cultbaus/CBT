@@ -1,14 +1,13 @@
 namespace CBT.Interface;
 
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Numerics;
 using CBT.FlyText.Configuration;
-using CBT.Helpers;
 using CBT.Interface.Tabs;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
+using FFXIVClientStructs;
 using ImGuiNET;
 
 /// <summary>
@@ -16,7 +15,7 @@ using ImGuiNET;
 /// </summary>
 public partial class ConfigWindow : Window
 {
-    private static TabKind currentTab = TabKind.Settings;
+    private readonly Tab tab = new KindTab();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConfigWindow"/> class.
@@ -35,15 +34,15 @@ public partial class ConfigWindow : Window
     {
         using (Service.Fonts.Push(Defaults.DefaultFontName, 14f))
         {
-            using (ImRaii.PushStyle(ImGuiStyleVar.CellPadding, new Vector2(Artist.Scale(5), Artist.Scale(30))))
+            using (ImRaii.PushStyle(ImGuiStyleVar.CellPadding, new Vector2(GuiArtist.Scale(5), GuiArtist.Scale(30))))
             {
                 using (ImRaii.Table("##CONFIGURATION_TABLE", 2, ImGuiTableFlags.BordersInnerV))
                 {
-                    ImGui.TableSetupColumn("##LEFT_CONFIG_COLUMN", ImGuiTableColumnFlags.WidthFixed, Artist.Scale(165f));
+                    ImGui.TableSetupColumn("##LEFT_CONFIG_COLUMN", ImGuiTableColumnFlags.WidthFixed, GuiArtist.Scale(165f));
                     DrawLeftColumn();
 
                     ImGui.TableSetupColumn("##RIGHT_CONFIG_COLUMN", ImGuiTableColumnFlags.WidthStretch);
-                    DrawRightColumn();
+                    this.DrawRightColumn();
                 }
             }
         }
@@ -56,8 +55,7 @@ public partial class ConfigWindow : Window
     /// <inheritdoc/>
     public override void OnClose()
     {
-        SettingsTab.Tabs.ForEach(tab => tab.OnClose());
-
+        this.tab.OnClose();
         Service.Configuration.Save();
     }
 
@@ -68,23 +66,12 @@ public partial class ConfigWindow : Window
         ImGui.TableNextColumn();
         using (ImRaii.Child("##LEFT_COLUMN_CHILD", ImGui.GetContentRegionAvail(), false, ImGuiWindowFlags.NoDecoration))
         {
-            DrawLogo(new Vector2(Artist.Scale(125f), Artist.Scale(125f)));
+            DrawLogo(new Vector2(GuiArtist.Scale(125f), GuiArtist.Scale(125f)));
 
             // Do not scale this
             using (ImRaii.PushStyle(ImGuiStyleVar.SelectableTextAlign, new Vector2(0.5f, 0.5f)))
             {
-                SettingsTab.Tabs.ForEach(tab =>
-                {
-                    var isSelected = currentTab == tab.Kind;
-
-                    using (ImRaii.PushColor(ImGuiCol.Text, ImGui.GetColorU32(new Vector4(1, 1, 0, 1)), isSelected))
-                    {
-                        using (Service.Fonts.Push(Defaults.DefaultFontName, 16f))
-                        {
-                            Artist.SelectableTab(tab, false, isSelected, t => { currentTab = t.Kind; });
-                        }
-                    }
-                });
+                // TODO: fixme
             }
         }
     }
@@ -119,16 +106,14 @@ public partial class ConfigWindow : Window
         }
     }
 
-    private static void DrawRightColumn()
+    private void DrawRightColumn()
     {
-        static void DrawContent()
+        void DrawContent()
         {
-            var tab = SettingsTab.Tabs.FirstOrDefault(tab => tab.Kind == currentTab);
-            tab?.ResetTmp();
-            tab?.Draw();
+            this.tab?.Draw();
         }
 
         ImGui.TableNextColumn();
-        Artist.DrawChildWithMargin("##RIGHT_COLUMN_CHILD", Vector2.Zero, Artist.Scale(5f), DrawContent, ImGuiWindowFlags.None);
+        GuiArtist.DrawChildWithMargin("##RIGHT_COLUMN_CHILD", Vector2.Zero, GuiArtist.Scale(5f), DrawContent, ImGuiWindowFlags.None);
     }
 }

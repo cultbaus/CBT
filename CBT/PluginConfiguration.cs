@@ -38,10 +38,8 @@ public class PluginConfiguration : IPluginConfiguration
     /// </summary>
     public PluginConfiguration()
     {
-        this.Options.Add(TabKind.Category.ToString(), false);
-        this.Options.Add(TabKind.Group.ToString(), false);
         this.Options.Add(GlobalOption.NativeUnhandled.ToString(), false);
-        this.Options.Add(GlobalOption.PlayerAnchor.ToString(), false);
+        this.Options.Add(GlobalOption.PlayerAnchor.ToString(), true);
 
         var size = ImGui.GetMainViewport().Size;
         this.FreeMoveAnchor = new Vector2(size.X / 2, size.Y / 2);

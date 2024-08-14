@@ -6,6 +6,7 @@ using CBT.FlyText.Configuration;
 using CBT.Interface;
 using CBT.Types;
 using Dalamud.Game.ClientState.Objects.SubKinds;
+using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
@@ -108,7 +109,8 @@ public unsafe partial class PluginManager
     /// <param name="target">Target of the event.</param>
     /// <returns>A bool if they're a bad guy.</returns>
     public static bool IsEnemy(Character* target)
-        => target->ObjectKind == ObjectKind.BattleNpc && target->SubKind == 5;
+        // => target->ObjectKind == ObjectKind.BattleNpc && target->SubKind == 5;
+        => target->IsHostile;
 
     /// <summary>
     /// Is the source a party member.
@@ -142,4 +144,22 @@ public unsafe partial class PluginManager
     /// <returns>True if the event is enabled.</returns>
     public static bool Unfiltered(FlyTextKind kind)
         => Service.Configuration.FlyTextKinds[kind].Enabled;
+
+    /// <summary>
+    /// Gets the distance from the player to the target.
+    /// </summary>
+    /// <param name="target">Target of the FlyTextEvent.</param>
+    /// <returns>The Yalm Distance from the target to the player.</returns>
+    public static double GetDistance(Character* target)
+    {
+        if (target is null)
+        {
+            return 0;
+        }
+
+        var x = target->YalmDistanceFromPlayerX;
+        var y = target->YalmDistanceFromPlayerZ;
+
+        return Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2));
+    }
 }

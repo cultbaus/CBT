@@ -13,7 +13,7 @@ public class FlyTextConfiguration
     public FlyTextConfiguration()
     {
         this.Enabled = true;
-        this.Positionals = false;
+        this.Positionals = true;
         this.Font = new FlyTextFontConfiguration();
         this.Animation = new FlyTextAnimationConfiguration();
         this.Icon = new FlyTextIconConfiguration();

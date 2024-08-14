@@ -1,12 +1,16 @@
 namespace CBT.FlyText;
 
 using System;
+using System.Linq;
+using System.Numerics;
 using CBT.Attributes;
+using CBT.Interface.Tabs;
 using CBT.Types;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Hooking;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
+using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using static FFXIVClientStructs.FFXIV.Client.Game.Character.ActionEffectHandler;
 using DalamudFlyText = Dalamud.Game.Gui.FlyText;
 
@@ -16,6 +20,7 @@ using DalamudFlyText = Dalamud.Game.Gui.FlyText;
 public unsafe partial class FlyTextReceiver : IDisposable
 {
     private readonly Hook<AddScreenLogDelegate> addScreenLogHook;
+    private readonly Hook<ReceiveActionEffectDelegate> receiveActionEffectHook;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FlyTextReceiver"/> class.
@@ -27,6 +32,9 @@ public unsafe partial class FlyTextReceiver : IDisposable
 
         this.addScreenLogHook = gameInteropProvider.HookFromAddress<AddScreenLogDelegate>(Service.Address.AddScreenLog, this.AddScreenLogDetour);
         this.addScreenLogHook.Enable();
+
+        this.receiveActionEffectHook = gameInteropProvider.HookFromAddress<ReceiveActionEffectDelegate>(Service.Address.ReceiveActionEffect, this.ReceiveActionEffectDetour);
+        this.receiveActionEffectHook.Enable();
     }
 
     private delegate void AddScreenLogDelegate(
@@ -41,11 +49,22 @@ public unsafe partial class FlyTextReceiver : IDisposable
         int val3,
         int val4);
 
+    private delegate void ReceiveActionEffectDelegate(
+        uint casterEntityId,
+        Character* casterPtr,
+        Vector3* targetPos,
+        Header* header,
+        TargetEffects* effects,
+        GameObjectId* targetEntityIds);
+
     /// <inheritdoc/>
     public void Dispose()
     {
         this.addScreenLogHook.Disable();
         this.addScreenLogHook.Dispose();
+
+        this.receiveActionEffectHook.Disable();
+        this.receiveActionEffectHook.Dispose();
 
         Service.FlyTextGui.FlyTextCreated -= this.FlyTextCreated;
 
@@ -67,50 +86,18 @@ public unsafe partial class FlyTextReceiver : IDisposable
         try
         {
             var kindConfig = PluginManager.GetConfigForKind(kind);
-            var weActuallyCare = false;
 
-            // I am leaving this exactly the way it is and you can't stop me.
-            if (kindConfig?.Enabled ?? false)
+            var handler = target->GetActionEffectHandler();
+
+            var effects = GetEffects(handler);
+            var sourceObjectID = GetGameObjectId(handler);
+
+            if (ShouldManageEvent(kind, source, target, sourceObjectID.ObjectId) && (kindConfig?.Enabled ?? false))
             {
-                var isOurAbility = PluginManager.IsPlayerCharacter(source);
-                var isAgainstUs = PluginManager.IsPlayerCharacter(target);
+                var flyTextEvent = Service.Pool.Get();
+                flyTextEvent.Hydrate(kind, effects, sourceObjectID.ObjectId, target, source, option, actionKind, actionID, val1, val2, val3, val4);
 
-                var isAllyAbility = PluginManager.IsPartyMember(source);
-                var isAgainstAlly = PluginManager.IsPartyMember(target);
-
-                var isEnemyAbility = PluginManager.IsEnemy(source);
-                var isAgainstEnemy = PluginManager.IsEnemy(target);
-
-                if (isOurAbility && isAgainstEnemy && kind.ShouldAllow(FlyTextFilter.Enemy))
-                {
-                    weActuallyCare = true;
-                }
-                else if (isOurAbility && isAgainstUs && kind.ShouldAllow(FlyTextFilter.Self))
-                {
-                    weActuallyCare = true;
-                }
-                else if (isOurAbility && isAgainstAlly && kind.ShouldAllow(FlyTextFilter.Party))
-                {
-                    weActuallyCare = true;
-                }
-                else if (isAllyAbility && isAgainstUs && kind.ShouldAllow(FlyTextFilter.Self))
-                {
-                    weActuallyCare = true;
-                }
-                else if (isEnemyAbility && isAgainstUs && kind.ShouldAllow(FlyTextFilter.Self))
-                {
-                    weActuallyCare = true;
-                }
-
-                if (weActuallyCare)
-                {
-                    var effects = GetEffects(target->GetActionEffectHandler());
-
-                    var flyTextEvent = Service.Pool.Get();
-                    flyTextEvent.Hydrate(kind, effects, target, source, option, actionKind, actionID, val1, val2, val3, val4);
-
-                    Service.Manager.Add(flyTextEvent);
-                }
+                Service.Manager.Add(flyTextEvent);
             }
         }
         catch (Exception ex)
@@ -119,6 +106,17 @@ public unsafe partial class FlyTextReceiver : IDisposable
         }
 
         this.addScreenLogHook.Original(target, source, kind, option, actionKind, actionID, val1, val2, val3, val4);
+    }
+
+    private void ReceiveActionEffectDetour(
+        uint casterEntityId,
+        Character* casterPtr,
+        Vector3* targetPos,
+        Header* header,
+        TargetEffects* effects,
+        GameObjectId* targetEntityIds)
+    {
+        this.receiveActionEffectHook.Original(casterEntityId, casterPtr, targetPos, header, effects, targetEntityIds);
     }
 
     private void FlyTextCreated(
@@ -174,5 +172,63 @@ public unsafe partial class FlyTextReceiver
         var effectsSpan = targetEffectsPtr->Effects;
 
         return effectsSpan.ToArray();
+    }
+
+    private static GameObjectId GetGameObjectId(ActionEffectHandler* handler, int effectEntryIndex = 0)
+    {
+        var effectEntryPtr = (byte*)handler + (effectEntryIndex * 0x78);
+        var gameObjectID = (GameObjectId*)(effectEntryPtr + 0x18);
+
+        return *gameObjectID;
+    }
+
+    /// <summary>
+    /// Determines if an event should be managed by the plugin or ignored.
+    /// </summary>
+    /// <param name="kind">Kind of the event. Unused.</param>
+    /// <param name="source">Source of the event.</param>
+    /// <param name="target">Target of the event.</param>
+    /// <param name="sourceObjectID">Caster of the event.</param>
+    /// <returns>A bool indicating whether the plugin should manage the flytext event.</returns>
+    private static bool ShouldManageEvent(FlyTextKind kind, Character* source, Character* target, uint sourceObjectID)
+    {
+        if (target == null || source == null)
+        {
+            return false;
+        }
+
+        // FIXME @cultbaus: Arbitrary value, get a better idea.
+        if (PluginManager.GetDistance(target) > 60)
+        {
+            return false;
+        }
+
+        var isOurAbility = PluginManager.IsPlayerCharacter(source);
+        var isAgainstUs = PluginManager.IsPlayerCharacter(target);
+
+        var isPartyAbility = PluginManager.IsPartyMember(source);
+        var isAgainstParty = PluginManager.IsPartyMember(target);
+
+        var isEnemyAbility = PluginManager.IsEnemy(source);
+        var isAgainstEnemy = PluginManager.IsEnemy(target);
+
+        var specialCaseForHpRegen =
+            kind == FlyTextKind.Healing
+                && PluginManager.IsPartyMember(source)
+                && PluginManager.LocalPlayer?.GameObjectId == sourceObjectID;
+
+        Service.PluginLog.Info($"IsPartyMember: {PluginManager.IsPartyMember(source)}, Kind: {PluginManager.IsPartyMember(source)}, PlayerIsSource: {PluginManager.LocalPlayer?.GameObjectId == sourceObjectID}");
+
+        var conditionTable = new (bool Condition, FlyTextFilter Filter)[]
+        {
+            (isOurAbility && isAgainstEnemy, FlyTextFilter.Enemy),
+            (isOurAbility && isAgainstUs, FlyTextFilter.Self),
+            (isOurAbility && isAgainstParty, FlyTextFilter.Party),
+            (isPartyAbility && isAgainstUs, FlyTextFilter.Self),
+            (isEnemyAbility && isAgainstUs, FlyTextFilter.Self),
+            (specialCaseForHpRegen, FlyTextFilter.Party),
+        };
+
+        return conditionTable.Any(c => c.Condition && kind.ShouldAllow(c.Filter));
     }
 }

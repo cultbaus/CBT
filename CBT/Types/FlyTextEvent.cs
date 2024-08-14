@@ -279,6 +279,11 @@ public unsafe partial class FlyTextEvent
     public int Value4 { get; set; }
 
     /// <summary>
+    /// Gets or sets the source ID from the original event.
+    /// </summary>
+    public uint SourceID { get; set; }
+
+    /// <summary>
     /// Update applies state changes to the FlyText event.
     /// </summary>
     /// <param name="timeElapsed">Time since the last frame.</param>
@@ -308,6 +313,8 @@ public unsafe partial class FlyTextEvent
         this.Value3 = default;
         this.Value4 = default;
 
+        this.SourceID = default;
+
         this.Config = null!;
         this.Animation = null!;
     }
@@ -317,6 +324,7 @@ public unsafe partial class FlyTextEvent
     /// </summary>
     /// <param name="kind">Kind of the FlyText event.</param>
     /// <param name="effects">An array of effects associated with this event.</param>
+    /// <param name="sourceID">The source ID of the caster.</param>
     /// <param name="target">Target for the incoming FlyText event.</param>
     /// <param name="source">Source of the FlyText event.</param>
     /// <param name="option">Option. Unused.</param>
@@ -326,7 +334,7 @@ public unsafe partial class FlyTextEvent
     /// <param name="val2">Val2 of the FlyText event.</param>
     /// <param name="val3">Val3 of the FlyText event.</param>
     /// <param name="val4">Val4 of the FlyText event.</param>
-    public void Hydrate(FlyTextKind kind, Effect[] effects, Character* target, Character* source, int option, int actionKind, int actionID, int val1, int val2, int val3, int val4)
+    public void Hydrate(FlyTextKind kind, Effect[] effects, uint sourceID, Character* target, Character* source, int option, int actionKind, int actionID, int val1, int val2, int val3, int val4)
     {
         this.Kind = kind;
         this.Effects = effects;
@@ -339,6 +347,9 @@ public unsafe partial class FlyTextEvent
         this.Value2 = val2;
         this.Value3 = val3;
         this.Value4 = val4;
+
+        // This is a special case for HP Regen attribution.
+        this.SourceID = sourceID;
 
         this.Config = new FlyTextConfiguration(kind);
         this.Animation = FlyTextAnimation.Create(kind);

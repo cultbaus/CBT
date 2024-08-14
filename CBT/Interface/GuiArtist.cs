@@ -1,4 +1,4 @@
-namespace CBT.Helpers;
+namespace CBT.Interface;
 
 using System;
 using System.Collections.Generic;
@@ -13,7 +13,7 @@ using ImGuiNET;
 /// <summary>
 /// Artist is a set of utility methods for drawing ImGui thingies.
 /// </summary>
-public class Artist
+public class GuiArtist
 {
     private const float LongElementWidth = 250f;
     private const float ShortElementWidth = 50f;
@@ -45,14 +45,14 @@ public class Artist
     /// <param name="sameLine">Should this be on the same line.</param>
     /// <param name="selected">Whether the tab has been selected.</param>
     /// <param name="onClicked">What to do when clicked.</param>
-    public static void SelectableTab(ITab tab, bool sameLine, bool selected, Action<ITab> onClicked)
+    public static void SelectableTab(KindTab tab, bool sameLine, bool selected, Action<KindTab> onClicked)
     {
         if (sameLine)
         {
             ImGui.SameLine();
         }
 
-        if (ImGui.Selectable($"{tab.Name}##{tab.Kind}_TAB", selected))
+        if (ImGui.Selectable($"{tab.Name}##KIND_TAB", selected))
         {
             onClicked(tab);
         }
@@ -176,6 +176,7 @@ public class Artist
                 }
             }
         });
+
     }
 
     /// <summary>
