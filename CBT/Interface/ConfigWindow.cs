@@ -76,7 +76,7 @@ public partial class ConfigWindow : Window
 
     private static void DrawLogo(Vector2 imageSize)
     {
-        var imagePath = Path.Combine(Service.Interface.AssemblyLocation.DirectoryName!, "images\\icon.png");
+        var imagePath = Path.Combine(Service.Interface.AssemblyLocation.DirectoryName!, "Data\\icon.png");
         var logoImage = Service.TextureProvider.GetFromFile(imagePath).GetWrapOrDefault();
 
         var regionSize = ImGui.GetContentRegionAvail();
