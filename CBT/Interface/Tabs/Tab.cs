@@ -3,26 +3,15 @@ namespace CBT.Interface.Tabs;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using CBT.Attributes;
 using CBT.FlyText.Configuration;
 using CBT.Types;
-using ImGuiNET;
 
 /// <summary>
 /// Tab class.
 /// </summary>
 public abstract class Tab
 {
-    /// <summary>
-    /// ButtonColors for save button styling.
-    /// </summary>
-    protected static readonly List<(ImGuiCol Style, Vector4 Color)> ButtonColors =
-    [
-        (ImGuiCol.Text, new Vector4(1, 1, 1, 1)),
-        (ImGuiCol.Button, new Vector4(206 / 255f, 39 / 255f, 187 / 255f, 1.0f)),
-        (ImGuiCol.ButtonHovered, new Vector4(39 / 255f, 187 / 255f, 206 / 255f, 1.0f)),
-        (ImGuiCol.ButtonActive, new Vector4(1, 1, 0, 1)),
-    ];
-
     private static readonly List<string> FontPickerValues = [.. PluginConfiguration.Fonts.Keys];
 
     /// <summary>
@@ -264,19 +253,19 @@ public abstract class Tab
             {
                 if (Service.Configuration.FlyTextKinds.TryGetValue(this.Current, out var currentConfig))
                 {
-                    if (currentConfig.Filter.Self)
+                    if (this.Current.ShouldAllow(FlyTextFilter.Self))
                     {
                         GuiArtist.DrawLabelPrefix("Enabled On Self", sameLine: false);
                         GuiArtist.Checkbox($"Enabled On Self_{this.Name}", sameLine: true, this.CurrentEnabledForSelf, enabled => { this.CurrentEnabledForSelf = enabled; });
                     }
 
-                    if (currentConfig.Filter.Enemy)
+                    if (this.Current.ShouldAllow(FlyTextFilter.Enemy))
                     {
                         GuiArtist.DrawLabelPrefix("Enabled On Enemy", sameLine: false);
                         GuiArtist.Checkbox($"Enabled On Enemy_{this.Name}", sameLine: true, this.CurrentEnabledForEnemy, enabled => { this.CurrentEnabledForEnemy = enabled; });
                     }
 
-                    if (currentConfig.Filter.Party)
+                    if (this.Current.ShouldAllow(FlyTextFilter.Party))
                     {
                         GuiArtist.DrawLabelPrefix("Enabled On Party", sameLine: false);
                         GuiArtist.Checkbox($"Enabled On Party_{this.Name}", sameLine: true, this.CurrentEnabledForParty, enabled => { this.CurrentEnabledForParty = enabled; });

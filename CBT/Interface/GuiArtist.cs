@@ -35,6 +35,7 @@ public class GuiArtist
         if (ImGui.Checkbox($"##{label}", ref value))
         {
             onChanged(value);
+            Service.Configuration.Save();
         }
     }
 
@@ -176,7 +177,6 @@ public class GuiArtist
                 }
             }
         });
-
     }
 
     /// <summary>

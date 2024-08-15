@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Authors>cultbaus</Authors>
     <Company>-</Company>
-    <Version>0.0.3.1</Version>
+    <Version>0.0.3.2</Version>
     <Description>This plugin manipulates flytext.</Description>
     <Copyright>-</Copyright>
     <PackageProjectUrl>https://github.com/cultbaus/CBT</PackageProjectUrl>

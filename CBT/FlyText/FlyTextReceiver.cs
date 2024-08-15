@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using System.Numerics;
 using CBT.Attributes;
+using CBT.FlyText.Configuration;
 using CBT.Interface.Tabs;
 using CBT.Types;
 using Dalamud.Game.Text.SeStringHandling;
@@ -90,7 +91,7 @@ public unsafe partial class FlyTextReceiver : IDisposable
             var effects = GetEffects(target->GetActionEffectHandler());
             var sourceObjectID = GetGameObjectId(target->GetActionEffectHandler());
 
-            if (ShouldManageEvent(kind, source, target, sourceObjectID.ObjectId) && (kindConfig?.Enabled ?? false))
+            if (ShouldManageEvent(kind, source, target, sourceObjectID.ObjectId, kindConfig) && (kindConfig?.Enabled ?? false))
             {
                 var flyTextEvent = Service.Pool.Get();
                 flyTextEvent.Hydrate(kind, effects, sourceObjectID.ObjectId, target, source, option, actionKind, actionID, val1, val2, val3, val4);
@@ -187,15 +188,25 @@ public unsafe partial class FlyTextReceiver
     /// <param name="source">Source of the event.</param>
     /// <param name="target">Target of the event.</param>
     /// <param name="sourceObjectID">Caster of the event.</param>
+    /// <param name="kindConfig">Configuration for the current kind.</param>
     /// <returns>A bool indicating whether the plugin should manage the flytext event.</returns>
-    private static bool ShouldManageEvent(FlyTextKind kind, Character* source, Character* target, uint sourceObjectID)
+    private static bool ShouldManageEvent(FlyTextKind kind, Character* source, Character* target, uint sourceObjectID, FlyTextConfiguration kindConfig)
     {
+        if (kindConfig == null)
+        {
+            return false;
+        }
+
+        if (!kindConfig.Enabled)
+        {
+            return false;
+        }
+
         if (target == null || source == null)
         {
             return false;
         }
 
-        // FIXME @cultbaus: Arbitrary value, get a better idea.
         if (PluginManager.GetDistance(target) > 60)
         {
             return false;
@@ -217,12 +228,12 @@ public unsafe partial class FlyTextReceiver
 
         var conditionTable = new (bool Condition, FlyTextFilter Filter)[]
         {
-            (isOurAbility && isAgainstEnemy, FlyTextFilter.Enemy),
-            (isOurAbility && isAgainstUs, FlyTextFilter.Self),
-            (isOurAbility && isAgainstParty, FlyTextFilter.Party),
-            (isPartyAbility && isAgainstUs, FlyTextFilter.Self),
-            (isEnemyAbility && isAgainstUs, FlyTextFilter.Self),
-            (specialCaseForHpRegen, FlyTextFilter.Party),
+            (isOurAbility && isAgainstEnemy && kindConfig.Filter.Enemy, FlyTextFilter.Enemy),
+            (isOurAbility && isAgainstUs && kindConfig.Filter.Self, FlyTextFilter.Self),
+            (isOurAbility && isAgainstParty && kindConfig.Filter.Party, FlyTextFilter.Party),
+            (isPartyAbility && isAgainstUs && kindConfig.Filter.Self, FlyTextFilter.Self),
+            (isEnemyAbility && isAgainstUs && kindConfig.Filter.Self, FlyTextFilter.Self),
+            (specialCaseForHpRegen && kindConfig.Filter.Party, FlyTextFilter.Party),
         };
 
         return conditionTable.Any(c => c.Condition && kind.ShouldAllow(c.Filter));

@@ -62,8 +62,7 @@ public class FontManager : IDisposable
         PluginConfiguration.Fonts = this.fonts
             .GroupBy(font => font.Name)
             .ToDictionary(
-                font =>
-                font.Key,
+                font => font.Key,
                 font => font.Select(f => f.Size).ToList());
     }
 
