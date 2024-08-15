@@ -207,14 +207,6 @@ public abstract class Tab
     }
 
     /// <summary>
-    /// Dispose.
-    /// </summary>
-    public virtual void Dispose()
-    {
-        GC.SuppressFinalize(this);
-    }
-
-    /// <summary>
     /// Draws the Window associated with a Tab.
     /// </summary>
     public abstract void Draw();

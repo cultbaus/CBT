@@ -129,6 +129,7 @@ public enum FlyTextKind
     [FlyTextFilter([FlyTextFilter.Enemy])]
     [FlyTextCategory(FlyTextCategory.AbilityHealing)]
     MpRegen = DalamudFlyText.MpRegen,
+
     /*
     * NamedTp2,
     * EpRegen,
@@ -143,8 +144,14 @@ public enum FlyTextKind
     [FlyTextCategory(FlyTextCategory.CategoryNone)]
     None = DalamudFlyText.None,
 
+    /// <summary>
+    /// Invulnerable.
+    /// </summary>
+    [FlyTextFilter([FlyTextFilter.Party, FlyTextFilter.Self])]
+    [FlyTextCategory(FlyTextCategory.Miss)]
+    Invulnerable = DalamudFlyText.Invulnerable,
+
     /*
-    * Invulnerable,
     * Interrupted,
     * CraftingProgress,
     * CraftingQuality,
@@ -179,9 +186,12 @@ public enum FlyTextKind
     [FlyTextCategory(FlyTextCategory.Debuff)]
     DebuffFading = DalamudFlyText.DebuffFading,
 
-    /*
-    * Named
-    */
+    /// <summary>
+    /// Named. Unknown.
+    /// </summary>
+    [FlyTextFilter([FlyTextFilter.Party])]
+    [FlyTextCategory(FlyTextCategory.Debuff)]
+    Named = DalamudFlyText.Named,
 
     /// <summary>
     /// Debuff was resisted.
@@ -232,15 +242,54 @@ public enum FlyTextKind
     [FlyTextCategory(FlyTextCategory.Miss)]
     Resist = DalamudFlyText.Resist,
 
-    /*
-    * LootedItem,
-    * Collectability,
-    * CollectabilityCrit,
-    * Reflect,
-    * Reflected,
-    * CraftingQualityDh,
-    * CraftingQualityCritDh
-    */
+    /// <summary>
+    /// Looted Item.
+    /// </summary>
+    [FlyTextFilter([FlyTextFilter.Party, FlyTextFilter.Enemy])]
+    [FlyTextCategory(FlyTextCategory.Other)]
+    LootedItem = DalamudFlyText.LootedItem,
+
+    /// <summary>
+    /// Collectible.
+    /// </summary>
+    [FlyTextFilter([FlyTextFilter.Party, FlyTextFilter.Enemy])]
+    [FlyTextCategory(FlyTextCategory.Other)]
+    Collectability = DalamudFlyText.Collectability,
+
+    /// <summary>
+    /// Crit collectible.
+    /// </summary>
+    [FlyTextFilter([FlyTextFilter.Party, FlyTextFilter.Enemy])]
+    [FlyTextCategory(FlyTextCategory.Other)]
+    CollectabilityCrit = DalamudFlyText.CollectabilityCrit,
+
+    /// <summary>
+    /// Reflect.
+    /// </summary>
+    [FlyTextFilter([FlyTextFilter.Party])]
+    [FlyTextCategory(FlyTextCategory.Miss)]
+    Reflect = DalamudFlyText.Reflect,
+
+    /// <summary>
+    /// Reflected.
+    /// </summary>
+    [FlyTextFilter([FlyTextFilter.Party])]
+    [FlyTextCategory(FlyTextCategory.Miss)]
+    Reflected = DalamudFlyText.Reflected,
+
+    /// <summary>
+    /// Crafting quality DH.
+    /// </summary>
+    [FlyTextFilter([FlyTextFilter.Party, FlyTextFilter.Enemy])]
+    [FlyTextCategory(FlyTextCategory.Other)]
+    CraftingQualityDh = DalamudFlyText.CraftingQualityDh,
+
+    /// <summary>
+    /// Crafting Quality crit DH.
+    /// </summary>
+    [FlyTextFilter([FlyTextFilter.Party, FlyTextFilter.Enemy])]
+    [FlyTextCategory(FlyTextCategory.Other)]
+    CraftingQualityCritDh = DalamudFlyText.CraftingQualityCritDh,
 }
 
 /// <summary>
@@ -362,8 +411,7 @@ public static class FlyTextKindExtension
     /// <param name="kind">Kind to print.</param>
     /// <returns>A pretty string.</returns>
     public static string Pretty(this FlyTextKind kind)
-    {
-        return kind switch
+        => kind switch
         {
             FlyTextKind.Miss => "Miss",
             FlyTextKind.NamedMiss => "Miss",
@@ -375,8 +423,16 @@ public static class FlyTextKindExtension
             FlyTextKind.FullyResisted => "Resisted",
             FlyTextKind.HasNoEffect => "No Effect",
             FlyTextKind.DebuffInvulnerable => "Invulnerable",
+            FlyTextKind.Invulnerable => "Invulnerable",
             FlyTextKind.Resist => "Resisted",
             _ => string.Empty,
         };
-    }
+
+    /// <summary>
+    /// Predicate for filtering unused kinds.
+    /// </summary>
+    /// <param name="kind">The kind to compare.</param>
+    /// <returns>A bool if the value should filter.</returns>
+    public static bool UnusedKindPredicate(FlyTextKind kind)
+        => kind != FlyTextKind.None;
 }

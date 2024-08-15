@@ -1,13 +1,11 @@
 namespace CBT.Interface;
 
 using System.IO;
-using System.Linq;
 using System.Numerics;
 using CBT.FlyText.Configuration;
 using CBT.Interface.Tabs;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
-using FFXIVClientStructs;
 using ImGuiNET;
 
 /// <summary>

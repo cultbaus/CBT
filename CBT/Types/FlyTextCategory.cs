@@ -65,6 +65,11 @@ public enum FlyTextCategory
     CC = 1 << 16 | Combat,
 
     /// <summary>
+    /// Non-combat events. Crafting, Gp Gains, etc.
+    /// </summary>
+    Other = 1 << 17 | NonCombat,
+
+    /// <summary>
     /// CC category. Member of the Combat group.
     /// </summary>
     CategoryNone = 1 << 17 | GroupNone,

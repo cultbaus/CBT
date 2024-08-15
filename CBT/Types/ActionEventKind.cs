@@ -22,6 +22,11 @@ public enum ActionEventKind : byte
     Healing = 4,
 
     /// <summary>
+    /// Mp regen ticks.
+    /// </summary>
+    MpGain = 11,
+
+    /// <summary>
     /// PlayerAppliedDebuff - maybe. Some ambiguity around this.
     /// </summary>
     PlayerAppliedDebuff = 14,
