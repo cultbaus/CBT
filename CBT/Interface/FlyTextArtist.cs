@@ -54,7 +54,7 @@ public unsafe class FlyTextArtist
     {
         using (ImRaii.PushStyle(ImGuiStyleVar.Alpha, flyTextEvent.Animation.Alpha))
         {
-            using (Service.Fonts.Push(flyTextEvent.Config.Font.Name, flyTextEvent.Config.Font.Size))
+            using (Service.Fonts.Push(flyTextEvent.Config.Font.FontId, flyTextEvent.Config.Font.Size))
             {
                 if (flyTextEvent.Config.Icon.Enabled)
                 {

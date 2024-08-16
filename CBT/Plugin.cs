@@ -54,7 +54,7 @@ public sealed partial class Plugin : IDalamudPlugin
             ShowInHelp = true,
         });
         Service.Configuration = pluginInterface.GetPluginConfig() as PluginConfiguration ?? new PluginConfiguration();
-        Service.Fonts = new FontManager(Path.GetDirectoryName(assemblyLocation) + "\\Media\\Fonts\\");
+        Service.Fonts = new FontManager();
         Service.Interface.UiBuilder.OpenConfigUi += this.OnOpenConfigUi;
         Service.Interface.UiBuilder.OpenMainUi += this.OnOpenConfigUi;
         Service.Interface.UiBuilder.Draw += this.windowSystem.Draw;

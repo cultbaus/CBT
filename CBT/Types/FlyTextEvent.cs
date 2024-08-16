@@ -118,7 +118,7 @@ public unsafe partial class FlyTextEvent
             }
             else
             {
-                using (Service.Fonts.Push(this.Config.Font.Name, this.Config.Font.Size))
+                using (Service.Fonts.Push(this.Config.Font.FontId, this.Config.Font.Size))
                 {
                     var textSize = ImGui.CalcTextSize(this.Text);
 

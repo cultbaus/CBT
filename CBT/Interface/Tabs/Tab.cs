@@ -6,14 +6,13 @@ using System.Numerics;
 using CBT.Attributes;
 using CBT.FlyText.Configuration;
 using CBT.Types;
+using Dalamud.Interface.FontIdentifier;
 
 /// <summary>
 /// Tab class.
 /// </summary>
 public abstract class Tab
 {
-    private static readonly List<string> FontPickerValues = [.. PluginConfiguration.Fonts.Keys];
-
     /// <summary>
     /// Gets the Name of the window.
     /// </summary>
@@ -63,10 +62,14 @@ public abstract class Tab
     /// <summary>
     /// Gets or sets a value indicating whether.
     /// </summary>
-    protected string CurrentFont
+    protected IFontId CurrentFont
     {
-        get => this.GetValue(config => config.Font.Name);
-        set => this.SetValue((config, val) => config.Font.Name = val, value);
+        get => this.GetValue(config => config.Font.FontId);
+        set
+        {
+            this.SetValue((config, val) => config.Font.FontId = val, value);
+            Service.Fonts.BuildFont(value,  this.CurrentFontSize);
+        }
     }
 
     /// <summary>
@@ -283,10 +286,7 @@ public abstract class Tab
         GuiArtist.DrawSubTitle("Font Configurations");
         {
             GuiArtist.DrawLabelPrefix("Select Font", sameLine: false);
-            GuiArtist.DrawSelectPicker($"Font_{this.Name}", sameLine: true, this.CurrentFont, FontPickerValues, font => { this.CurrentFont = font; });
-
-            GuiArtist.DrawLabelPrefix("Select Font Size", sameLine: false);
-            GuiArtist.DrawSelectPicker($"Font Size_{this.Name}", sameLine: true, this.CurrentFontSize, PluginConfiguration.Fonts[this.CurrentFont], size => { this.CurrentFontSize = size; }, 50f);
+            GuiArtist.DrawFontPicker($"Font_{this.Name}", sameLine: true, this.CurrentFont, font => { this.CurrentFont = font; });
 
             GuiArtist.DrawLabelPrefix("Select Font Color", sameLine: false);
             GuiArtist.DrawColorPicker($"Font Color_{this.Name}", sameLine: true, this.CurrentFontColor, color => { this.CurrentFontColor = color; });

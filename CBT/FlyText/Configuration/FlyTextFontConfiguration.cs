@@ -1,6 +1,7 @@
 namespace CBT.FlyText.Configuration;
 
 using System.Numerics;
+using Dalamud.Interface.FontIdentifier;
 
 /// <summary>
 /// FlyTextFont configuration options.
@@ -13,8 +14,9 @@ public class FlyTextFontConfiguration
     public FlyTextFontConfiguration()
     {
         this.Outline = new FlyTextOutlineConfiguration();
+        this.FontId = Defaults.DefaultFontId;
         this.Size = Defaults.DefaultFontSize;
-        this.Name = Defaults.DefaultFontName;
+        this.Name = this.FontId.EnglishName;
         this.Color = Defaults.DefaultFontColor;
         this.ColorSuccess = Defaults.DefaultFontColor;
         this.ColorFailed = Defaults.DefaultFontColor;
@@ -27,6 +29,7 @@ public class FlyTextFontConfiguration
     public FlyTextFontConfiguration(FlyTextFontConfiguration toCopy)
     {
         this.Outline = toCopy.Outline;
+        this.FontId = toCopy.FontId;
         this.Size = toCopy.Size;
         this.Name = toCopy.Name;
         this.Color = toCopy.Color;
@@ -40,14 +43,19 @@ public class FlyTextFontConfiguration
     public FlyTextOutlineConfiguration Outline { get; set; }
 
     /// <summary>
+    ///  Gets or sets the font id.
+    /// </summary>
+    public IFontId FontId { get; set; }
+
+    /// <summary>
     ///  Gets or sets the size of the font.
     /// </summary>
     public float Size { get; set; }
 
     /// <summary>
-    /// Gets or sets the name of the font.
+    /// Gets the name of the font.
     /// </summary>
-    public string Name { get; set; }
+    public string Name { get; }
 
     /// <summary>
     /// Gets or sets the color of the font.
