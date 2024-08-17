@@ -190,7 +190,7 @@ public class GuiArtist
     /// <param name="currentFont">The current font.</param>
     /// <param name="action">An action to take with kind T.</param>
     /// <param name="size">Size of the input width.</param>
-    public static void DrawFontPicker(string label, bool sameLine, IFontId currentFont, Action<IFontId> action, float size = LongElementWidth)
+    public static void DrawFontPicker(string label, bool sameLine, SingleFontSpec currentFont, Action<SingleFontSpec> action, float size = LongElementWidth)
     {
         size = Scale(size);
 
@@ -203,19 +203,19 @@ public class GuiArtist
 
         using var id = ImRaii.PushId($"##{label}");
 
-        if (!ImGui.Button(currentFont.Family.EnglishName))
+        if (!ImGui.Button($"{currentFont.FontId.Family.EnglishName} | {currentFont.SizePt}pt"))
         {
             return;
         }
 
         var chooser = SingleFontChooserDialog.CreateAuto((UiBuilder)Service.Interface.UiBuilder);
-        chooser.SelectedFont = new SingleFontSpec { FontId = currentFont };
+        chooser.SelectedFont = currentFont;
         chooser?.ResultTask.ContinueWith(
             r =>
             {
                 if (r.IsCompletedSuccessfully)
                 {
-                    action(r.Result.FontId);
+                    action(new SingleFontSpec { FontId = r.Result.FontId, SizePt = r.Result.SizePt });
                 }
             });
     }
