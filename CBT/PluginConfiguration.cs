@@ -149,11 +149,6 @@ public class PluginConfiguration : IPluginConfiguration
     }
 
     /// <summary>
-    /// Gets or sets the Fonts configuration settings.
-    /// </summary>
-    public static Dictionary<string, List<float>> Fonts { get; set; } = [];
-
-    /// <summary>
     /// Gets or sets the FlyTextKinds Configuration options.
     /// </summary>
     public Dictionary<FlyTextKind, FlyTextConfiguration> FlyTextKinds { get; set; } = [];
