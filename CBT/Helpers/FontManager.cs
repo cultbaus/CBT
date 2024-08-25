@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+
 namespace CBT.Helpers;
 
 using System;
@@ -14,7 +16,7 @@ using Dalamud.Interface.ManagedFontAtlas;
 /// </summary>
 public class FontManager : IDisposable
 {
-    private readonly Dictionary<string, IFontHandle> fonts = [];
+    private readonly ConcurrentDictionary<(IFontId, float), IFontHandle> fonts = [];
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FontManager"/> class.
@@ -47,9 +49,15 @@ public class FontManager : IDisposable
     /// <param name="fontId">ID of the font to push.</param>
     /// <param name="size">Size of the font to push.</param>
     /// <returns>A <see cref="IDisposable"/> font object which will Pop once it goes out of scope.</returns>
-    public IDisposable Push(IFontId fontId, float size)
+    public IDisposable? Push(IFontId fontId, float size)
     {
-        return this.fonts.FirstOrDefault(f => Equals(f.Key, $"{fontId}_{size}")).Value.Push();
+        if (this.fonts.TryGetValue((fontId, size), out var fontHandle))
+        {
+            return fontHandle.Push();
+        }
+
+        Service.PluginLog.Error($"CBT FontManager failed to push font {fontId} with size {size}.");
+        return null;
     }
 
     /// <summary>
@@ -59,7 +67,7 @@ public class FontManager : IDisposable
     /// <param name="size">Size of the font to add.</param>
     public void BuildFont(IFontId fontId, float size)
     {
-        if (this.fonts.ContainsKey($"{fontId}_{size}"))
+        if (this.fonts.ContainsKey((fontId, size)))
         {
             return;
         }
@@ -71,6 +79,6 @@ public class FontManager : IDisposable
 
             tk.Font = cfg.MergeFont;
         }));
-        this.fonts.Add($"{fontId}_{size}", fontHandle);
+        this.fonts.TryAdd((fontId, size), fontHandle);
     }
 }
