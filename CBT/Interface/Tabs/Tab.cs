@@ -65,11 +65,7 @@ public abstract class Tab
     protected SingleFontSpec CurrentFont
     {
         get => this.GetValue(config => new SingleFontSpec { SizePt = config.Font.Size, FontId = config.Font.FontId });
-        set
-        {
-            this.SetValue((config, val) => (config.Font.FontId, config.Font.Size) = (val.FontId, val.SizePt), value);
-            Service.Fonts.BuildFont(value.FontId,  value.SizePt);
-        }
+        set => this.SetValue((config, val) => (config.Font.FontId, config.Font.Size) = (val.FontId, val.SizePt), value);
     }
 
     /// <summary>

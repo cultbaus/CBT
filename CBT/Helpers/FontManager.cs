@@ -1,14 +1,8 @@
-using System.Collections.Concurrent;
-
 namespace CBT.Helpers;
 
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using CBT.FlyText.Configuration;
+using System.Collections.Concurrent;
 using Dalamud.Interface.FontIdentifier;
-using Dalamud.Interface.GameFonts;
 using Dalamud.Interface.ManagedFontAtlas;
 
 /// <summary>
@@ -16,26 +10,7 @@ using Dalamud.Interface.ManagedFontAtlas;
 /// </summary>
 public class FontManager : IDisposable
 {
-    private readonly ConcurrentDictionary<(IFontId, float), IFontHandle> fonts = [];
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="FontManager"/> class.
-    /// </summary>
-    public FontManager()
-    {
-        Enumerable.Range(14, 32 - 14 + 1)
-            .Where(i => i % 2 == 0)
-            .ToList()
-            .ForEach(size =>
-            {
-                this.BuildFont(Defaults.DefaultFontId, size);
-            });
-
-        foreach (var k in Service.Configuration.FlyTextKinds)
-        {
-            this.BuildFont(k.Value.Font.FontId, k.Value.Font.Size);
-        }
-    }
+    private readonly ConcurrentDictionary<(IFontId, float), Lazy<IFontHandle>> fonts = [];
 
     /// <inheritdoc/>
     public void Dispose()
@@ -49,36 +24,24 @@ public class FontManager : IDisposable
     /// <param name="fontId">ID of the font to push.</param>
     /// <param name="size">Size of the font to push.</param>
     /// <returns>A <see cref="IDisposable"/> font object which will Pop once it goes out of scope.</returns>
-    public IDisposable? Push(IFontId fontId, float size)
+    public IDisposable Push(IFontId fontId, float size)
     {
-        if (this.fonts.TryGetValue((fontId, size), out var fontHandle))
-        {
-            return fontHandle.Push();
-        }
-
-        Service.PluginLog.Error($"CBT FontManager failed to push font {fontId} with size {size}.");
-        return null;
+        return this.fonts.GetOrAdd((fontId, size), key => new Lazy<IFontHandle>(() => BuildFontHandle(key.Item1, key.Item2))).Value.Push();
     }
 
     /// <summary>
-    /// Builds a FontHandle and adds it to the FontManager.
+    /// Builds and returns a FontHandle.
     /// </summary>
     /// <param name="fontId">ID of the font to add.</param>
     /// <param name="size">Size of the font to add.</param>
-    public void BuildFont(IFontId fontId, float size)
+    private static IFontHandle BuildFontHandle(IFontId fontId, float size)
     {
-        if (this.fonts.ContainsKey((fontId, size)))
-        {
-            return;
-        }
-
-        IFontHandle fontHandle = Service.Interface.UiBuilder.FontAtlas.NewDelegateFontHandle(e => e.OnPreBuild(tk =>
+        return Service.Interface.UiBuilder.FontAtlas.NewDelegateFontHandle(e => e.OnPreBuild(tk =>
         {
             var cfg = new SafeFontConfig { SizePt = size };
             cfg.MergeFont = fontId.AddToBuildToolkit(tk, cfg);
 
             tk.Font = cfg.MergeFont;
         }));
-        this.fonts.TryAdd((fontId, size), fontHandle);
     }
 }
