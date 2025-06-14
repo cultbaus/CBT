@@ -30,7 +30,7 @@ public partial class ConfigWindow : Window
     /// <inheritdoc/>
     public override void Draw()
     {
-        using (Service.Fonts.Push(Defaults.DefaultFontName, 14f))
+        using (Service.Fonts.Push(Defaults.DefaultFontId, 14f))
         {
             using (ImRaii.PushStyle(ImGuiStyleVar.CellPadding, new Vector2(GuiArtist.Scale(5), GuiArtist.Scale(30))))
             {

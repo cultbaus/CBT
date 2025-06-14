@@ -2,6 +2,8 @@ namespace CBT.FlyText.Configuration;
 
 using System.Numerics;
 using CBT.FlyText.Animations;
+using Dalamud.Interface.FontIdentifier;
+using Dalamud.Interface.GameFonts;
 
 /// <summary>
 /// Defaults for configuration settings.
@@ -11,7 +13,7 @@ public record Defaults
     /// <summary>
     /// Default font.
     /// </summary>
-    public const string DefaultFontName = "Expressway";
+    public static readonly IFontId DefaultFontId = new GameFontAndFamilyId(GameFontFamily.Axis);
 
     /// <summary>
     /// Default message format option.

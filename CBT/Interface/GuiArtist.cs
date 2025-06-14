@@ -6,6 +6,9 @@ using System.Numerics;
 using System.Text;
 using CBT.FlyText.Configuration;
 using CBT.Interface.Tabs;
+using Dalamud.Interface;
+using Dalamud.Interface.FontIdentifier;
+using Dalamud.Interface.ImGuiFontChooserDialog;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
@@ -97,7 +100,7 @@ public class GuiArtist
             ImGui.SameLine();
         }
 
-        using (Service.Fonts.Push(Defaults.DefaultFontName, 24f))
+        using (Service.Fonts.Push(Defaults.DefaultFontId, 24f))
         {
             if (ImGui.Button(label))
             {
@@ -180,6 +183,44 @@ public class GuiArtist
     }
 
     /// <summary>
+    /// Draw Font Picker.
+    /// </summary>
+    /// <param name="label">A label for the font picker.</param>
+    /// <param name="sameLine">Should this be on the same line.</param>
+    /// <param name="currentFont">The current font.</param>
+    /// <param name="action">An action to take with kind <see cref="SingleFontSpec"/>.</param>
+    /// <param name="size">Size of the input width.</param>
+    public static void DrawFontPicker(string label, bool sameLine, SingleFontSpec currentFont, Action<SingleFontSpec> action, float size = LongElementWidth)
+    {
+        size = Scale(size);
+
+        if (sameLine)
+        {
+            ImGui.SameLine();
+        }
+
+        ImGui.SetNextItemWidth(size);
+
+        using var id = ImRaii.PushId($"##{label}");
+
+        if (!ImGui.Button($"{currentFont.FontId.Family.EnglishName} | {currentFont.SizePt}pt"))
+        {
+            return;
+        }
+
+        var chooser = SingleFontChooserDialog.CreateAuto((UiBuilder)Service.Interface.UiBuilder);
+        chooser.SelectedFont = currentFont;
+        chooser?.ResultTask.ContinueWith(
+            r =>
+            {
+                if (r.IsCompletedSuccessfully)
+                {
+                    action(new SingleFontSpec { FontId = r.Result.FontId, SizePt = r.Result.SizePt });
+                }
+            });
+    }
+
+    /// <summary>
     /// Draws a color picker.
     /// </summary>
     /// <param name="label">String label for the picker.</param>
@@ -212,7 +253,7 @@ public class GuiArtist
     /// <param name="seperatorSize">Size in pixels to draw the space.</param>
     public static void DrawSeperator(float seperatorSize = 14f)
     {
-        using (Service.Fonts.Push(Defaults.DefaultFontName, seperatorSize))
+        using (Service.Fonts.Push(Defaults.DefaultFontId, seperatorSize))
         {
             ImGui.Spacing();
             ImGui.Separator();
@@ -226,7 +267,7 @@ public class GuiArtist
     /// <param name="fontSize">The font size for the title.</param>
     public static void DrawTitle(string titleText, float fontSize = 24f)
     {
-        using (Service.Fonts.Push(Defaults.DefaultFontName, fontSize))
+        using (Service.Fonts.Push(Defaults.DefaultFontId, fontSize))
         {
             using (ImRaii.PushColor(ImGuiCol.Text, ImGui.GetColorU32(new Vector4(1, 1, 0, 1))))
             {
@@ -243,7 +284,7 @@ public class GuiArtist
     /// <param name="fontSize">The font size for the title.</param>
     public static void DrawSubTitle(string titleText, float fontSize = 18f)
     {
-        using (Service.Fonts.Push(Defaults.DefaultFontName, fontSize))
+        using (Service.Fonts.Push(Defaults.DefaultFontId, fontSize))
         {
             using (ImRaii.PushColor(ImGuiCol.Text, ImGui.GetColorU32(new Vector4(0, 1, 1, 1))))
             {
@@ -261,7 +302,7 @@ public class GuiArtist
     /// <param name="fontSize">Size of the warning.</param>
     public static void DrawWarning(string message, float fontSize = 16f)
     {
-        using (Service.Fonts.Push(Defaults.DefaultFontName, fontSize))
+        using (Service.Fonts.Push(Defaults.DefaultFontId, fontSize))
         {
             using (ImRaii.PushColor(ImGuiCol.Text, ImGui.GetColorU32(new Vector4(1, 0, 0, 1))))
             {
@@ -284,7 +325,7 @@ public class GuiArtist
             ImGui.SameLine();
         }
 
-        using (Service.Fonts.Push(Defaults.DefaultFontName, fontSize))
+        using (Service.Fonts.Push(Defaults.DefaultFontId, fontSize))
         {
             using (ImRaii.PushColor(ImGuiCol.Text, ImGui.GetColorU32(new Vector4(1, 1, 0, 1))))
             {
